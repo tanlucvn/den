@@ -3,6 +3,7 @@ import { todosTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { SignInButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   const user = await currentUser();
@@ -27,6 +28,7 @@ export default async function Home() {
           <li key={todo.id}>{todo.id}</li>
         ))}
       </ul>
+      <Button>Hi</Button>
     </div>
   );
 }

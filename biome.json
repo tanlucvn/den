@@ -16,20 +16,16 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"suspicious": {
+				"noArrayIndexKey": "off"
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",
 					"fix": "safe",
 					"options": {
-						"attributes": [
-							"classList"
-						],
-						"functions": [
-							"clsx",
-							"cva",
-							"tw",
-							"cn"
-						]
+						"attributes": ["classList"],
+						"functions": ["clsx", "cva", "tw", "cn"]
 					}
 				}
 			},
@@ -50,5 +46,17 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/components/icon-renderer.tsx"],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noDynamicNamespaceImportAccess": "off"
+					}
+				}
+			}
+		}
+	]
 }

@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import type { ThemeProviderProps } from "next-themes/dist/types";
+import { useEffect, useState } from "react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -49,6 +50,13 @@ function ThemeButton({
 	themeTitle: "light" | "dark" | "system";
 }) {
 	const { theme, setTheme } = useTheme();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	const isActive = mounted && theme === themeTitle;
 
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -59,7 +67,7 @@ function ThemeButton({
 						size="sm"
 						className={cn(
 							"aspect-square size-5 rounded-full border border-transparent p-0 transition-all hover:bg-transparent hover:text-foreground [&_svg]:size-3",
-							theme === themeTitle && "border-foreground/20 text-foreground",
+							isActive && "border-foreground/20 text-foreground",
 						)}
 						onClick={() => setTheme(themeTitle)}
 					>

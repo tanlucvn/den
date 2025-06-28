@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AppLayout from "@/components/layouts/app-layout";
 import "./globals.css";
+import { Toaster } from "sonner";
+import { ModalInitializer } from "@/components/layouts/initializer/modal-initializer";
 import { ThemeProvider } from "@/components/theme";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -36,6 +38,8 @@ export default function RootLayout({
 						<TooltipProvider>
 							<AppLayout>{children}</AppLayout>
 						</TooltipProvider>
+						<ModalInitializer />
+						<Toaster />
 					</ThemeProvider>
 				</body>
 			</html>

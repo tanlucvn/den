@@ -1,14 +1,10 @@
 "use client";
 
-import {
-	Calculator,
-	Calendar,
-	CreditCard,
-	Settings,
-	Smile,
-	User,
-} from "lucide-react";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { Calculator, Calendar, Smile } from "lucide-react";
 import { useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +15,6 @@ import {
 	CommandItem,
 	CommandList,
 	CommandSeparator,
-	CommandShortcut,
 } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
 import {
@@ -27,9 +22,24 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDialogStore } from "@/store/use-dialog-store";
 
 export function AppQuickActions() {
+	const { user } = useUser();
+	const { signOut } = useClerk();
+
+	const { setIsSignInOpen } = useDialogStore();
+
 	const [open, setOpen] = useState(false);
+
+	useHotkeys(
+		"ctrl+k",
+		(event) => {
+			event.preventDefault(); // Prevent the browser's default behavior
+			setOpen((prev) => !prev);
+		},
+		{ enableOnFormTags: ["INPUT", "TEXTAREA"] },
+	);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -69,22 +79,26 @@ export function AppQuickActions() {
 
 						<CommandSeparator />
 
-						<CommandGroup heading="Settings">
-							<CommandItem>
-								<User />
-								<span>Profile</span>
-								<CommandShortcut>⌘P</CommandShortcut>
-							</CommandItem>
-							<CommandItem>
-								<CreditCard />
-								<span>Billing</span>
-								<CommandShortcut>⌘B</CommandShortcut>
-							</CommandItem>
-							<CommandItem>
-								<Settings />
-								<span>Settings</span>
-								<CommandShortcut>⌘S</CommandShortcut>
-							</CommandItem>
+						<CommandGroup heading="Accounts">
+							{user ? (
+								<CommandItem
+									onSelect={async () => {
+										toast.promise(signOut({ redirectUrl: "/" }), {
+											loading: "Signing out...",
+											success: "Signed out successfully",
+											error: "Sign out failed",
+										});
+									}}
+								>
+									<IconRenderer name="LogOut" className="text-destructive" />
+									<span>Log out</span>
+								</CommandItem>
+							) : (
+								<CommandItem onSelect={() => setIsSignInOpen(true)}>
+									<IconRenderer name="LogIn" />
+									<span>Sign In</span>
+								</CommandItem>
+							)}
 						</CommandGroup>
 					</CommandList>
 				</Command>

@@ -1,7 +1,6 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
-import type { ThemeProviderProps } from "next-themes/dist/types";
 import { useEffect, useState } from "react";
 import {
 	Tooltip,
@@ -13,14 +12,13 @@ import { cn } from "@/lib/utils";
 import { IconRenderer } from "./icon-renderer";
 import { Button } from "./ui/button";
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	return (
 		<NextThemesProvider
 			enableSystem={true}
 			attribute="class"
 			storageKey="theme"
 			defaultTheme="system"
-			{...props}
 		>
 			{children}
 		</NextThemesProvider>

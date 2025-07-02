@@ -23,12 +23,12 @@ export default function Layout({ children }: LayoutProps) {
 	}, [user, supabase, fetchTodos]);
 
 	return (
-		<div className="relative flex min-h-screen flex-col gap-2 bg-background">
+		<div className="relative flex min-h-screen flex-col gap-6 bg-background">
 			<header className="px-4">
 				<AppHeader />
 			</header>
 
-			<div className="sticky top-0 z-10 w-full bg-background p-4">
+			<div className="sticky top-2 z-10 w-full px-4">
 				<AppQuickActions />
 			</div>
 

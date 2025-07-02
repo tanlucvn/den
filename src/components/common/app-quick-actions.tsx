@@ -46,7 +46,7 @@ export function AppQuickActions() {
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					className="w-full justify-between rounded-full font-normal"
+					className="w-full justify-between rounded-full font-normal dark:bg-card dark:hover:border-primary dark:hover:bg-card"
 				>
 					<span className="flex items-center gap-2">
 						<IconRenderer name="Command" className="!text-primary/60" />

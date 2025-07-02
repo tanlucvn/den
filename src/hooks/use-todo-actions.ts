@@ -15,6 +15,7 @@ export const useTodoActions = () => {
 	if (!supabase || !isLoaded) {
 		return {
 			onCreate: async () => {},
+			onToggle: async () => {},
 			onUpdate: async () => {},
 			onDelete: async () => {},
 			onRefresh: async () => {},
@@ -30,6 +31,13 @@ export const useTodoActions = () => {
 			success: "Todo created!",
 			error: "Failed to create todo.",
 		}); */
+
+		await promise;
+	};
+
+	const onToggle = async (todo: Todo) => {
+		const updated = { ...todo, isCompleted: !todo.isCompleted };
+		const promise = updateTodo(supabase, updated);
 
 		await promise;
 	};
@@ -68,6 +76,7 @@ export const useTodoActions = () => {
 
 	return {
 		onCreate,
+		onToggle,
 		onUpdate,
 		onDelete,
 		onRefresh,

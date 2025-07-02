@@ -1,13 +1,7 @@
 "use client";
 
 import { format, isToday, isTomorrow } from "date-fns";
-import {
-	ArrowUpWideNarrowIcon,
-	CalendarIcon,
-	MapPinIcon,
-	MoreHorizontalIcon,
-	PencilLineIcon,
-} from "lucide-react";
+import { MoreHorizontalIcon } from "lucide-react";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,11 +22,7 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
-	const { onUpdate } = useTodoActions();
-
-	const handleToggleComplete = () => {
-		onUpdate({ ...todo, isCompleted: !todo.isCompleted });
-	};
+	const { onToggle } = useTodoActions();
 
 	const isRemindPast = (dateStr: string) => {
 		const d = new Date(dateStr);
@@ -46,26 +36,37 @@ export function TodoItem({ todo }: TodoItemProps) {
 		return format(d, "MMMM do yyyy");
 	};
 
+	const hasMetadata =
+		todo.remindAt ||
+		todo.location ||
+		todo.note ||
+		todo.priority !== "none" ||
+		todo.isPinned;
+
 	return (
 		<TodoControlsContext todo={todo}>
 			<div
 				className={cn(
-					"group relative flex flex-col gap-2 rounded-xl border p-1 shadow-xs hover:border-primary/60",
+					"group relative flex w-full flex-col gap-2 rounded-xl border-2 bg-card/60 shadow-xs hover:border-primary/60",
+					hasMetadata && "pb-2",
 					todo.isCompleted && "opacity-60",
 				)}
 			>
-				<div className="flex items-center justify-between rounded-lg bg-card px-2 py-1">
-					<div className="flex items-center gap-2">
+				{/* Main row */}
+				<div className="flex items-center justify-between gap-2 rounded-xl bg-card px-2 py-1">
+					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<Checkbox
 							checked={todo.isCompleted}
-							onCheckedChange={handleToggleComplete}
+							onCheckedChange={() => onToggle(todo)}
 							className="size-6 rounded-full"
 						/>
 
-						<div className="flex flex-col">
-							<p className="font-medium">{todo.title}</p>
+						<div className="flex max-w-full flex-col overflow-hidden">
+							<span className="truncate font-medium">{todo.title}</span>
 							{todo.note && (
-								<p className="text-muted-foreground text-xs">{todo.note}</p>
+								<p className="truncate text-muted-foreground text-xs">
+									{todo.note}
+								</p>
 							)}
 						</div>
 					</div>
@@ -78,58 +79,69 @@ export function TodoItem({ todo }: TodoItemProps) {
 				</div>
 
 				{/* Metadata row */}
-				{(todo.remindAt ||
-					todo.location ||
-					todo.note ||
-					todo.priority !== "none" ||
-					todo.isPinned) && (
+				{hasMetadata && (
 					<div className="flex flex-wrap items-center gap-3 px-2 text-muted-foreground text-xs">
-						{todo.remindAt && (
-							<span
-								className={cn(
-									"inline-flex items-center gap-1",
-									isRemindPast(todo.remindAt) && "text-destructive",
-								)}
-							>
-								<CalendarIcon className="size-3" />
-								{formatRemindDate(todo.remindAt)}
-							</span>
-						)}
+						{/* Left-side metadata */}
+						<div className="flex flex-wrap items-center gap-3">
+							{todo.isPinned && (
+								<span className="flex items-center gap-1">
+									<IconRenderer name="Pin" />
+								</span>
+							)}
 
-						{location && (
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<span className="inline-flex items-center gap-1">
-										<MapPinIcon className="size-3" />
-									</span>
-								</TooltipTrigger>
-								<TooltipContent>{todo.location}</TooltipContent>
-							</Tooltip>
-						)}
-						{todo.note && (
-							<span className="inline-flex items-center gap-1">
-								<PencilLineIcon className="size-3" />
-							</span>
-						)}
-						{todo.priority !== "none" && (
-							<span className="inline-flex items-center gap-1">
-								<ArrowUpWideNarrowIcon className="size-3" />
-							</span>
-						)}
-						{todo.priority !== "none" && (
-							<Badge
-								variant="secondary"
-								className={cn(
-									"ml-auto rounded-full text-[10px] capitalize",
-									todo.priority === "low" && "text-emerald-500",
-									todo.priority === "medium" && "text-orange-500",
-									todo.priority === "high" && "text-rose-700",
-								)}
-							>
-								<IconRenderer name="Flag" />
-								{todo.priority}
-							</Badge>
-						)}
+							{todo.location && (
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<span className="flex items-center gap-1">
+											<IconRenderer name="MapPin" />
+										</span>
+									</TooltipTrigger>
+									<TooltipContent>{todo.location}</TooltipContent>
+								</Tooltip>
+							)}
+
+							{todo.note && (
+								<span className="flex items-center gap-1">
+									<IconRenderer name="PencilLine" />
+								</span>
+							)}
+
+							{todo.priority !== "none" && (
+								<span className="flex items-center gap-1">
+									<IconRenderer name="ArrowUpWideNarrow" />
+								</span>
+							)}
+						</div>
+
+						{/* Right-side metadata (always at end) */}
+						<div className="ml-auto flex items-center gap-2">
+							{todo.remindAt && (
+								<span
+									className={cn(
+										"flex items-center gap-1",
+										isRemindPast(todo.remindAt) && "text-destructive",
+									)}
+								>
+									<IconRenderer name="Calendar" />
+									{formatRemindDate(todo.remindAt)}
+								</span>
+							)}
+
+							{todo.priority !== "none" && (
+								<Badge
+									variant="secondary"
+									className={cn(
+										"rounded-full text-[10px] capitalize",
+										todo.priority === "low" && "text-emerald-500",
+										todo.priority === "medium" && "text-orange-500",
+										todo.priority === "high" && "text-rose-700",
+									)}
+								>
+									<IconRenderer name="Flag" />
+									{todo.priority}
+								</Badge>
+							)}
+						</div>
 					</div>
 				)}
 			</div>

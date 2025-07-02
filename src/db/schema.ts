@@ -1,11 +1,11 @@
-import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const todosTable = pgTable("todos", {
-	id: serial("id").primaryKey(),
-	userId: text("user_id").notNull(),
+	id: uuid("id").primaryKey().defaultRandom(),
+	userId: text("userId").notNull(),
 
-	task: text("task").notNull(),
-	note: text("note").notNull(),
+	title: text("title").notNull(),
+	note: text("note"),
 
 	priority: text("priority", {
 		enum: ["none", "low", "medium", "high"],
@@ -15,13 +15,12 @@ export const todosTable = pgTable("todos", {
 
 	location: text("location"), // optional field
 
-	isComplete: boolean("is_complete").notNull().default(false),
-	isPin: boolean("is_pin").notNull().default(false),
+	isCompleted: boolean("isCompleted").notNull().default(false),
+	isPinned: boolean("isPinned").notNull().default(false),
 
-	deletedAt: timestamp("deleted_at", { mode: "date" }).notNull(),
-	createdAt: timestamp("created_at", { mode: "date" }).notNull().defaultNow(),
-	updatedAt: timestamp("updated_at", { mode: "date" })
-		.notNull()
-		.$onUpdate(() => new Date()),
-	remindAt: timestamp("remind_at", { mode: "date" }).notNull(),
+	deletedAt: timestamp("deletedAt", { mode: "date" }),
+	remindAt: timestamp("remindAt", { mode: "date" }),
+
+	createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+	updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 });

@@ -46,18 +46,18 @@ export function AppQuickActions() {
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					className="w-full justify-between text-muted-foreground"
+					className="w-full justify-between rounded-full font-normal"
 				>
 					<span className="flex items-center gap-2">
-						<IconRenderer name="Command" />
+						<IconRenderer name="Command" className="!text-primary/60" />
 						Quick Actions
 					</span>
 					<Kbd keys="Ctrl+K" />
 				</Button>
 			</PopoverTrigger>
 
-			<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-				<Command>
+			<PopoverContent className="w-[var(--radix-popover-trigger-width)] rounded-xl p-0">
+				<Command className="rounded-xl">
 					<CommandInput placeholder="Type a command or search..." />
 					<CommandList>
 						<CommandEmpty>No results found.</CommandEmpty>

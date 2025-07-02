@@ -1,20 +1,20 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import AppLayout from "@/components/layouts/app-layout";
-import "./globals.css";
-import { Toaster } from "sonner";
-import { ModalInitializer } from "@/components/layouts/initializer/modal-initializer";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+import "./globals.css";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
+const inter = Inter({
+	variable: "--font-inter",
 	subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+	variable: "--font-mono",
 	subsets: ["latin"],
 });
 
@@ -32,13 +32,12 @@ export default function RootLayout({
 		<ClerkProvider>
 			<html lang="en" suppressHydrationWarning>
 				<body
-					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+					className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
 				>
 					<ThemeProvider>
 						<TooltipProvider>
-							<AppLayout>{children}</AppLayout>
+							<SidebarProvider>{children}</SidebarProvider>
 						</TooltipProvider>
-						<ModalInitializer />
 						<Toaster />
 					</ThemeProvider>
 				</body>

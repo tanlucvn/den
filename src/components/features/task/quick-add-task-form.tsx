@@ -5,13 +5,14 @@ import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import { Input, InputSuffix, InputWrapper } from "@/components/ui/input";
-import { useTodoActions } from "@/hooks/use-todo-actions";
+import { useTaskActions } from "@/hooks/use-task-actions";
 import { useDialogStore } from "@/store/use-dialog-store";
 
-export function QuickAddTodoForm() {
+export default function QuickAddTaskForm() {
 	const { user } = useUser();
-	const { onCreate } = useTodoActions();
-	const { setIsNewTodoOpen } = useDialogStore();
+	const { onCreate } = useTaskActions();
+	const { setIsNewTaskOpen } = useDialogStore();
+
 	const [title, setTitle] = useState("");
 
 	const handleSubmit = async () => {
@@ -44,7 +45,7 @@ export function QuickAddTodoForm() {
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 				onKeyDown={handleKeyDown}
-				placeholder="Add a quick todo..."
+				placeholder="Add a quick task..."
 				className="rounded-full pr-28 text-foreground"
 			/>
 
@@ -53,7 +54,7 @@ export function QuickAddTodoForm() {
 					variant="ghost"
 					size="icon"
 					className="size-7 rounded-full text-muted-foreground"
-					onClick={() => setIsNewTodoOpen(true)}
+					onClick={() => setIsNewTaskOpen(true)}
 				>
 					<IconRenderer name="Maximize2" />
 				</Button>

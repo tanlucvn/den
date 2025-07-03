@@ -11,18 +11,21 @@ const SignInModal = dynamic(() => import("@/components/modals/sign-in-modal"), {
 	ssr: false,
 });
 
-const NewTodoModal = dynamic(() => import("@/components/modals/new-todo"), {
-	ssr: false,
-});
+const NewTaskModal = dynamic(
+	() => import("@/components/modals/new-task-modal"),
+	{
+		ssr: false,
+	},
+);
 
 export function ModalInitializer() {
-	const { isAppModalOpen, isSignInOpen, isNewTodoOpen } = useDialogStore();
+	const { isAppModalOpen, isSignInOpen, isNewTaskOpen } = useDialogStore();
 
 	// Modal definitions
 	const modals = [
 		{ open: isAppModalOpen, Component: AppModal },
 		{ open: isSignInOpen, Component: SignInModal },
-		{ open: isNewTodoOpen, Component: NewTodoModal },
+		{ open: isNewTaskOpen, Component: NewTaskModal },
 	];
 
 	return (

@@ -8,32 +8,32 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import type { Todo } from "@/lib/models";
-import { TodoItem } from "./todo-item";
+import type { Task } from "@/lib/models";
+import TaskItem from "./task-item";
 
 type SectionProps = {
 	icon: React.ReactNode;
 	title: string;
-	todos: Todo[];
+	tasks: Task[];
 	defaultOpen?: boolean;
 };
 
-export default function TodoSection({
+export default function TaskSection({
 	icon,
 	title,
-	todos,
+	tasks,
 	defaultOpen,
 }: SectionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 
-	if (todos.length === 0) return null;
+	if (tasks.length === 0) return null;
 
 	return (
 		<Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
 			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
 				{icon}
 				<span className="text-foreground">{title}</span>
-				<NumberFlowBadge value={todos.length} />
+				<NumberFlowBadge value={tasks.length} />
 
 				<CollapsibleTrigger asChild>
 					<Button variant="ghost" size="icon" className="size-6 rounded">
@@ -46,8 +46,8 @@ export default function TodoSection({
 			</div>
 
 			<CollapsibleContent className="space-y-4 px-2">
-				{todos.map((todo) => (
-					<TodoItem key={todo.id} todo={todo} />
+				{tasks.map((task) => (
+					<TaskItem key={task.id} task={task} />
 				))}
 			</CollapsibleContent>
 		</Collapsible>

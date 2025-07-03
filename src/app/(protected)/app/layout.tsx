@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
 import { useSupabase } from "@/lib/supabase/supabase-provider";
-import { useTodoStore } from "@/store/use-todo-store";
+import { useTaskStore } from "@/store/use-task-store";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -14,13 +14,13 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
 	const { user } = useUser();
 	const { supabase } = useSupabase();
-	const { fetchTodos } = useTodoStore();
+	const { fetchTasks } = useTaskStore();
 
 	useEffect(() => {
 		if (supabase && user) {
-			fetchTodos(supabase);
+			fetchTasks(supabase);
 		}
-	}, [user, supabase, fetchTodos]);
+	}, [user, supabase, fetchTasks]);
 
 	return (
 		<div className="relative flex min-h-screen flex-col gap-6 bg-background">

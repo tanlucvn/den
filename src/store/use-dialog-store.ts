@@ -7,8 +7,8 @@ interface DialogStore {
 	isSignInOpen: boolean;
 	setIsSignInOpen: (open: boolean) => void;
 
-	isNewTodoOpen: boolean;
-	setIsNewTodoOpen: (open: boolean) => void;
+	isNewTaskOpen: boolean;
+	setIsNewTaskOpen: (open: boolean) => void;
 }
 
 export const useDialogStore = create<DialogStore>((set) => ({
@@ -18,6 +18,6 @@ export const useDialogStore = create<DialogStore>((set) => ({
 	isSignInOpen: false,
 	setIsSignInOpen: (open) => set({ isSignInOpen: open }),
 
-	isNewTodoOpen: false,
-	setIsNewTodoOpen: (open) => set({ isNewTodoOpen: open }),
+	isNewTaskOpen: false,
+	setIsNewTaskOpen: (open) => set({ isNewTaskOpen: open }),
 }));

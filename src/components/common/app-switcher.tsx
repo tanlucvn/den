@@ -18,7 +18,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 const APPS = [
 	{
-		name: "Todo",
+		name: "Task",
 		iconName: "Check",
 		description: "Tasks & lists",
 		shortcut: "Ctrl+1",

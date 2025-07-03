@@ -40,20 +40,20 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useTodoActions } from "@/hooks/use-todo-actions";
-import type { NewTodo } from "@/lib/models";
+import { useTaskActions } from "@/hooks/use-task-actions";
+import type { NewTask } from "@/lib/models";
 import { cn } from "@/lib/utils";
-import { type NewTodoFormValues, newTodoSchema } from "@/lib/validators/todo";
+import { type NewTaskFormValues, newTaskSchema } from "@/lib/validators/task";
 import { useDialogStore } from "@/store/use-dialog-store";
 
-export default function NewTodoModal() {
+export default function NewTaskModal() {
 	const { user } = useUser();
 
-	const { isNewTodoOpen, setIsNewTodoOpen } = useDialogStore();
-	const { onCreate } = useTodoActions();
+	const { isNewTaskOpen, setIsNewTaskOpen } = useDialogStore();
+	const { onCreate } = useTaskActions();
 
-	const form = useForm<NewTodoFormValues>({
-		resolver: zodResolver(newTodoSchema),
+	const form = useForm<NewTaskFormValues>({
+		resolver: zodResolver(newTaskSchema),
 		defaultValues: {
 			title: "",
 			note: "",
@@ -63,10 +63,10 @@ export default function NewTodoModal() {
 		},
 	});
 
-	const onSubmit = async (values: NewTodoFormValues) => {
+	const onSubmit = async (values: NewTaskFormValues) => {
 		if (!user) return;
 
-		const newTodo: NewTodo = {
+		const newTask: NewTask = {
 			...values,
 			remindAt: values.remindAt?.toISOString(),
 			userId: user.id,
@@ -74,16 +74,16 @@ export default function NewTodoModal() {
 			isPinned: false,
 		};
 
-		await onCreate(newTodo);
+		await onCreate(newTask);
 		form.reset();
-		setIsNewTodoOpen(false);
+		setIsNewTaskOpen(false);
 	};
 
 	return (
-		<Modal open={isNewTodoOpen} onOpenChange={setIsNewTodoOpen}>
+		<Modal open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
 			<ModalContent className="sm:max-w-md">
 				<ModalHeader>
-					<ModalTitle>New Todo</ModalTitle>
+					<ModalTitle>New Task</ModalTitle>
 					<ModalDescription>Plan something new</ModalDescription>
 				</ModalHeader>
 

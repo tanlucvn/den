@@ -1,4 +1,4 @@
-export interface Todo {
+export interface Task {
 	id: number;
 	userId: string;
 	title: string;
@@ -16,4 +16,4 @@ export interface Todo {
 	updatedAt: string;
 }
 
-export type NewTodo = Omit<Todo, "id" | "createdAt" | "updatedAt">;
+export type NewTask = Omit<Task, "id" | "createdAt" | "updatedAt">;

@@ -6,33 +6,34 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTodoActions } from "@/hooks/use-todo-actions";
-import type { Todo } from "@/lib/models";
+import { useTaskActions } from "@/hooks/use-task-actions";
+import type { Task } from "@/lib/models";
 
-interface TodoControlsDropdownProps {
-	todo: Todo;
+interface TaskControlsDropdownProps {
+	task: Task;
 	children: ReactNode;
 }
 
-export function TodoControlsDropdown({
-	todo,
+export default function TaskControlsDropdown({
+	task,
 	children,
-}: TodoControlsDropdownProps) {
-	const { onUpdate, onDelete } = useTodoActions();
+}: TaskControlsDropdownProps) {
+	const { onUpdate, onDelete } = useTaskActions();
 
 	const handlePinToggle = () => {
-		onUpdate({ ...todo, isPinned: !todo.isPinned });
+		onUpdate({ ...task, isPinned: !task.isPinned });
 	};
 
 	const handleDelete = () => {
-		onDelete(todo.id);
+		onDelete(task.id);
 	};
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent side="bottom" forceMount>
 				<DropdownMenuItem className="gap-2" onClick={handlePinToggle}>
-					{todo.isPinned ? (
+					{task.isPinned ? (
 						<>
 							<IconRenderer name="PinOff" className="!text-primary" />
 							<span>Unpin</span>

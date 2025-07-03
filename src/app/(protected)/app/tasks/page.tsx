@@ -1,23 +1,23 @@
 "use client";
 
-import { QuickAddTodoForm } from "@/components/features/todo/quick-add-todo-form";
-import TodoSection from "@/components/features/todo/todo-section";
+import QuickAddTaskForm from "@/components/features/task/quick-add-task-form";
+import TaskSection from "@/components/features/task/task-section";
 import { IconRenderer } from "@/components/icon-renderer";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import { useGroupedTodos } from "@/hooks/use-grouped-todos";
-import { useTodoStore } from "@/store/use-todo-store";
+import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
+import { useTaskStore } from "@/store/use-task-store";
 
 export default function Page() {
-	const { todos } = useTodoStore();
-	const { pinned, recent, completed } = useGroupedTodos(todos);
+	const { tasks } = useTaskStore();
+	const { pinned, recent, completed } = useGroupedTasks(tasks);
 
 	const sections = [
-		{ title: "Pinned", icon: "Pin", todos: pinned },
-		{ title: "Recent", icon: "History", todos: recent, defaultOpen: true },
+		{ title: "Pinned", icon: "Pin", tasks: pinned },
+		{ title: "Recent", icon: "History", tasks: recent, defaultOpen: true },
 		{
 			title: "Completed",
 			icon: "CircleCheck",
-			todos: completed,
+			tasks: completed,
 			defaultOpen: true,
 		},
 	];
@@ -27,19 +27,19 @@ export default function Page() {
 			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
 				<IconRenderer name="List" className="!text-primary/60" />
 				<span className="text-foreground">All Tasks</span>
-				<NumberFlowBadge value={todos.length} />
+				<NumberFlowBadge value={tasks.length} />
 			</div>
 
-			<QuickAddTodoForm />
+			<QuickAddTaskForm />
 
-			{todos.length > 0 ? (
+			{tasks.length > 0 ? (
 				<div className="space-y-4">
-					{sections.map(({ title, icon, todos, defaultOpen }) => (
-						<TodoSection
+					{sections.map(({ title, icon, tasks, defaultOpen }) => (
+						<TaskSection
 							key={title}
 							icon={<IconRenderer name={icon} />}
 							title={title}
-							todos={todos}
+							tasks={tasks}
 							defaultOpen={defaultOpen}
 						/>
 					))}

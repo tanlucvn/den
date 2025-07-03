@@ -11,18 +11,18 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useTodoActions } from "@/hooks/use-todo-actions";
-import type { Todo } from "@/lib/models";
+import { useTaskActions } from "@/hooks/use-task-actions";
+import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
-import { TodoControlsContext } from "./todo-controls-context";
-import { TodoControlsDropdown } from "./todo-controls-dropdown";
+import TaskControlsContext from "./task-controls-context";
+import TaskControlsDropdown from "./task-controls-dropdown";
 
-interface TodoItemProps {
-	todo: Todo;
+interface TaskItemProps {
+	task: Task;
 }
 
-export function TodoItem({ todo }: TodoItemProps) {
-	const { onToggle } = useTodoActions();
+export default function TaskItem({ task }: TaskItemProps) {
+	const { onToggle } = useTaskActions();
 
 	const isRemindPast = (dateStr: string) => {
 		const d = new Date(dateStr);
@@ -37,45 +37,45 @@ export function TodoItem({ todo }: TodoItemProps) {
 	};
 
 	const hasMetadata =
-		todo.remindAt ||
-		todo.location ||
-		todo.note ||
-		todo.priority !== "none" ||
-		todo.isPinned;
+		task.remindAt ||
+		task.location ||
+		task.note ||
+		task.priority !== "none" ||
+		task.isPinned;
 
 	return (
-		<TodoControlsContext todo={todo}>
+		<TaskControlsContext task={task}>
 			<div
 				className={cn(
 					"group relative flex w-full flex-col gap-2 rounded-xl border bg-card/60 shadow-xs hover:border-primary/60",
 					hasMetadata && "pb-2",
-					todo.isCompleted && "opacity-60",
+					task.isCompleted && "opacity-60",
 				)}
 			>
 				{/* Main row */}
 				<div className="flex items-center justify-between gap-2 rounded-xl bg-card px-2 py-1">
 					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<Checkbox
-							checked={todo.isCompleted}
-							onCheckedChange={() => onToggle(todo)}
+							checked={task.isCompleted}
+							onCheckedChange={() => onToggle(task)}
 							className="size-6 rounded-full"
 						/>
 
 						<div className="flex max-w-full flex-col overflow-hidden">
-							<span className="truncate font-medium">{todo.title}</span>
-							{todo.note && (
+							<span className="truncate font-medium">{task.title}</span>
+							{task.note && (
 								<p className="truncate text-muted-foreground text-xs">
-									{todo.note}
+									{task.note}
 								</p>
 							)}
 						</div>
 					</div>
 
-					<TodoControlsDropdown todo={todo}>
+					<TaskControlsDropdown task={task}>
 						<Button variant="ghost" size="icon">
 							<MoreHorizontalIcon />
 						</Button>
-					</TodoControlsDropdown>
+					</TaskControlsDropdown>
 				</div>
 
 				{/* Metadata row */}
@@ -83,68 +83,68 @@ export function TodoItem({ todo }: TodoItemProps) {
 					<div className="flex flex-wrap items-center gap-3 px-2 text-muted-foreground text-xs">
 						{/* Left-side metadata */}
 						<div className="flex flex-wrap items-center gap-3">
-							{todo.isPinned && (
+							{task.isPinned && (
 								<span className="flex items-center gap-1">
 									<IconRenderer name="Pin" />
 								</span>
 							)}
 
-							{todo.location && (
+							{task.location && (
 								<Tooltip>
 									<TooltipTrigger asChild>
 										<span className="flex items-center gap-1">
 											<IconRenderer name="MapPin" />
 										</span>
 									</TooltipTrigger>
-									<TooltipContent>{todo.location}</TooltipContent>
+									<TooltipContent>{task.location}</TooltipContent>
 								</Tooltip>
 							)}
 
-							{todo.note && (
+							{task.note && (
 								<span className="flex items-center gap-1">
 									<IconRenderer name="PencilLine" />
 								</span>
 							)}
 
-							{todo.priority !== "none" && (
+							{task.priority !== "none" && (
 								<span className="flex items-center gap-1">
 									<IconRenderer name="ArrowUpWideNarrow" />
 								</span>
 							)}
 						</div>
 
-						{/* Right-side metadata (always at end) */}
+						{/* Right-side metadata */}
 						<div className="ml-auto flex items-center gap-2">
-							{todo.remindAt && (
+							{task.remindAt && (
 								<span
 									className={cn(
 										"flex items-center gap-1",
-										isRemindPast(todo.remindAt) && "text-destructive",
+										isRemindPast(task.remindAt) && "text-destructive",
 									)}
 								>
 									<IconRenderer name="Calendar" />
-									{formatRemindDate(todo.remindAt)}
+									{formatRemindDate(task.remindAt)}
 								</span>
 							)}
 
-							{todo.priority !== "none" && (
+							{task.priority !== "none" && (
 								<Badge
 									variant="secondary"
 									className={cn(
 										"rounded-full text-[10px] capitalize",
-										todo.priority === "low" && "text-emerald-500",
-										todo.priority === "medium" && "text-orange-500",
-										todo.priority === "high" && "text-rose-700",
+										task.priority === "low" && "text-emerald-500",
+										task.priority === "medium" && "text-orange-500",
+										task.priority === "high" && "text-rose-700",
 									)}
 								>
 									<IconRenderer name="Flag" />
-									{todo.priority}
+									{task.priority}
 								</Badge>
 							)}
 						</div>
 					</div>
 				)}
 			</div>
-		</TodoControlsContext>
+		</TaskControlsContext>
 	);
 }

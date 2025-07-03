@@ -6,33 +6,34 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useTodoActions } from "@/hooks/use-todo-actions";
-import type { Todo } from "@/lib/models";
+import { useTaskActions } from "@/hooks/use-task-actions";
+import type { Task } from "@/lib/models";
 
-interface TodoControlsContextProps {
-	todo: Todo;
+interface TaskControlsContextProps {
+	task: Task;
 	children: ReactNode;
 }
 
-export function TodoControlsContext({
-	todo,
+export default function TaskControlsContext({
+	task,
 	children,
-}: TodoControlsContextProps) {
-	const { onUpdate, onDelete } = useTodoActions();
+}: TaskControlsContextProps) {
+	const { onUpdate, onDelete } = useTaskActions();
 
 	const handlePinToggle = () => {
-		onUpdate({ ...todo, isPinned: !todo.isPinned });
+		onUpdate({ ...task, isPinned: !task.isPinned });
 	};
 
 	const handleDelete = () => {
-		onDelete(todo.id);
+		onDelete(task.id);
 	};
+
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 			<ContextMenuContent forceMount>
 				<ContextMenuItem className="gap-2" onClick={handlePinToggle}>
-					{todo.isPinned ? (
+					{task.isPinned ? (
 						<>
 							<IconRenderer name="PinOff" className="!text-primary" />
 							<span>Unpin</span>

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const newTodoSchema = z.object({
+export const newTaskSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	note: z.string().optional(),
 	location: z.string().optional(),
@@ -8,4 +8,4 @@ export const newTodoSchema = z.object({
 	remindAt: z.date().nullable().optional(),
 });
 
-export type NewTodoFormValues = z.infer<typeof newTodoSchema>;
+export type NewTaskFormValues = z.infer<typeof newTaskSchema>;

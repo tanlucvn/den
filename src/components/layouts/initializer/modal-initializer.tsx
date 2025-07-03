@@ -18,14 +18,23 @@ const NewTaskModal = dynamic(
 	},
 );
 
+const EditTaskModal = dynamic(
+	() => import("@/components/modals/edit-task-modal"),
+	{
+		ssr: false,
+	},
+);
+
 export function ModalInitializer() {
-	const { isAppModalOpen, isSignInOpen, isNewTaskOpen } = useDialogStore();
+	const { isAppModalOpen, isSignInOpen, isNewTaskOpen, isEditTaskOpen } =
+		useDialogStore();
 
 	// Modal definitions
 	const modals = [
 		{ open: isAppModalOpen, Component: AppModal },
 		{ open: isSignInOpen, Component: SignInModal },
 		{ open: isNewTaskOpen, Component: NewTaskModal },
+		{ open: isEditTaskOpen, Component: EditTaskModal },
 	];
 
 	return (

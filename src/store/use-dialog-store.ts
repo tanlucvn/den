@@ -9,6 +9,9 @@ interface DialogStore {
 
 	isNewTaskOpen: boolean;
 	setIsNewTaskOpen: (open: boolean) => void;
+
+	isEditTaskOpen: boolean;
+	setIsEditTaskOpen: (open: boolean) => void;
 }
 
 export const useDialogStore = create<DialogStore>((set) => ({
@@ -20,4 +23,7 @@ export const useDialogStore = create<DialogStore>((set) => ({
 
 	isNewTaskOpen: false,
 	setIsNewTaskOpen: (open) => set({ isNewTaskOpen: open }),
+
+	isEditTaskOpen: false,
+	setIsEditTaskOpen: (open) => set({ isEditTaskOpen: open }),
 }));

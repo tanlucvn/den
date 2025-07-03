@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
+import { useAppStore } from "@/store/use-app-store";
+import { useDialogStore } from "@/store/use-dialog-store";
 
 interface TaskControlsDropdownProps {
 	task: Task;
@@ -18,7 +20,15 @@ export default function TaskControlsDropdown({
 	task,
 	children,
 }: TaskControlsDropdownProps) {
+	const { setEditTask } = useAppStore();
+	const { setIsEditTaskOpen } = useDialogStore();
+
 	const { onUpdate, onDelete } = useTaskActions();
+
+	const handleEdit = () => {
+		setEditTask(task);
+		setIsEditTaskOpen(true);
+	};
 
 	const handlePinToggle = () => {
 		onUpdate({ ...task, isPinned: !task.isPinned });
@@ -32,15 +42,20 @@ export default function TaskControlsDropdown({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent side="bottom" forceMount>
+				<DropdownMenuItem className="gap-2" onClick={handleEdit}>
+					<IconRenderer name="Pen" className="!text-primary/60" />
+					<span>Edit</span>
+				</DropdownMenuItem>
+
 				<DropdownMenuItem className="gap-2" onClick={handlePinToggle}>
 					{task.isPinned ? (
 						<>
-							<IconRenderer name="PinOff" className="!text-primary" />
+							<IconRenderer name="PinOff" className="!text-primary/60" />
 							<span>Unpin</span>
 						</>
 					) : (
 						<>
-							<IconRenderer name="Pin" className="!text-primary" />
+							<IconRenderer name="Pin" className="!text-primary/60" />
 							<span>Pin</span>
 						</>
 					)}

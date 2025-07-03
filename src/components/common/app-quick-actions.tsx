@@ -1,7 +1,6 @@
 "use client";
 
 import { useClerk, useUser } from "@clerk/nextjs";
-import { Calculator, Calendar, Smile } from "lucide-react";
 import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
@@ -22,6 +21,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTaskActions } from "@/hooks/use-task-actions";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
@@ -33,7 +33,9 @@ export function AppQuickActions() {
 
 	const { searchTerm, setSearchTerm } = useAppStore();
 	const { tasks } = useTaskStore();
-	const { setIsSignInOpen } = useDialogStore();
+	const { setIsSignInOpen, setIsNewTaskOpen } = useDialogStore();
+
+	const { handleEdit } = useTaskActions();
 
 	const [open, setOpen] = useState(false);
 
@@ -88,15 +90,13 @@ export function AppQuickActions() {
 						{isSearching && filteredTasks.length > 0 && (
 							<CommandGroup heading="Search Tasks">
 								{filteredTasks.map((task) => (
-									<CommandItem
-										key={task.id}
-										onSelect={() => {
-											toast(`You selected "${task.title}"`);
-											setOpen(false);
-										}}
-									>
+									<CommandItem key={task.id} onSelect={() => handleEdit(task)}>
 										<IconRenderer name="ListTodo" />
 										<span className="truncate">{task.title}</span>
+
+										<span className="ml-auto text-muted-foreground text-xs">
+											Click to Edit
+										</span>
 									</CommandItem>
 								))}
 							</CommandGroup>
@@ -105,17 +105,9 @@ export function AppQuickActions() {
 						<CommandSeparator />
 
 						<CommandGroup heading="Suggestions">
-							<CommandItem>
-								<Calendar />
-								<span>Calendar</span>
-							</CommandItem>
-							<CommandItem>
-								<Smile />
-								<span>Search Emoji</span>
-							</CommandItem>
-							<CommandItem>
-								<Calculator />
-								<span>Calculator</span>
+							<CommandItem onSelect={() => setIsNewTaskOpen(true)}>
+								<IconRenderer name="Plus" />
+								<span>Create new task</span>
 							</CommandItem>
 						</CommandGroup>
 

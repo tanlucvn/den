@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/context-menu";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
-import { useAppStore } from "@/store/use-app-store";
-import { useDialogStore } from "@/store/use-dialog-store";
 
 interface TaskControlsContextProps {
 	task: Task;
@@ -20,34 +18,21 @@ export default function TaskControlsContext({
 	task,
 	children,
 }: TaskControlsContextProps) {
-	const { setEditTask } = useAppStore();
-	const { setIsEditTaskOpen } = useDialogStore();
-
-	const { onUpdate, onDelete } = useTaskActions();
-
-	const handleEdit = () => {
-		setEditTask(task);
-		setIsEditTaskOpen(true);
-	};
-
-	const handlePinToggle = () => {
-		onUpdate({ ...task, isPinned: !task.isPinned });
-	};
-
-	const handleDelete = () => {
-		onDelete(task.id);
-	};
+	const { handleEdit, handlePinToggle, handleDelete } = useTaskActions();
 
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 			<ContextMenuContent forceMount>
-				<ContextMenuItem className="gap-2" onClick={handleEdit}>
+				<ContextMenuItem className="gap-2" onClick={() => handleEdit(task)}>
 					<IconRenderer name="Pen" className="!text-primary/60" />
 					<span>Edit</span>
 				</ContextMenuItem>
 
-				<ContextMenuItem className="gap-2" onClick={handlePinToggle}>
+				<ContextMenuItem
+					className="gap-2"
+					onClick={() => handlePinToggle(task)}
+				>
 					{task.isPinned ? (
 						<>
 							<IconRenderer name="PinOff" className="!text-primary/60" />
@@ -63,7 +48,7 @@ export default function TaskControlsContext({
 
 				<ContextMenuItem
 					className="!text-destructive gap-2"
-					onClick={handleDelete}
+					onClick={() => handleDelete(task)}
 				>
 					<IconRenderer name="Trash2" className="!text-destructive" />
 					<span>Delete</span>

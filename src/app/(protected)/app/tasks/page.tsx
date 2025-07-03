@@ -19,6 +19,11 @@ export default function Page() {
 	const filteredRecentTasks = filterTasks(recent, searchTerm);
 	const filteredCompletedTasks = filterTasks(completed, searchTerm);
 
+	const totalTasks =
+		filteredPinnedTasks.length +
+		filteredRecentTasks.length +
+		filteredCompletedTasks.length;
+
 	const sections = [
 		{ title: "Pinned", icon: "Pin", tasks: filteredPinnedTasks },
 		{
@@ -40,7 +45,7 @@ export default function Page() {
 			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
 				<IconRenderer name="List" className="!text-primary/60" />
 				<span className="text-foreground">All Tasks</span>
-				<NumberFlowBadge value={tasks.length} />
+				<NumberFlowBadge value={totalTasks} />
 			</div>
 
 			<QuickAddTaskForm />

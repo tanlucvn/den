@@ -4,11 +4,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTask, Task } from "@/lib/models";
 import { useSupabase } from "@/lib/supabase/supabase-provider";
+import { useAppStore } from "@/store/use-app-store";
+import { useDialogStore } from "@/store/use-dialog-store";
 import { useTaskStore } from "@/store/use-task-store";
 
 export const useTaskActions = () => {
 	const router = useRouter();
 	const { supabase, isLoaded } = useSupabase();
+
+	const { setEditTask } = useAppStore();
+	const { setIsEditTaskOpen } = useDialogStore();
 	const { createTask, updateTask, deleteTask, fetchTasks } = useTaskStore();
 
 	// ! Guard: avoid calling APIs before client is ready
@@ -19,6 +24,9 @@ export const useTaskActions = () => {
 			onUpdate: async () => {},
 			onDelete: async () => {},
 			onRefresh: async () => {},
+			handleEdit: () => {},
+			handlePinToggle: () => {},
+			handleDelete: () => {},
 		};
 	}
 
@@ -64,11 +72,27 @@ export const useTaskActions = () => {
 		await fetchTasks(supabase);
 	};
 
+	const handleEdit = (task: Task) => {
+		setEditTask(task);
+		setIsEditTaskOpen(true);
+	};
+
+	const handlePinToggle = (task: Task) => {
+		onUpdate({ ...task, isPinned: !task.isPinned });
+	};
+
+	const handleDelete = (task: Task) => {
+		onDelete(task.id);
+	};
+
 	return {
 		onCreate,
 		onToggle,
 		onUpdate,
 		onDelete,
 		onRefresh,
+		handleEdit,
+		handlePinToggle,
+		handleDelete,
 	};
 };

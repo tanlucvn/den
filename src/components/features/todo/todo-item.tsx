@@ -47,7 +47,7 @@ export function TodoItem({ todo }: TodoItemProps) {
 		<TodoControlsContext todo={todo}>
 			<div
 				className={cn(
-					"group relative flex w-full flex-col gap-2 rounded-xl border-2 bg-card/60 shadow-xs hover:border-primary/60",
+					"group relative flex w-full flex-col gap-2 rounded-xl border bg-card/60 shadow-xs hover:border-primary/60",
 					hasMetadata && "pb-2",
 					todo.isCompleted && "opacity-60",
 				)}

@@ -43,7 +43,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { NewTask } from "@/lib/models";
 import { cn } from "@/lib/utils";
-import { type NewTaskFormValues, newTaskSchema } from "@/lib/validators/task";
+import {
+	type NewTaskFormValues,
+	newTaskSchema,
+} from "@/lib/validators/new-task";
 import { useDialogStore } from "@/store/use-dialog-store";
 
 export default function NewTaskModal() {

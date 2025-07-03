@@ -35,7 +35,7 @@ export default function TodoSection({
 				<span className="text-foreground">{title}</span>
 				<NumberFlowBadge value={todos.length} />
 
-				<CollapsibleTrigger>
+				<CollapsibleTrigger asChild>
 					<Button variant="ghost" size="icon" className="size-6 rounded">
 						<IconRenderer
 							name={isOpen ? "ChevronsDownUp" : "ChevronsUpDown"}

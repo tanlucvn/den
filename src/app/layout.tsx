@@ -1,12 +1,8 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppProviders } from "@/components/app-providers";
 
 const inter = Inter({
 	variable: "--font-inter",
@@ -29,19 +25,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<ClerkProvider>
-			<html lang="en" suppressHydrationWarning>
-				<body
-					className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
-				>
-					<ThemeProvider>
-						<TooltipProvider>
-							<SidebarProvider>{children}</SidebarProvider>
-						</TooltipProvider>
-						<Toaster />
-					</ThemeProvider>
-				</body>
-			</html>
-		</ClerkProvider>
+		<html lang="en" suppressHydrationWarning>
+			<body
+				className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+			>
+				<AppProviders>{children}</AppProviders>
+			</body>
+		</html>
 	);
 }

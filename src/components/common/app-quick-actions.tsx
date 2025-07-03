@@ -22,15 +22,24 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { filterTasks } from "@/lib/utils";
+import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
+import { useTaskStore } from "@/store/use-task-store";
 
 export function AppQuickActions() {
 	const { user } = useUser();
 	const { signOut } = useClerk();
 
+	const { searchTerm, setSearchTerm } = useAppStore();
+	const { tasks } = useTaskStore();
 	const { setIsSignInOpen } = useDialogStore();
 
 	const [open, setOpen] = useState(false);
+
+	const filteredTasks = filterTasks(tasks, searchTerm);
+
+	const isSearching = searchTerm.trim().length > 0;
 
 	useHotkeys(
 		"ctrl+k",
@@ -52,15 +61,48 @@ export function AppQuickActions() {
 						<IconRenderer name="Command" className="!text-primary/60" />
 						Quick Actions
 					</span>
-					<Kbd keys="Ctrl+K" />
+
+					<div className="ml-auto flex items-center gap-2">
+						{isSearching && (
+							<span className="text-muted-foreground text-xs">
+								{filteredTasks.length > 0 &&
+									`${filteredTasks.length} tasks found`}
+							</span>
+						)}
+
+						<Kbd keys="Ctrl+K" />
+					</div>
 				</Button>
 			</PopoverTrigger>
 
 			<PopoverContent className="w-[var(--radix-popover-trigger-width)] rounded-xl p-0">
 				<Command className="rounded-xl">
-					<CommandInput placeholder="Type a command or search..." />
+					<CommandInput
+						placeholder="Type a command or search..."
+						value={searchTerm}
+						onValueChange={setSearchTerm}
+					/>
 					<CommandList>
 						<CommandEmpty>No results found.</CommandEmpty>
+
+						{isSearching && filteredTasks.length > 0 && (
+							<CommandGroup heading="Search Tasks">
+								{filteredTasks.map((task) => (
+									<CommandItem
+										key={task.id}
+										onSelect={() => {
+											toast(`You selected "${task.title}"`);
+											setOpen(false);
+										}}
+									>
+										<IconRenderer name="ListTodo" />
+										<span className="truncate">{task.title}</span>
+									</CommandItem>
+								))}
+							</CommandGroup>
+						)}
+
+						<CommandSeparator />
 
 						<CommandGroup heading="Suggestions">
 							<CommandItem>

@@ -5,19 +5,32 @@ import TaskSection from "@/components/features/task/task-section";
 import { IconRenderer } from "@/components/icon-renderer";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
+import { filterTasks } from "@/lib/utils";
+import { useAppStore } from "@/store/use-app-store";
 import { useTaskStore } from "@/store/use-task-store";
 
 export default function Page() {
+	const { searchTerm } = useAppStore();
 	const { tasks } = useTaskStore();
+
 	const { pinned, recent, completed } = useGroupedTasks(tasks);
 
+	const filteredPinnedTasks = filterTasks(pinned, searchTerm);
+	const filteredRecentTasks = filterTasks(recent, searchTerm);
+	const filteredCompletedTasks = filterTasks(completed, searchTerm);
+
 	const sections = [
-		{ title: "Pinned", icon: "Pin", tasks: pinned },
-		{ title: "Recent", icon: "History", tasks: recent, defaultOpen: true },
+		{ title: "Pinned", icon: "Pin", tasks: filteredPinnedTasks },
+		{
+			title: "Recent",
+			icon: "History",
+			tasks: filteredRecentTasks,
+			defaultOpen: true,
+		},
 		{
 			title: "Completed",
 			icon: "CircleCheck",
-			tasks: completed,
+			tasks: filteredCompletedTasks,
 			defaultOpen: true,
 		},
 	];

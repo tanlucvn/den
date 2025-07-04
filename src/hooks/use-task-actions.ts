@@ -27,6 +27,7 @@ export const useTaskActions = () => {
 			handleEdit: () => {},
 			handlePinToggle: () => {},
 			handleDelete: () => {},
+			batchUpdateTasks: async () => {},
 		};
 	}
 
@@ -34,7 +35,6 @@ export const useTaskActions = () => {
 		if (!task.title.trim()) return;
 
 		const promise = createTask(supabase, task);
-
 		await promise;
 	};
 
@@ -85,6 +85,12 @@ export const useTaskActions = () => {
 		onDelete(task.id);
 	};
 
+	const batchUpdateTasks = async (tasks: Task[]) => {
+		return supabase.from("tasks").upsert(tasks, {
+			onConflict: "id",
+		});
+	};
+
 	return {
 		onCreate,
 		onToggle,
@@ -94,5 +100,6 @@ export const useTaskActions = () => {
 		handleEdit,
 		handlePinToggle,
 		handleDelete,
+		batchUpdateTasks,
 	};
 };

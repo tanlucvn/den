@@ -5,6 +5,7 @@ export interface Task {
 	note?: string;
 	priority: "none" | "low" | "medium" | "high";
 	location?: string;
+	sortIndex: number;
 
 	isCompleted: boolean;
 	isPinned: boolean;

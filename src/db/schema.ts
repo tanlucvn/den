@@ -1,4 +1,11 @@
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	integer,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
 
 export const tasksTable = pgTable("tasks", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -14,6 +21,7 @@ export const tasksTable = pgTable("tasks", {
 		.default("none"),
 
 	location: text("location"), // optional field
+	sortIndex: integer("sortIndex").notNull().default(0), // optional for sorting
 
 	isCompleted: boolean("isCompleted").notNull().default(false),
 	isPinned: boolean("isPinned").notNull().default(false),

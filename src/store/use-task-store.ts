@@ -15,6 +15,8 @@ interface TaskStore {
 	updateTask: (supabase: SupabaseClient, task: Task) => Promise<void>;
 	deleteTask: (supabase: SupabaseClient, id: number) => Promise<void>;
 
+	batchUpdateTasks: (supabase: SupabaseClient, tasks: Task[]) => Promise<void>;
+
 	setTasks: (tasks: Task[]) => void;
 }
 
@@ -137,6 +139,36 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 			console.error("Failed to delete task", err);
 		} finally {
 			get().setUpdating(id, false);
+		}
+	},
+
+	// * Batch update tasks (optimistic with rollback)
+	batchUpdateTasks: async (supabase, updatedTasks) => {
+		const { tasks: prevTasks } = get();
+
+		try {
+			// Optimistically update UI
+			const updatedTaskMap = new Map(updatedTasks.map((t) => [t.id, t]));
+
+			set((state) => ({
+				tasks: state.tasks.map((task) =>
+					updatedTaskMap.has(task.id)
+						? { ...task, ...updatedTaskMap.get(task.id)! }
+						: task,
+				),
+			}));
+
+			// Send to Supabase
+			const { error } = await supabase.from("tasks").upsert(updatedTasks, {
+				onConflict: "id",
+			});
+
+			if (error) throw error;
+		} catch (err) {
+			console.error("Failed to batch update tasks", err);
+
+			// Rollback UI
+			set({ tasks: prevTasks });
 		}
 	},
 

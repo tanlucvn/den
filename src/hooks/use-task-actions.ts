@@ -14,7 +14,8 @@ export const useTaskActions = () => {
 
 	const { setEditTask } = useAppStore();
 	const { setIsEditTaskOpen } = useDialogStore();
-	const { createTask, updateTask, deleteTask, fetchTasks } = useTaskStore();
+	const { createTask, updateTask, deleteTask, fetchTasks, batchUpdateTasks } =
+		useTaskStore();
 
 	// ! Guard: avoid calling APIs before client is ready
 	if (!supabase || !isLoaded) {
@@ -27,7 +28,7 @@ export const useTaskActions = () => {
 			handleEdit: () => {},
 			handlePinToggle: () => {},
 			handleDelete: () => {},
-			batchUpdateTasks: async () => {},
+			onSort: async () => {},
 		};
 	}
 
@@ -85,10 +86,8 @@ export const useTaskActions = () => {
 		onDelete(task.id);
 	};
 
-	const batchUpdateTasks = async (tasks: Task[]) => {
-		return supabase.from("tasks").upsert(tasks, {
-			onConflict: "id",
-		});
+	const onSort = async (tasks: Task[]) => {
+		return batchUpdateTasks(supabase, tasks);
 	};
 
 	return {
@@ -100,6 +99,6 @@ export const useTaskActions = () => {
 		handleEdit,
 		handlePinToggle,
 		handleDelete,
-		batchUpdateTasks,
+		onSort,
 	};
 };

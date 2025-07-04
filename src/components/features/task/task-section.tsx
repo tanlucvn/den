@@ -32,7 +32,7 @@ export default function TaskSection({
 }: SectionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 	const [items, setItems] = useState<Task[]>([]);
-	const { batchUpdateTasks } = useTaskActions();
+	const { onSort } = useTaskActions();
 
 	useEffect(() => {
 		const sorted = sortTasks(tasks, "sortIndex-asc");
@@ -51,7 +51,7 @@ export default function TaskSection({
 
 		if (updatedTasks.length === 0) return;
 
-		await batchUpdateTasks(updatedTasks);
+		await onSort(updatedTasks);
 	};
 
 	if (items.length === 0) return null;

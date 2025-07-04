@@ -1,7 +1,7 @@
 "use client";
 
-import QuickAddTaskForm from "@/components/features/task/quick-add-task-form";
 import TaskSection from "@/components/features/task/task-section";
+import QuickAddTaskForm from "@/components/forms/quick-add-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";

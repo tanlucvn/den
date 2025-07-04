@@ -165,7 +165,7 @@ const ModalFooter = ({ className, children, ...props }: ModalProps) => {
 	const ModalFooter = isMobile ? DrawerFooter : DialogFooter;
 
 	return (
-		<ModalFooter className={className} {...props}>
+		<ModalFooter className={cn("mt-4 max-md:p-0", className)} {...props}>
 			{children}
 		</ModalFooter>
 	);

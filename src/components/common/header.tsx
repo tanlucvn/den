@@ -10,12 +10,10 @@ export default function AppHeader() {
 		<div className="flex w-full items-center justify-between">
 			<Button
 				variant="outline"
-				size="sm"
+				size="icon"
 				onClick={() => setIsAppModalOpen(true)}
-				className="font-normal"
 			>
-				<IconRenderer name="AlignLeft" className="!text-primary/60" />
-				Menu
+				<IconRenderer name="AlignLeft" />
 			</Button>
 
 			<ThemeSwitcher />

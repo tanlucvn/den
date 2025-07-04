@@ -67,6 +67,7 @@ export default function QuickAddTaskForm() {
 
 									<InputSuffix className="right-1 flex items-center gap-1">
 										<Button
+											type="button"
 											variant="ghost"
 											size="icon"
 											className="size-7 rounded-full text-muted-foreground"

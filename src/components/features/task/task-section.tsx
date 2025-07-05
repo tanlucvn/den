@@ -16,7 +16,6 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 
-import TaskItem from "@/components/features/task/task-item";
 import { IconRenderer } from "@/components/icon-renderer";
 import {
 	Collapsible,
@@ -122,7 +121,9 @@ export default function TaskSection({
 					<DragOverlay>
 						{activeId ? (
 							<div className="pointer-events-none">
-								<TaskItem task={items.find((t) => t.id === activeId)!} />
+								<DraggableTaskItem
+									task={items.find((t) => t.id === activeId)!}
+								/>
 							</div>
 						) : null}
 					</DragOverlay>

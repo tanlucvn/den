@@ -64,9 +64,10 @@ export default function DraggableTaskItem({ task }: Props) {
 					{/* Main row */}
 					<div className="flex items-center justify-between gap-2 rounded-xl bg-card px-2 py-1">
 						<div className="flex w-full items-center gap-2 overflow-hidden">
-							<div className="flex items-center gap-1">
+							<div className="flex items-center gap-2">
 								<div
 									{...listeners}
+									{...attributes}
 									className="cursor-grab active:cursor-grabbing"
 								>
 									<IconRenderer

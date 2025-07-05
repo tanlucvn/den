@@ -1,8 +1,21 @@
 "use client";
 
-import { Reorder } from "framer-motion";
-import type React from "react";
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	DragOverlay,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
+
 import TaskItem from "@/components/features/task/task-item";
 import { IconRenderer } from "@/components/icon-renderer";
 import {
@@ -16,6 +29,7 @@ import { useTaskActions } from "@/hooks/use-task-actions";
 import { sortTasks } from "@/lib/helpers/sort-tasks";
 import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
+import DraggableTaskItem from "./draggable-task-item";
 
 type SectionProps = {
 	icon: React.ReactNode;
@@ -32,26 +46,35 @@ export default function TaskSection({
 }: SectionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 	const [items, setItems] = useState<Task[]>([]);
+	const [activeId, setActiveId] = useState<string | null>(null);
 	const { onSort } = useTaskActions();
+
+	const sensors = useSensors(useSensor(PointerSensor));
 
 	useEffect(() => {
 		const sorted = sortTasks(tasks, "sortIndex-asc");
 		setItems(sorted);
 	}, [tasks]);
 
-	const handleDragEnd = async () => {
-		const updatedTasks = items
-			.map((task, index) => {
-				if (task.sortIndex !== index) {
-					return { ...task, sortIndex: index };
-				}
-				return null;
-			})
-			.filter((task) => task !== null);
+	const handleDragEnd = async (event: DragEndEvent) => {
+		const { active, over } = event;
+		if (!over || active.id === over.id) return;
 
-		if (updatedTasks.length === 0) return;
+		const oldIndex = items.findIndex((t) => t.id === active.id);
+		const newIndex = items.findIndex((t) => t.id === over.id);
+		const reordered = arrayMove(items, oldIndex, newIndex);
 
-		await onSort(updatedTasks);
+		setItems(reordered);
+
+		const updatedTasks = reordered
+			.map((task, index) =>
+				task.sortIndex !== index ? { ...task, sortIndex: index } : null,
+			)
+			.filter((tasks) => tasks !== null);
+
+		if (updatedTasks.length > 0) {
+			await onSort(updatedTasks as Task[]);
+		}
 	};
 
 	if (items.length === 0) return null;
@@ -76,23 +99,34 @@ export default function TaskSection({
 			</CollapsibleTrigger>
 
 			<CollapsibleContent>
-				<Reorder.Group
-					axis="y"
-					values={items}
-					onReorder={setItems}
-					className="space-y-4 px-2"
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragStart={(event) => setActiveId(event.active.id as string)}
+					onDragEnd={(event) => {
+						setActiveId(null);
+						handleDragEnd(event);
+					}}
 				>
-					{items.map((task) => (
-						<Reorder.Item
-							key={task.id}
-							value={task}
-							onDragEnd={handleDragEnd}
-							transition={{ duration: 0.2, ease: "easeInOut" }}
-						>
-							<TaskItem task={task} />
-						</Reorder.Item>
-					))}
-				</Reorder.Group>
+					<SortableContext
+						items={items.map((t) => t.id)}
+						strategy={verticalListSortingStrategy}
+					>
+						<div className="space-y-4">
+							{items.map((task) => (
+								<DraggableTaskItem key={task.id} task={task} />
+							))}
+						</div>
+					</SortableContext>
+
+					<DragOverlay>
+						{activeId ? (
+							<div className="pointer-events-none">
+								<TaskItem task={items.find((t) => t.id === activeId)!} />
+							</div>
+						) : null}
+					</DragOverlay>
+				</DndContext>
 			</CollapsibleContent>
 
 			{isOpen && <Separator />}

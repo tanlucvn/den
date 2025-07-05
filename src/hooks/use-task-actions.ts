@@ -51,7 +51,7 @@ export const useTaskActions = () => {
 		await promise;
 	};
 
-	const onDelete = async (id: number) => {
+	const onDelete = async (id: string) => {
 		const promise = deleteTask(supabase, id);
 		toast.promise(promise, {
 			loading: "Deleting task...",

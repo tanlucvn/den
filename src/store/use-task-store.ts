@@ -7,13 +7,13 @@ interface TaskStore {
 	isLoading: boolean;
 	error: string | null;
 
-	updatingIds: number[];
-	setUpdating: (id: number, isUpdating: boolean) => void;
+	updatingIds: string[];
+	setUpdating: (id: string, isUpdating: boolean) => void;
 
 	fetchTasks: (supabase: SupabaseClient) => Promise<void>;
 	createTask: (supabase: SupabaseClient, task: NewTask) => Promise<void>;
 	updateTask: (supabase: SupabaseClient, task: Task) => Promise<void>;
-	deleteTask: (supabase: SupabaseClient, id: number) => Promise<void>;
+	deleteTask: (supabase: SupabaseClient, id: string) => Promise<void>;
 
 	batchUpdateTasks: (supabase: SupabaseClient, tasks: Task[]) => Promise<void>;
 

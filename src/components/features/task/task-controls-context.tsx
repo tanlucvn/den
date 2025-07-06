@@ -4,10 +4,12 @@ import {
 	ContextMenu,
 	ContextMenuContent,
 	ContextMenuItem,
+	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
+import { formatDate } from "@/lib/utils";
 
 interface TaskControlsContextProps {
 	task: Task;
@@ -24,6 +26,10 @@ export default function TaskControlsContext({
 		<ContextMenu>
 			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
 			<ContextMenuContent forceMount>
+				<p className="select-none p-2 text-muted-foreground text-xs">
+					Created at {formatDate(task.updatedAt)}.
+				</p>
+
 				<ContextMenuItem className="gap-2" onClick={() => handleEdit(task)}>
 					<IconRenderer name="Pen" className="!text-primary/60" />
 					<span>Edit</span>
@@ -45,6 +51,8 @@ export default function TaskControlsContext({
 						</>
 					)}
 				</ContextMenuItem>
+
+				<ContextMenuSeparator />
 
 				<ContextMenuItem
 					className="!text-destructive gap-2"

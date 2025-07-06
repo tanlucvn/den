@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { format, isToday, isTomorrow } from "date-fns";
+import { isToday } from "date-fns";
 import { MoreHorizontalIcon } from "lucide-react";
 import TaskControlsDropdown from "@/components/features/task/task-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import TaskControlsContext from "./task-controls-context";
 
 type Props = {
@@ -44,13 +44,6 @@ export default function DraggableTaskItem({ task }: Props) {
 		return d < new Date() && !isToday(d);
 	};
 
-	const formatRemindDate = (date: string) => {
-		const d = new Date(date);
-		if (isToday(d)) return "today";
-		if (isTomorrow(d)) return "tomorrow";
-		return format(d, "MMMM do yyyy");
-	};
-
 	const hasMetadata = task.remindAt || task.location || task.isPinned;
 
 	return (
@@ -58,7 +51,7 @@ export default function DraggableTaskItem({ task }: Props) {
 			<TaskControlsContext task={task}>
 				<div
 					className={cn(
-						"group relative flex w-full flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-primary",
+						"group relative flex w-full select-none flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-primary",
 						hasMetadata && "pb-2",
 					)}
 				>
@@ -126,7 +119,7 @@ export default function DraggableTaskItem({ task }: Props) {
 										)}
 									>
 										<IconRenderer name="Calendar" />
-										{formatRemindDate(task.remindAt)}
+										{formatDate(task.remindAt)}
 									</span>
 								)}
 

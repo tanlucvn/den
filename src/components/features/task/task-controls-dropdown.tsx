@@ -4,10 +4,12 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
+import { formatDate } from "@/lib/utils";
 
 interface TaskControlsDropdownProps {
 	task: Task;
@@ -24,6 +26,10 @@ export default function TaskControlsDropdown({
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
 			<DropdownMenuContent side="bottom" forceMount>
+				<p className="select-none p-2 text-muted-foreground text-xs">
+					Created at {formatDate(task.updatedAt)}.
+				</p>
+
 				<DropdownMenuItem className="gap-2" onClick={() => handleEdit(task)}>
 					<IconRenderer name="Pen" className="!text-primary/60" />
 					<span>Edit</span>
@@ -45,6 +51,8 @@ export default function TaskControlsDropdown({
 						</>
 					)}
 				</DropdownMenuItem>
+
+				<DropdownMenuSeparator />
 
 				<DropdownMenuItem
 					className="!text-destructive gap-2"

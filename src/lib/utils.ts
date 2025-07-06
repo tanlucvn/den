@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { format, isToday, isTomorrow } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import type { Task } from "./models";
 
@@ -15,4 +16,11 @@ export const filterTasks = (tasks: Task[], query: string): Task[] => {
 
 		return matchesSearch;
 	});
+};
+
+export const formatDate = (date: string) => {
+	const d = new Date(date);
+	if (isToday(d)) return "today";
+	if (isTomorrow(d)) return "tomorrow";
+	return format(d, "MMMM do yyyy");
 };

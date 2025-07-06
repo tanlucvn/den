@@ -24,7 +24,6 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import { Separator } from "@/components/ui/separator";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import { sortTasks } from "@/lib/helpers/sort-tasks";
 import type { Task } from "@/lib/models";
@@ -92,7 +91,7 @@ export default function TaskSection({
 			<CollapsibleTrigger asChild>
 				<div
 					className={cn(
-						"flex cursor-pointer select-none items-center gap-2 text-muted-foreground text-sm",
+						"flex w-fit cursor-pointer select-none items-center gap-2 text-muted-foreground text-sm",
 						isOpen && "font-medium text-primary",
 					)}
 				>
@@ -138,8 +137,6 @@ export default function TaskSection({
 					</DragOverlay>
 				</DndContext>
 			</CollapsibleContent>
-
-			{isOpen && <Separator />}
 		</Collapsible>
 	);
 }

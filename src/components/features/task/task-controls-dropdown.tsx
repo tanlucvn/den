@@ -20,12 +20,18 @@ export default function TaskControlsDropdown({
 	task,
 	children,
 }: TaskControlsDropdownProps) {
-	const { handleEdit, handlePinToggle, handleDelete } = useTaskActions();
+	const {
+		handleEdit,
+		handlePinToggle,
+		handleDelete,
+		onDuplicate,
+		onCopyToClipboard,
+	} = useTaskActions();
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-			<DropdownMenuContent side="bottom" forceMount>
+			<DropdownMenuContent className="min-w-44" side="bottom" forceMount>
 				<p className="select-none p-2 text-muted-foreground text-xs">
 					Created at {formatDate(task.updatedAt)}.
 				</p>
@@ -33,6 +39,19 @@ export default function TaskControlsDropdown({
 				<DropdownMenuItem className="gap-2" onClick={() => handleEdit(task)}>
 					<IconRenderer name="Pen" className="!text-primary/60" />
 					<span>Edit</span>
+				</DropdownMenuItem>
+
+				<DropdownMenuItem className="gap-2" onClick={() => onDuplicate(task)}>
+					<IconRenderer name="CopyPlus" className="!text-primary/60" />
+					<span>Duplicate</span>
+				</DropdownMenuItem>
+
+				<DropdownMenuItem
+					className="gap-2"
+					onClick={() => onCopyToClipboard(task)}
+				>
+					<IconRenderer name="Clipboard" className="!text-primary/60" />
+					<span>Copy Task</span>
 				</DropdownMenuItem>
 
 				<DropdownMenuItem

@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTask, Task } from "@/lib/models";
@@ -10,6 +11,7 @@ import { useTaskStore } from "@/store/use-task-store";
 
 export const useTaskActions = () => {
 	const router = useRouter();
+	const { user } = useUser();
 	const { supabase, isLoaded } = useSupabase();
 
 	const { setEditTask } = useAppStore();
@@ -24,11 +26,13 @@ export const useTaskActions = () => {
 			onToggle: async () => {},
 			onUpdate: async () => {},
 			onDelete: async () => {},
+			onSort: async () => {},
+			onDuplicate: async () => {},
+			onCopyToClipboard: async () => {},
 			onRefresh: async () => {},
 			handleEdit: () => {},
 			handlePinToggle: () => {},
 			handleDelete: () => {},
-			onSort: async () => {},
 		};
 	}
 
@@ -69,6 +73,34 @@ export const useTaskActions = () => {
 		}
 	};
 
+	const onSort = async (tasks: Task[]) => {
+		return batchUpdateTasks(supabase, tasks);
+	};
+
+	const onDuplicate = async (task: NewTask) => {
+		if (!user) return;
+
+		const duplicatedTask: NewTask = {
+			userId: user.id,
+			title: task.title,
+			note: task.note || "",
+			location: task.location || "",
+			isPinned: task.isPinned,
+			isCompleted: task.isCompleted,
+			remindAt: task.remindAt,
+			priority: task.priority,
+		};
+
+		await onCreate(duplicatedTask);
+		toast.success("Task duplicated!");
+	};
+
+	const onCopyToClipboard = async (task: Task) => {
+		const content = `${task.title}\n${task.note ?? ""}`;
+		await navigator.clipboard.writeText(content);
+		toast.success("Task copied to clipboard!");
+	};
+
 	const onRefresh = async () => {
 		await fetchTasks(supabase);
 	};
@@ -86,19 +118,17 @@ export const useTaskActions = () => {
 		onDelete(task.id);
 	};
 
-	const onSort = async (tasks: Task[]) => {
-		return batchUpdateTasks(supabase, tasks);
-	};
-
 	return {
 		onCreate,
 		onToggle,
 		onUpdate,
 		onDelete,
+		onSort,
+		onDuplicate,
+		onCopyToClipboard,
 		onRefresh,
 		handleEdit,
 		handlePinToggle,
 		handleDelete,
-		onSort,
 	};
 };

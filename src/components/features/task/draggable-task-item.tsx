@@ -58,7 +58,7 @@ export default function DraggableTaskItem({ task }: Props) {
 					{/* Main row */}
 					<div className="flex items-center justify-between gap-2">
 						<div className="flex w-full items-center gap-2 overflow-hidden">
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-1">
 								<button
 									className="cursor-grab touch-none active:cursor-grabbing"
 									{...listeners}

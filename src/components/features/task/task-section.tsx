@@ -6,6 +6,7 @@ import {
 	type DragEndEvent,
 	DragOverlay,
 	PointerSensor,
+	TouchSensor,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -48,7 +49,15 @@ export default function TaskSection({
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const { onSort } = useTaskActions();
 
-	const sensors = useSensors(useSensor(PointerSensor));
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(TouchSensor, {
+			activationConstraint: {
+				delay: 250,
+				tolerance: 5,
+			},
+		}),
+	);
 
 	useEffect(() => {
 		const sorted = sortTasks(tasks, "sortIndex-asc");

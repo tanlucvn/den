@@ -4,7 +4,6 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format, isToday, isTomorrow } from "date-fns";
 import { MoreHorizontalIcon } from "lucide-react";
-import TaskControlsContext from "@/components/features/task/task-controls-context";
 import TaskControlsDropdown from "@/components/features/task/task-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +12,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
+import TaskControlsContext from "./task-controls-context";
 
 type Props = {
 	task: Task;
+	noContext?: boolean;
 };
 
 export default function DraggableTaskItem({ task }: Props) {
@@ -57,24 +58,24 @@ export default function DraggableTaskItem({ task }: Props) {
 			<TaskControlsContext task={task}>
 				<div
 					className={cn(
-						"group relative flex w-full flex-col gap-2 rounded-xl border bg-card/60 shadow-xs hover:border-primary",
+						"group relative flex w-full flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-primary",
 						hasMetadata && "pb-2",
 					)}
 				>
 					{/* Main row */}
-					<div className="flex items-center justify-between gap-2 rounded-xl bg-card px-2 py-1">
+					<div className="flex items-center justify-between gap-2">
 						<div className="flex w-full items-center gap-2 overflow-hidden">
 							<div className="flex items-center gap-2">
-								<div
+								<button
+									className="cursor-grab touch-none active:cursor-grabbing"
 									{...listeners}
 									{...attributes}
-									className="cursor-grab active:cursor-grabbing"
 								>
 									<IconRenderer
 										name="GripVertical"
 										className="text-muted-foreground hover:text-primary"
 									/>
-								</div>
+								</button>
 
 								<Checkbox
 									checked={task.isCompleted}
@@ -102,7 +103,7 @@ export default function DraggableTaskItem({ task }: Props) {
 
 					{/* Metadata row */}
 					{hasMetadata && (
-						<div className="flex flex-wrap items-center gap-3 px-2 text-muted-foreground text-xs">
+						<div className="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
 							{/* Left-side metadata */}
 							<div className="flex flex-wrap items-center gap-2">
 								{task.isPinned && <IconRenderer name="Pin" />}

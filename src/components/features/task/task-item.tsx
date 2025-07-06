@@ -6,11 +6,6 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
@@ -47,13 +42,12 @@ export default function TaskItem({ task }: TaskItemProps) {
 		<TaskControlsContext task={task}>
 			<div
 				className={cn(
-					"group relative flex w-full flex-col gap-2 rounded-xl border bg-card/60 shadow-xs hover:border-primary/60",
+					"group relative flex w-full flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-primary",
 					hasMetadata && "pb-2",
-					task.isCompleted && "opacity-60",
 				)}
 			>
 				{/* Main row */}
-				<div className="flex items-center justify-between gap-2 rounded-xl bg-card px-2 py-1">
+				<div className="flex items-center justify-between gap-2">
 					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<Checkbox
 							checked={task.isCompleted}
@@ -61,8 +55,8 @@ export default function TaskItem({ task }: TaskItemProps) {
 							className="size-6 rounded-full"
 						/>
 
-						<div className="flex max-w-full flex-col overflow-hidden">
-							<span className="truncate font-medium">{task.title}</span>
+						<div className="flex flex-col overflow-hidden">
+							<h3 className="truncate font-medium">{task.title}</h3>
 							{task.note && (
 								<p className="truncate text-muted-foreground text-xs">
 									{task.note}
@@ -80,36 +74,16 @@ export default function TaskItem({ task }: TaskItemProps) {
 
 				{/* Metadata row */}
 				{hasMetadata && (
-					<div className="flex flex-wrap items-center gap-3 px-2 text-muted-foreground text-xs">
+					<div className="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
 						{/* Left-side metadata */}
-						<div className="flex flex-wrap items-center gap-3">
-							{task.isPinned && (
-								<span className="flex items-center gap-1">
-									<IconRenderer name="Pin" />
-								</span>
-							)}
+						<div className="flex flex-wrap items-center gap-2">
+							{task.isPinned && <IconRenderer name="Pin" />}
 
 							{task.location && (
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<span className="flex items-center gap-1">
-											<IconRenderer name="MapPin" />
-										</span>
-									</TooltipTrigger>
-									<TooltipContent>{task.location}</TooltipContent>
-								</Tooltip>
-							)}
-
-							{task.note && (
-								<span className="flex items-center gap-1">
-									<IconRenderer name="PencilLine" />
-								</span>
-							)}
-
-							{task.priority !== "none" && (
-								<span className="flex items-center gap-1">
-									<IconRenderer name="ArrowUpWideNarrow" />
-								</span>
+								<div className="flex min-w-0 max-w-20 items-center gap-0.5">
+									<IconRenderer name="MapPin" className="shrink-0" />
+									<span className="truncate">{task.location}</span>
+								</div>
 							)}
 						</div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
 import { useSupabase } from "@/lib/supabase/supabase-provider";
@@ -15,9 +15,11 @@ export default function Layout({ children }: LayoutProps) {
 	const { user } = useUser();
 	const { supabase } = useSupabase();
 	const { fetchTasks } = useTaskStore();
+	const fetchedRef = useRef(false);
 
 	useEffect(() => {
-		if (supabase && user) {
+		if (supabase && user && !fetchedRef.current) {
+			fetchedRef.current = true;
 			fetchTasks(supabase);
 		}
 	}, [user, supabase, fetchTasks]);

@@ -25,6 +25,7 @@ export const tasksTable = pgTable("tasks", {
 
 	isCompleted: boolean("isCompleted").notNull().default(false),
 	isPinned: boolean("isPinned").notNull().default(false),
+	isArchived: boolean("isArchived").notNull().default(false),
 
 	deletedAt: timestamp("deletedAt", { mode: "date" }),
 	remindAt: timestamp("remindAt", { mode: "date" }),

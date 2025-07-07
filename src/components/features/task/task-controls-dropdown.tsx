@@ -23,6 +23,7 @@ export default function TaskControlsDropdown({
 	const {
 		handleEdit,
 		handlePinToggle,
+		onArchive,
 		handleDelete,
 		onDuplicate,
 		onCopyToClipboard,
@@ -54,6 +55,12 @@ export default function TaskControlsDropdown({
 					<span>Copy Task</span>
 				</DropdownMenuItem>
 
+				<DropdownMenuSeparator />
+
+				<p className="select-none px-2 py-1 text-muted-foreground text-xs">
+					Status
+				</p>
+
 				<DropdownMenuItem
 					className="gap-2"
 					onClick={() => handlePinToggle(task)}
@@ -67,6 +74,20 @@ export default function TaskControlsDropdown({
 						<>
 							<IconRenderer name="Pin" className="!text-primary/60" />
 							<span>Pin</span>
+						</>
+					)}
+				</DropdownMenuItem>
+
+				<DropdownMenuItem className="gap-2" onClick={() => onArchive(task)}>
+					{task.isArchived ? (
+						<>
+							<IconRenderer name="ArchiveX" className="!text-primary/60" />
+							<span>Unarchive</span>
+						</>
+					) : (
+						<>
+							<IconRenderer name="Archive" className="!text-primary/60" />
+							<span>Archive</span>
 						</>
 					)}
 				</DropdownMenuItem>

@@ -23,6 +23,7 @@ export default function TaskControlsContext({
 	const {
 		handleEdit,
 		handlePinToggle,
+		onArchive,
 		handleDelete,
 		onDuplicate,
 		onCopyToClipboard,
@@ -54,6 +55,12 @@ export default function TaskControlsContext({
 					<span>Copy Task</span>
 				</ContextMenuItem>
 
+				<ContextMenuSeparator />
+
+				<p className="select-none px-2 py-1 text-muted-foreground text-xs">
+					Status
+				</p>
+
 				<ContextMenuItem
 					className="gap-2"
 					onClick={() => handlePinToggle(task)}
@@ -67,6 +74,20 @@ export default function TaskControlsContext({
 						<>
 							<IconRenderer name="Pin" className="!text-primary/60" />
 							<span>Pin</span>
+						</>
+					)}
+				</ContextMenuItem>
+
+				<ContextMenuItem className="gap-2" onClick={() => onArchive(task)}>
+					{task.isArchived ? (
+						<>
+							<IconRenderer name="ArchiveX" className="!text-primary/60" />
+							<span>Unarchive</span>
+						</>
+					) : (
+						<>
+							<IconRenderer name="Archive" className="!text-primary/60" />
+							<span>Archive</span>
 						</>
 					)}
 				</ContextMenuItem>

@@ -24,8 +24,10 @@ export const useTaskActions = () => {
 		return {
 			onCreate: async () => {},
 			onToggle: async () => {},
+			onArchive: async () => {},
 			onUpdate: async () => {},
 			onDelete: async () => {},
+			onClearCompleted: async () => {},
 			onSort: async () => {},
 			onDuplicate: async () => {},
 			onCopyToClipboard: async () => {},
@@ -50,6 +52,19 @@ export const useTaskActions = () => {
 		await promise;
 	};
 
+	const onArchive = async (task: Task) => {
+		const updated = { ...task, isArchived: !task.isArchived };
+
+		const promise = updateTask(supabase, updated);
+		toast.promise(promise, {
+			loading: task.isArchived ? "Unarchiving task..." : "Archiving task...",
+			success: task.isArchived ? "Task unarchived!" : "Task archived!",
+			error: "Failed to update task archive status.",
+		});
+
+		await promise;
+	};
+
 	const onUpdate = async (task: Task) => {
 		const promise = updateTask(supabase, task);
 		await promise;
@@ -65,12 +80,14 @@ export const useTaskActions = () => {
 		await promise;
 
 		// Optional: redirect if you're on the deleted task page
-		if (
-			typeof window !== "undefined" &&
-			window.location.pathname === `/tasks/${id}`
-		) {
+		if (router && window.location.pathname.includes(`/tasks/${id}`)) {
 			router.push("/");
 		}
+	};
+
+	const onClearCompleted = async (tasks: Task[]) => {
+		const toDelete = tasks.filter((t) => t.isCompleted);
+		await Promise.all(toDelete.map((t) => deleteTask(supabase, t.id)));
 	};
 
 	const onSort = async (tasks: Task[]) => {
@@ -121,8 +138,10 @@ export const useTaskActions = () => {
 	return {
 		onCreate,
 		onToggle,
+		onArchive,
 		onUpdate,
 		onDelete,
+		onClearCompleted,
 		onSort,
 		onDuplicate,
 		onCopyToClipboard,

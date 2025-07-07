@@ -4,6 +4,7 @@ import TaskSection from "@/components/features/task/task-section";
 import QuickAddTaskForm from "@/components/forms/quick-add-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
@@ -11,17 +12,17 @@ import { useTaskStore } from "@/store/use-task-store";
 
 export default function Page() {
 	const { searchTerm } = useAppStore();
-	const { tasks } = useTaskStore();
+	const { tasks, isLoading } = useTaskStore();
 
-	const { pinned, recent, completed } = useGroupedTasks(tasks);
+	const { pinned, active, completed } = useGroupedTasks(tasks);
 
 	const filteredPinnedTasks = filterTasks(pinned, searchTerm);
-	const filteredRecentTasks = filterTasks(recent, searchTerm);
+	const filteredActiveTasks = filterTasks(active, searchTerm);
 	const filteredCompletedTasks = filterTasks(completed, searchTerm);
 
 	const totalTasks =
 		filteredPinnedTasks.length +
-		filteredRecentTasks.length +
+		filteredActiveTasks.length +
 		filteredCompletedTasks.length;
 
 	const sections = [
@@ -29,7 +30,7 @@ export default function Page() {
 		{
 			title: "Recent",
 			icon: "History",
-			tasks: filteredRecentTasks,
+			tasks: filteredActiveTasks,
 			defaultOpen: true,
 		},
 		{
@@ -50,7 +51,14 @@ export default function Page() {
 
 			<QuickAddTaskForm />
 
-			{tasks.length > 0 ? (
+			{isLoading ? (
+				<div className="space-y-4">
+					<Skeleton className="h-6 w-20" />
+					<Skeleton className="h-28 w-full rounded-xl" />
+					<Skeleton className="h-6 w-20" />
+					<Skeleton className="h-28 w-full rounded-xl" />
+				</div>
+			) : tasks.length > 0 ? (
 				<div className="space-y-4">
 					{sections.map(({ title, icon, tasks, defaultOpen }) => (
 						<TaskSection

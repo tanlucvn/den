@@ -9,6 +9,7 @@ export interface Task {
 
 	isCompleted: boolean;
 	isPinned: boolean;
+	isArchived?: boolean;
 
 	deletedAt?: string;
 	remindAt?: string;

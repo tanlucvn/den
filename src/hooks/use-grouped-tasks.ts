@@ -1,13 +1,21 @@
 import type { Task } from "@/lib/models";
 
 export const useGroupedTasks = (tasks: Task[]) => {
-	const pinned = tasks.filter((task) => task.isPinned && !task.isCompleted);
-	const recent = tasks.filter((task) => !task.isPinned && !task.isCompleted);
-	const completed = tasks.filter((task) => task.isCompleted);
+	const pinned = tasks.filter(
+		(task) => task.isPinned && !task.isCompleted && !task.isArchived,
+	);
+	const active = tasks.filter(
+		(task) => !task.isPinned && !task.isCompleted && !task.isArchived,
+	);
+	const completed = tasks.filter(
+		(task) => task.isCompleted && !task.isArchived,
+	);
+	const archive = tasks.filter((task) => task.isArchived);
 
 	return {
 		pinned,
-		recent,
+		active,
 		completed,
+		archive,
 	};
 };

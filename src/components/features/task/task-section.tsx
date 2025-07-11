@@ -24,9 +24,9 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
+import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import { sortTasks } from "@/lib/helpers/sort-tasks";
-import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
 import DraggableTaskItem from "./draggable-task-item";
 

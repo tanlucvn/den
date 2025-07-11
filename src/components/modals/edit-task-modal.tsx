@@ -85,7 +85,7 @@ export default function EditTaskModal() {
 		await onUpdate({
 			...editTask,
 			...values,
-			remindAt: values.remindAt?.toISOString(),
+			remindAt: values.remindAt ?? null,
 		});
 
 		form.reset();

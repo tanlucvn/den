@@ -28,9 +28,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { NewTask } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import { useSession } from "@/lib/auth-client";
-import type { NewTask } from "@/lib/models";
 import { cn } from "@/lib/utils";
 import {
 	type NewTaskFormValues,
@@ -63,7 +63,7 @@ export default function NewTaskForm() {
 			userId: data.user.id,
 			isCompleted: false,
 			isPinned: false,
-			remindAt: values.remindAt?.toISOString(),
+			remindAt: values.remindAt,
 		};
 
 		await onCreate(newTask);

@@ -6,8 +6,8 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
-import type { Task } from "@/lib/models";
 import { cn } from "@/lib/utils";
 import TaskControlsContext from "./task-controls-context";
 import TaskControlsDropdown from "./task-controls-dropdown";
@@ -19,12 +19,12 @@ interface TaskItemProps {
 export default function TaskItem({ task }: TaskItemProps) {
 	const { onToggle } = useTaskActions();
 
-	const isRemindPast = (dateStr: string) => {
-		const d = new Date(dateStr);
+	const isRemindPast = (date: string | Date) => {
+		const d = new Date(date);
 		return d < new Date() && !isToday(d);
 	};
 
-	const formatRemindDate = (date: string) => {
+	const formatRemindDate = (date: string | Date) => {
 		const d = new Date(date);
 		if (isToday(d)) return "today";
 		if (isTomorrow(d)) return "tomorrow";

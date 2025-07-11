@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { create } from "zustand";
-import type { NewTask, Task } from "@/lib/models";
+import type { NewTask, Task } from "@/db/schema/tasks";
 
 interface TaskStore {
 	tasks: Task[];

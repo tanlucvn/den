@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Task } from "@/lib/models";
+import type { Task } from "@/db/schema/tasks";
 
 type AppStore = {
 	editTask: Task | null;

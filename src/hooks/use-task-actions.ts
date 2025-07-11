@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { NewTask, Task } from "@/db/schema/tasks";
 import { useSession } from "@/lib/auth-client";
-import type { NewTask, Task } from "@/lib/models";
 import { useSupabase } from "@/lib/supabase/supabase-provider";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";

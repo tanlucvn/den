@@ -9,8 +9,8 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
-import type { Task } from "@/lib/models";
 import { cn, formatDate } from "@/lib/utils";
 import TaskControlsContext from "./task-controls-context";
 
@@ -39,8 +39,8 @@ export default function DraggableTaskItem({ task }: Props) {
 		zIndex: isDragging ? 1 : 0,
 	};
 
-	const isRemindPast = (dateStr: string) => {
-		const d = new Date(dateStr);
+	const isRemindPast = (date: string | Date) => {
+		const d = new Date(date);
 		return d < new Date() && !isToday(d);
 	};
 

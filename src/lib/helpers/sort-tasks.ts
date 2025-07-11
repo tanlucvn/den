@@ -1,4 +1,4 @@
-import type { Task } from "@/lib/models";
+import type { Task } from "@/db/schema/tasks";
 
 export type TaskSortOption =
 	| "created-desc"

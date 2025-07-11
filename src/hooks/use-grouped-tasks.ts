@@ -1,4 +1,4 @@
-import type { Task } from "@/lib/models";
+import type { Task } from "@/db/schema/tasks";
 
 export const useGroupedTasks = (tasks: Task[]) => {
 	const pinned = tasks.filter(

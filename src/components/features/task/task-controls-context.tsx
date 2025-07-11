@@ -7,8 +7,8 @@ import {
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
-import type { Task } from "@/lib/models";
 import { formatDate } from "@/lib/utils";
 
 interface TaskControlsContextProps {

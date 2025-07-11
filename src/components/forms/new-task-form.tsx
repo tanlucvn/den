@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -30,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTaskActions } from "@/hooks/use-task-actions";
+import { useSession } from "@/lib/auth-client";
 import type { NewTask } from "@/lib/models";
 import { cn } from "@/lib/utils";
 import {
@@ -39,7 +39,7 @@ import {
 import { useDialogStore } from "@/store/use-dialog-store";
 
 export default function NewTaskForm() {
-	const { user } = useUser();
+	const { data } = useSession();
 
 	const { setIsNewTaskOpen } = useDialogStore();
 	const { onCreate } = useTaskActions();
@@ -56,14 +56,14 @@ export default function NewTaskForm() {
 	});
 
 	const onSubmit = async (values: NewTaskFormValues) => {
-		if (!user) return;
+		if (!data) return;
 
 		const newTask: NewTask = {
 			...values,
-			remindAt: values.remindAt?.toISOString(),
-			userId: user.id,
+			userId: data.user.id,
 			isCompleted: false,
 			isPinned: false,
+			remindAt: values.remindAt?.toISOString(),
 		};
 
 		await onCreate(newTask);

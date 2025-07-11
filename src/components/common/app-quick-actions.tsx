@@ -1,6 +1,6 @@
 "use client";
 
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
@@ -22,18 +22,18 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTaskActions } from "@/hooks/use-task-actions";
+import { authClient } from "@/lib/auth-client";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
 import { useTaskStore } from "@/store/use-task-store";
 
 export function AppQuickActions() {
-	const { user } = useUser();
-	const { signOut } = useClerk();
+	const router = useRouter();
 
 	const { searchTerm, setSearchTerm } = useAppStore();
 	const { tasks } = useTaskStore();
-	const { setIsSignInOpen, setIsNewTaskOpen } = useDialogStore();
+	const { setIsNewTaskOpen } = useDialogStore();
 
 	const { handleEdit } = useTaskActions();
 
@@ -42,6 +42,11 @@ export function AppQuickActions() {
 	const filteredTasks = filterTasks(tasks, searchTerm);
 
 	const isSearching = searchTerm.trim().length > 0;
+
+	const handleSignOut = async () => {
+		await authClient.signOut();
+		router.push("/");
+	};
 
 	useHotkeys(
 		"ctrl+k",
@@ -114,25 +119,18 @@ export function AppQuickActions() {
 						<CommandSeparator />
 
 						<CommandGroup heading="Accounts">
-							{user ? (
-								<CommandItem
-									onSelect={async () => {
-										toast.promise(signOut({ redirectUrl: "/" }), {
-											loading: "Signing out...",
-											success: "Signed out successfully",
-											error: "Sign out failed",
-										});
-									}}
-								>
-									<IconRenderer name="LogOut" className="text-destructive" />
-									<span>Log out</span>
-								</CommandItem>
-							) : (
-								<CommandItem onSelect={() => setIsSignInOpen(true)}>
-									<IconRenderer name="LogIn" />
-									<span>Sign In</span>
-								</CommandItem>
-							)}
+							<CommandItem
+								onSelect={async () => {
+									toast.promise(handleSignOut, {
+										loading: "Signing out...",
+										success: "Signed out successfully",
+										error: "Sign out failed",
+									});
+								}}
+							>
+								<IconRenderer name="LogOut" className="text-destructive" />
+								<span>Log out</span>
+							</CommandItem>
 						</CommandGroup>
 					</CommandList>
 				</Command>

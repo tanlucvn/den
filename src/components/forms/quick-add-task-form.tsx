@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input, InputSuffix, InputWrapper } from "@/components/ui/input";
 import { useTaskActions } from "@/hooks/use-task-actions";
+import { useSession } from "@/lib/auth-client";
 import {
 	type QuickNewTaskFormValues,
 	quickNewTaskSchema,
@@ -21,7 +21,7 @@ import {
 import { useDialogStore } from "@/store/use-dialog-store";
 
 export default function QuickAddTaskForm() {
-	const { user } = useUser();
+	const { data } = useSession();
 	const { onCreate } = useTaskActions();
 	const { setIsNewTaskOpen } = useDialogStore();
 
@@ -33,11 +33,11 @@ export default function QuickAddTaskForm() {
 	});
 
 	const onSubmit = async (values: QuickNewTaskFormValues) => {
-		if (!user) return;
+		if (!data) return;
 
 		await onCreate({
 			title: values.title.trim(),
-			userId: user.id,
+			userId: data.user.id,
 			isCompleted: false,
 			isPinned: false,
 			note: "",

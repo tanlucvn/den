@@ -1,8 +1,8 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
 import type { NewTask, Task } from "@/lib/models";
 import { useSupabase } from "@/lib/supabase/supabase-provider";
 import { useAppStore } from "@/store/use-app-store";
@@ -11,7 +11,7 @@ import { useTaskStore } from "@/store/use-task-store";
 
 export const useTaskActions = () => {
 	const router = useRouter();
-	const { user } = useUser();
+	const { data } = useSession();
 	const { supabase, isLoaded } = useSupabase();
 
 	const { setEditTask } = useAppStore();
@@ -95,10 +95,10 @@ export const useTaskActions = () => {
 	};
 
 	const onDuplicate = async (task: NewTask) => {
-		if (!user) return;
+		if (!data) return;
 
 		const duplicatedTask: NewTask = {
-			userId: user.id,
+			userId: data.user.id,
 			title: task.title,
 			note: task.note || "",
 			location: task.location || "",

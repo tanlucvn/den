@@ -1,0 +1,35 @@
+import {
+	boolean,
+	integer,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
+
+export const tasks = pgTable("tasks", {
+	id: uuid().primaryKey().defaultRandom(),
+	userId: text().notNull(),
+
+	title: text().notNull(),
+	note: text(),
+
+	priority: text("priority", {
+		enum: ["none", "low", "medium", "high"],
+	})
+		.notNull()
+		.default("none"),
+
+	location: text(),
+	sortIndex: integer().notNull().default(0),
+
+	isCompleted: boolean().notNull().default(false),
+	isPinned: boolean().notNull().default(false),
+	isArchived: boolean().notNull().default(false),
+
+	deletedAt: timestamp({ mode: "date" }),
+	remindAt: timestamp({ mode: "date" }),
+
+	createdAt: timestamp({ mode: "date" }).notNull().defaultNow(),
+	updatedAt: timestamp({ mode: "date" }).notNull().defaultNow(),
+});

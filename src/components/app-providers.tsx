@@ -1,23 +1,19 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/react";
-import { ThemeProvider } from "@/components/theme";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { SidebarProvider } from "./ui/sidebar";
+import type React from "react";
+import AppLayout from "@/components/layouts/app-layout";
+import SupabaseProvider from "@/lib/supabase/supabase-provider";
+import { ModalInitializer } from "./layouts/initializer/modal-initializer";
 
-export function AppProviders({ children }: { children: React.ReactNode }) {
+export default function AppProviders({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return (
-		<ClerkProvider>
-			<ThemeProvider>
-				<TooltipProvider>
-					<SidebarProvider>
-						{children}
-
-						<Toaster position="bottom-center" />
-						<Analytics />
-					</SidebarProvider>
-				</TooltipProvider>
-			</ThemeProvider>
-		</ClerkProvider>
+		<SupabaseProvider>
+			<AppLayout>
+				{children}
+				<ModalInitializer />
+			</AppLayout>
+		</SupabaseProvider>
 	);
 }

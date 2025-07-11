@@ -4,9 +4,6 @@ interface DialogStore {
 	isAppModalOpen: boolean;
 	setIsAppModalOpen: (open: boolean) => void;
 
-	isSignInOpen: boolean;
-	setIsSignInOpen: (open: boolean) => void;
-
 	isNewTaskOpen: boolean;
 	setIsNewTaskOpen: (open: boolean) => void;
 
@@ -17,9 +14,6 @@ interface DialogStore {
 export const useDialogStore = create<DialogStore>((set) => ({
 	isAppModalOpen: false,
 	setIsAppModalOpen: (open) => set({ isAppModalOpen: open }),
-
-	isSignInOpen: false,
-	setIsSignInOpen: (open) => set({ isSignInOpen: open }),
 
 	isNewTaskOpen: false,
 	setIsNewTaskOpen: (open) => set({ isNewTaskOpen: open }),

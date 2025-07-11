@@ -1,12 +1,40 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { getSessionCookie } from "better-auth/cookies";
+import { type NextRequest, NextResponse } from "next/server";
 
-export default clerkMiddleware();
+const PUBLIC_ROUTES = ["/"];
+const AUTH_ROUTES = ["/signin", "/signup", "/reset-password", "/goodbye"];
 
+const isPublicRoute = (pathname: string) => PUBLIC_ROUTES.includes(pathname);
+const isAuthRoute = (pathname: string) => AUTH_ROUTES.includes(pathname);
+
+export default function middleware(request: NextRequest) {
+	const pathname = request.nextUrl.pathname;
+	const sessionCookie = getSessionCookie(request);
+
+	// ! If user is logged in, they shouldn't access auth routes
+	if (sessionCookie && isAuthRoute(pathname)) {
+		return NextResponse.redirect(new URL("/profile", request.url));
+	}
+
+	// ! If user is not logged in and trying to access protected routes
+	if (!sessionCookie && !isAuthRoute(pathname) && !isPublicRoute(pathname)) {
+		return NextResponse.redirect(new URL("/signin", request.url));
+	}
+
+	return NextResponse.next();
+}
+
+// Protect all routes except excluded ones
 export const config = {
 	matcher: [
-		// Skip Next.js internals and all static files, unless found in search params
-		"/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-		// Always run for API routes
-		"/(api|trpc)(.*)",
+		/*
+		 * Match all request paths except:
+		 * - api/auth (auth endpoints)
+		 * - _next/static (static files)
+		 * - _next/image (image optimization files)
+		 * - favicon.ico (favicon file)
+		 * - public folder
+		 */
+		"/((?!api/auth|api/webhook/polar|_next/static|_next/image|favicon.ico).*)",
 	],
 };

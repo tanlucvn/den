@@ -95,7 +95,7 @@ const ModalContent = ({ className, children, ...props }: ModalProps) => {
 	return (
 		<ModalContent
 			className={cn(
-				"max-md:!right-2 max-md:!bottom-2 max-md:!left-2 after:hidden after:content-none max-md:rounded-md max-md:border",
+				"max-md:!right-2 max-md:!bottom-2 max-md:!left-2 max-md:!rounded-2xl bg-card after:hidden after:content-none max-md:border",
 				className,
 			)}
 			{...props}
@@ -140,7 +140,7 @@ const ModalTitle = ({ className, children, ...props }: ModalProps) => {
 	return (
 		<ModalTitle
 			className={cn(
-				"-translate-x-1/2 -translate-y-1/2 absolute top-0 left-1/2 select-none rounded-full border bg-background p-0.5",
+				"-translate-x-1/2 -translate-y-1/2 absolute top-0 left-1/2 select-none rounded-full border bg-card p-0.5",
 				className,
 			)}
 			{...props}

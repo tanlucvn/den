@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -51,8 +50,6 @@ import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
 
 export default function EditTaskModal() {
-	const { user } = useUser();
-
 	const { editTask } = useAppStore();
 	const { isEditTaskOpen, setIsEditTaskOpen } = useDialogStore();
 
@@ -83,7 +80,7 @@ export default function EditTaskModal() {
 	}, [editTask, form]);
 
 	const onSubmit = async (values: NewTaskFormValues) => {
-		if (!user || !editTask) return;
+		if (!editTask) return;
 
 		await onUpdate({
 			...editTask,

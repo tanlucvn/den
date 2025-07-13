@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import axios from "axios";
 import { create } from "zustand";
 import type { NewTask, Task } from "@/db/schema/tasks";
 
@@ -10,12 +10,11 @@ interface TaskStore {
 	updatingIds: string[];
 	setUpdating: (id: string, isUpdating: boolean) => void;
 
-	fetchTasks: (supabase: SupabaseClient) => Promise<void>;
-	createTask: (supabase: SupabaseClient, task: NewTask) => Promise<void>;
-	updateTask: (supabase: SupabaseClient, task: Task) => Promise<void>;
-	deleteTask: (supabase: SupabaseClient, id: string) => Promise<void>;
-
-	batchUpdateTasks: (supabase: SupabaseClient, tasks: Task[]) => Promise<void>;
+	fetchTasks: () => Promise<void>;
+	createTask: (task: NewTask) => Promise<void>;
+	updateTask: (task: Task) => Promise<void>;
+	deleteTask: (id: string) => Promise<void>;
+	batchUpdateTasks: (tasks: Task[]) => Promise<void>;
 
 	setTasks: (tasks: Task[]) => void;
 }
@@ -25,7 +24,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 	isLoading: false,
 	error: null,
 
-	// * Track tasks being updated/deleted
 	updatingIds: [],
 	setUpdating: (id, isUpdating) => {
 		set((state) => ({
@@ -36,142 +34,98 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 	},
 
 	// * Fetch tasks
-	fetchTasks: async (supabase) => {
+	fetchTasks: async () => {
 		try {
 			set({ isLoading: true, error: null });
-
-			const { data, error } = await supabase
-				.from("tasks")
-				.select("*")
-				.order("updatedAt", { ascending: false });
-
-			if (error) throw error;
-
-			set({ tasks: data || [], isLoading: false });
-		} catch (err) {
+			const res = await axios.get<Task[]>("/api/tasks");
+			set({ tasks: res.data, isLoading: false });
+		} catch (err: any) {
 			set({
-				error: err instanceof Error ? err.message : "Failed to fetch tasks",
+				error: err.response?.data?.error || "Failed to fetch tasks",
 				isLoading: false,
 			});
 		}
 	},
 
 	// * Create task
-	createTask: async (supabase, task) => {
+	createTask: async (task) => {
 		try {
-			const { data, error } = await supabase
-				.from("tasks")
-				.insert(task)
-				.select()
-				.single();
-
-			if (error) throw error;
-
-			if (data) {
-				set((state) => ({
-					tasks: [data, ...state.tasks],
-				}));
-			}
+			const res = await axios.post<Task>("/api/tasks", task);
+			set((state) => ({
+				tasks: [res.data, ...state.tasks],
+			}));
 		} catch (err) {
 			console.error("Failed to create task", err);
 		}
 	},
 
 	// * Update task (optimistic with rollback)
-	updateTask: async (supabase, task) => {
+	updateTask: async (task) => {
 		const { tasks } = get();
 		const prevTasks = [...tasks];
 
 		get().setUpdating(task.id, true);
 
 		try {
-			// Optimistically update UI
 			set((state) => ({
 				tasks: state.tasks.map((t) =>
 					t.id === task.id ? { ...t, ...task } : t,
 				),
 			}));
 
-			const { data, error } = await supabase
-				.from("tasks")
-				.update(task)
-				.eq("id", task.id)
-				.select()
-				.single();
+			const res = await axios.put<Task>(`/api/tasks/${task.id}`, task);
 
-			if (error) throw error;
-
-			if (data) {
-				set((state) => ({
-					tasks: state.tasks.map((t) => (t.id === data.id ? data : t)),
-				}));
-			}
+			set((state) => ({
+				tasks: state.tasks.map((t) => (t.id === res.data.id ? res.data : t)),
+			}));
 		} catch (err) {
-			// Rollback UI
-			set({ tasks: prevTasks });
-
 			console.error("Failed to update task", err);
+			set({ tasks: prevTasks });
 		} finally {
 			get().setUpdating(task.id, false);
 		}
 	},
 
 	// * Delete task (optimistic with rollback)
-	deleteTask: async (supabase, id) => {
+	deleteTask: async (id) => {
 		const { tasks } = get();
 		const prevTasks = [...tasks];
 
 		get().setUpdating(id, true);
 
 		try {
-			// Optimistically remove
 			set((state) => ({
 				tasks: state.tasks.filter((t) => t.id !== id),
 			}));
 
-			const { error } = await supabase.from("tasks").delete().eq("id", id);
-
-			if (error) throw error;
+			await axios.delete(`/api/tasks/${id}`);
 		} catch (err) {
-			// Rollback UI
-			set({ tasks: prevTasks });
-
 			console.error("Failed to delete task", err);
+			set({ tasks: prevTasks });
 		} finally {
 			get().setUpdating(id, false);
 		}
 	},
 
-	// * Batch update tasks (optimistic with rollback)
-	batchUpdateTasks: async (supabase, updatedTasks) => {
+	// * Batch update
+	batchUpdateTasks: async (updatedTasks) => {
 		const { tasks: prevTasks } = get();
 
 		try {
-			// Optimistically update UI
-			const updatedTaskMap = new Map(updatedTasks.map((t) => [t.id, t]));
+			const updatedMap = new Map(updatedTasks.map((t) => [t.id, t]));
 
 			set((state) => ({
-				tasks: state.tasks.map((task) =>
-					updatedTaskMap.has(task.id)
-						? { ...task, ...updatedTaskMap.get(task.id)! }
-						: task,
+				tasks: state.tasks.map((t) =>
+					updatedMap.has(t.id) ? { ...t, ...updatedMap.get(t.id)! } : t,
 				),
 			}));
 
-			// Send to Supabase
-			const { error } = await supabase.from("tasks").upsert(updatedTasks, {
-				onConflict: "id",
-			});
-
-			if (error) throw error;
+			await axios.put("/api/tasks/batch", updatedTasks);
 		} catch (err) {
-			console.error("Failed to batch update tasks", err);
-
-			// Rollback UI
+			console.error("Failed to batch update", err);
 			set({ tasks: prevTasks });
 		}
 	},
 
-	// * Manual set
 	setTasks: (tasks) => set({ tasks }),
 }));

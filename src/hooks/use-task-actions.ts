@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTask, Task } from "@/db/schema/tasks";
 import { useSession } from "@/lib/auth-client";
-import { useSupabase } from "@/lib/supabase/supabase-provider";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
 import { useTaskStore } from "@/store/use-task-store";
@@ -12,42 +11,22 @@ import { useTaskStore } from "@/store/use-task-store";
 export const useTaskActions = () => {
 	const router = useRouter();
 	const { data } = useSession();
-	const { supabase, isLoaded } = useSupabase();
 
 	const { setEditTask } = useAppStore();
 	const { setIsEditTaskOpen } = useDialogStore();
 	const { createTask, updateTask, deleteTask, fetchTasks, batchUpdateTasks } =
 		useTaskStore();
 
-	// ! Guard: avoid calling APIs before client is ready
-	if (!supabase || !isLoaded) {
-		return {
-			onCreate: async () => {},
-			onToggle: async () => {},
-			onArchive: async () => {},
-			onUpdate: async () => {},
-			onDelete: async () => {},
-			onClearCompleted: async () => {},
-			onSort: async () => {},
-			onDuplicate: async () => {},
-			onCopyToClipboard: async () => {},
-			onRefresh: async () => {},
-			handleEdit: () => {},
-			handlePinToggle: () => {},
-			handleDelete: () => {},
-		};
-	}
-
 	const onCreate = async (task: NewTask) => {
 		if (!task.title.trim()) return;
 
-		const promise = createTask(supabase, task);
+		const promise = createTask(task);
 		await promise;
 	};
 
 	const onToggle = async (task: Task) => {
 		const updated = { ...task, isCompleted: !task.isCompleted };
-		const promise = updateTask(supabase, updated);
+		const promise = updateTask(updated);
 
 		await promise;
 	};
@@ -55,7 +34,7 @@ export const useTaskActions = () => {
 	const onArchive = async (task: Task) => {
 		const updated = { ...task, isArchived: !task.isArchived };
 
-		const promise = updateTask(supabase, updated);
+		const promise = updateTask(updated);
 		toast.promise(promise, {
 			loading: task.isArchived ? "Unarchiving task..." : "Archiving task...",
 			success: task.isArchived ? "Task unarchived!" : "Task archived!",
@@ -66,12 +45,12 @@ export const useTaskActions = () => {
 	};
 
 	const onUpdate = async (task: Task) => {
-		const promise = updateTask(supabase, task);
+		const promise = updateTask(task);
 		await promise;
 	};
 
 	const onDelete = async (id: string) => {
-		const promise = deleteTask(supabase, id);
+		const promise = deleteTask(id);
 		toast.promise(promise, {
 			loading: "Deleting task...",
 			success: "Task deleted!",
@@ -79,7 +58,7 @@ export const useTaskActions = () => {
 		});
 		await promise;
 
-		// Optional: redirect if you're on the deleted task page
+		// ? Optional: redirect if you're on the deleted task page
 		if (router && window.location.pathname.includes(`/tasks/${id}`)) {
 			router.push("/");
 		}
@@ -87,11 +66,11 @@ export const useTaskActions = () => {
 
 	const onClearCompleted = async (tasks: Task[]) => {
 		const toDelete = tasks.filter((t) => t.isCompleted);
-		await Promise.all(toDelete.map((t) => deleteTask(supabase, t.id)));
+		await Promise.all(toDelete.map((t) => deleteTask(t.id)));
 	};
 
 	const onSort = async (tasks: Task[]) => {
-		return batchUpdateTasks(supabase, tasks);
+		return batchUpdateTasks(tasks);
 	};
 
 	const onDuplicate = async (task: NewTask) => {
@@ -119,7 +98,7 @@ export const useTaskActions = () => {
 	};
 
 	const onRefresh = async () => {
-		await fetchTasks(supabase);
+		await fetchTasks();
 	};
 
 	const handleEdit = (task: Task) => {

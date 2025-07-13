@@ -7,6 +7,17 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export const parseTaskDates = (task: Task) => ({
+	...task,
+	createdAt: new Date(task.createdAt),
+	updatedAt: new Date(task.updatedAt),
+	remindAt: task.remindAt ? new Date(task.remindAt) : null,
+	deletedAt: task.deletedAt ? new Date(task.deletedAt) : null,
+});
+
+export const parseTaskArrayDates = (tasks: Task[]): Task[] =>
+	tasks.map(parseTaskDates);
+
 export const filterTasks = (tasks: Task[], query: string): Task[] => {
 	const q = query.trim().toLowerCase();
 

@@ -5,7 +5,6 @@ import AppProviders from "@/components/app-providers";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
 import { useSession } from "@/lib/auth-client";
-import { useSupabase } from "@/lib/supabase/supabase-provider";
 import { useTaskStore } from "@/store/use-task-store";
 
 interface LayoutProps {
@@ -14,16 +13,17 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
 	const { data } = useSession();
-	const { supabase } = useSupabase();
 	const { fetchTasks } = useTaskStore();
 	const fetchedRef = useRef(false);
 
 	useEffect(() => {
-		if (supabase && data && !fetchedRef.current) {
+		if (data && !fetchedRef.current) {
 			fetchedRef.current = true;
-			fetchTasks(supabase);
+			fetchTasks();
+
+			console.log("fetched task");
 		}
-	}, [data, supabase, fetchTasks]);
+	}, [data, fetchTasks]);
 
 	return (
 		<AppProviders>

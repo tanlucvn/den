@@ -41,6 +41,7 @@
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.50.2",
 		"@vercel/analytics": "^1.5.0",
+		"axios": "^1.10.0",
 		"better-auth": "^1.2.12",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",

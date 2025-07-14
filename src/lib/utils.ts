@@ -35,3 +35,18 @@ export const formatDate = (date: string | Date) => {
 	if (isTomorrow(d)) return "tomorrow";
 	return format(d, "MMMM do yyyy");
 };
+
+export const getUserInitials = (name: string | null, email: string | null) => {
+	if (name) {
+		return name
+			.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2);
+	}
+	if (email) {
+		return email[0].toUpperCase();
+	}
+	return "U";
+};

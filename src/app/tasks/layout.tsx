@@ -1,29 +1,23 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import AppProviders from "@/components/app-providers";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
-import { useSession } from "@/lib/auth-client";
-import { useTaskStore } from "@/store/use-task-store";
+import { AppInitializer } from "@/components/layouts/initializer/app-initializer";
+import { auth } from "@/lib/auth";
 
 interface LayoutProps {
 	children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
-	const { data } = useSession();
-	const { fetchTasks } = useTaskStore();
-	const fetchedRef = useRef(false);
+export default async function Layout({ children }: LayoutProps) {
+	const session = await auth.api
+		.getSession({ headers: await headers() })
+		.catch(() => {
+			redirect("/signin");
+		});
 
-	useEffect(() => {
-		if (data && !fetchedRef.current) {
-			fetchedRef.current = true;
-			fetchTasks();
-
-			console.log("fetched task");
-		}
-	}, [data, fetchTasks]);
+	if (!session) redirect("/signin");
 
 	return (
 		<AppProviders>
@@ -40,6 +34,8 @@ export default function Layout({ children }: LayoutProps) {
 					<div className="mx-auto w-full max-w-4xl">{children}</div>
 				</main>
 			</div>
+
+			<AppInitializer />
 		</AppProviders>
 	);
 }

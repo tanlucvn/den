@@ -26,7 +26,7 @@ export default function Page() {
 			{data ? (
 				<>
 					<p className="text-muted-foregroundted-fosm">
-						Welcome, data.user.name
+						Welcome, {data.user.name}
 					</p>
 					<Button onClick={handleSignOut}>Sign out</Button>
 				</>

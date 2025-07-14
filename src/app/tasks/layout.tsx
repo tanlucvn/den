@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import AppProviders from "@/components/app-providers";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
-import { AppInitializer } from "@/components/layouts/initializer/app-initializer";
 import { auth } from "@/lib/auth";
 
 interface LayoutProps {
@@ -34,8 +33,6 @@ export default async function Layout({ children }: LayoutProps) {
 					<div className="mx-auto w-full max-w-4xl">{children}</div>
 				</main>
 			</div>
-
-			<AppInitializer />
 		</AppProviders>
 	);
 }

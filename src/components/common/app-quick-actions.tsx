@@ -22,17 +22,18 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTasks } from "@/hooks/use-tasks";
 import { authClient } from "@/lib/auth-client";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
-import { useTaskStore } from "@/store/use-task-store";
 
 export function AppQuickActions() {
 	const router = useRouter();
 
+	const { data: tasks = [] } = useTasks();
+
 	const { searchTerm, setSearchTerm } = useAppStore();
-	const { tasks } = useTaskStore();
 	const { setIsNewTaskOpen } = useDialogStore();
 
 	const { handleEdit } = useTaskActions();

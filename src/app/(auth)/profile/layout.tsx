@@ -1,8 +1,8 @@
 "use client";
 
+import AppProviders from "@/components/app-providers";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import AppHeader from "@/components/common/header";
-import AppLayout from "@/components/layouts/app-layout";
 
 interface SettingsLayoutProps {
 	children: React.ReactNode;
@@ -10,7 +10,7 @@ interface SettingsLayoutProps {
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
 	return (
-		<AppLayout>
+		<AppProviders>
 			<div className="relative flex min-h-screen flex-col gap-6 bg-background px-4">
 				<header>
 					<AppHeader />
@@ -22,6 +22,6 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
 				<main className="flex-1">{children}</main>
 			</div>
-		</AppLayout>
+		</AppProviders>
 	);
 }

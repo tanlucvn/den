@@ -12,13 +12,13 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
+import { useTasks } from "@/hooks/use-tasks";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
-import { useTaskStore } from "@/store/use-task-store";
 
 export default function Page() {
 	const { searchTerm } = useAppStore();
-	const { tasks, isLoading } = useTaskStore();
+	const { data: tasks = [], isLoading: isTasksLoading } = useTasks();
 
 	const { pinned, active, completed, archive } = useGroupedTasks(tasks);
 
@@ -58,7 +58,7 @@ export default function Page() {
 
 				<QuickAddTaskForm />
 
-				{isLoading ? (
+				{isTasksLoading ? (
 					<div className="space-y-4">
 						<Skeleton className="h-6 w-20" />
 						<Skeleton className="h-28 w-full rounded-xl" />

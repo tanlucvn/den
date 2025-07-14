@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { AppLogo } from "@/components/app-logo";
 import { IconRenderer } from "@/components/icon-renderer";
+import { ThemeSwitcher } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import UserButton from "@/components/user-button";
 import { useDialogStore } from "@/store/use-dialog-store";
-import { AppLogo } from "../app-logo";
 
 export default function AppHeader() {
 	const { setIsAppModalOpen } = useDialogStore();
@@ -28,7 +29,10 @@ export default function AppHeader() {
 				</Button>
 			</div>
 
-			<UserButton />
+			<div className="flex items-center gap-2">
+				<ThemeSwitcher />
+				<UserButton />
+			</div>
 		</div>
 	);
 }

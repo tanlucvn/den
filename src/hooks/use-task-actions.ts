@@ -3,10 +3,16 @@
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTask, Task } from "@/db/schema/tasks";
+import {
+	useBatchUpdateTasks,
+	useCreateTask,
+	useDeleteTask,
+	useTasks,
+	useUpdateTask,
+} from "@/hooks/use-tasks";
 import { useSession } from "@/lib/auth-client";
 import { useAppStore } from "@/store/use-app-store";
 import { useDialogStore } from "@/store/use-dialog-store";
-import { useTaskStore } from "@/store/use-task-store";
 
 export const useTaskActions = () => {
 	const router = useRouter();
@@ -14,8 +20,12 @@ export const useTaskActions = () => {
 
 	const { setEditTask } = useAppStore();
 	const { setIsEditTaskOpen } = useDialogStore();
-	const { createTask, updateTask, deleteTask, fetchTasks, batchUpdateTasks } =
-		useTaskStore();
+
+	const { mutateAsync: createTask } = useCreateTask();
+	const { mutateAsync: updateTask } = useUpdateTask();
+	const { mutateAsync: deleteTask } = useDeleteTask();
+	const { mutateAsync: batchUpdateTasks } = useBatchUpdateTasks();
+	const { refetch: fetchTasks } = useTasks();
 
 	const onCreate = async (task: NewTask) => {
 		if (!task.title.trim()) return;

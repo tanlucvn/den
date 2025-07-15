@@ -30,19 +30,19 @@ import { sortTasks } from "@/lib/helpers/sort-tasks";
 import { cn } from "@/lib/utils";
 import DraggableTaskItem from "./draggable-task-item";
 
-type SectionProps = {
+type TaskSectionCollapsibleProps = {
 	icon: React.ReactNode;
 	title: string;
 	tasks: Task[];
 	defaultOpen?: boolean;
 };
 
-export default function TaskSection({
+export default function TaskSectionCollapsible({
 	icon,
 	title,
 	tasks,
 	defaultOpen,
-}: SectionProps) {
+}: TaskSectionCollapsibleProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 	const [items, setItems] = useState<Task[]>([]);
 	const [activeId, setActiveId] = useState<string | null>(null);

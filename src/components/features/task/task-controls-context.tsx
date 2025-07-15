@@ -37,22 +37,28 @@ export default function TaskControlsContext({
 					Created at {formatDate(task.updatedAt)}.
 				</p>
 
-				<ContextMenuItem className="gap-2" onClick={() => handleEdit(task)}>
-					<IconRenderer name="Pen" className="!text-primary/60" />
+				<ContextMenuItem
+					className="justify-between gap-2"
+					onClick={() => handleEdit(task)}
+				>
 					<span>Edit</span>
-				</ContextMenuItem>
-
-				<ContextMenuItem className="gap-2" onClick={() => onDuplicate(task)}>
-					<IconRenderer name="CopyPlus" className="!text-primary/60" />
-					<span>Duplicate</span>
+					<IconRenderer name="Pen" className="!text-primary/60" />
 				</ContextMenuItem>
 
 				<ContextMenuItem
-					className="gap-2"
+					className="justify-between gap-2"
+					onClick={() => onDuplicate(task)}
+				>
+					<span>Duplicate</span>
+					<IconRenderer name="CopyPlus" className="!text-primary/60" />
+				</ContextMenuItem>
+
+				<ContextMenuItem
+					className="justify-between gap-2"
 					onClick={() => onCopyToClipboard(task)}
 				>
-					<IconRenderer name="Clipboard" className="!text-primary/60" />
 					<span>Copy Task</span>
+					<IconRenderer name="Clipboard" className="!text-primary/60" />
 				</ContextMenuItem>
 
 				<ContextMenuSeparator />
@@ -62,32 +68,35 @@ export default function TaskControlsContext({
 				</p>
 
 				<ContextMenuItem
-					className="gap-2"
+					className="justify-between gap-2"
 					onClick={() => handlePinToggle(task)}
 				>
 					{task.isPinned ? (
 						<>
-							<IconRenderer name="PinOff" className="!text-primary/60" />
 							<span>Unpin</span>
+							<IconRenderer name="PinOff" className="!text-primary/60" />
 						</>
 					) : (
 						<>
-							<IconRenderer name="Pin" className="!text-primary/60" />
 							<span>Pin</span>
+							<IconRenderer name="Pin" className="!text-primary/60" />
 						</>
 					)}
 				</ContextMenuItem>
 
-				<ContextMenuItem className="gap-2" onClick={() => onArchive(task)}>
+				<ContextMenuItem
+					className="justify-between gap-2"
+					onClick={() => onArchive(task)}
+				>
 					{task.isArchived ? (
 						<>
-							<IconRenderer name="ArchiveX" className="!text-primary/60" />
 							<span>Unarchive</span>
+							<IconRenderer name="ArchiveX" className="!text-primary/60" />
 						</>
 					) : (
 						<>
-							<IconRenderer name="Archive" className="!text-primary/60" />
 							<span>Archive</span>
+							<IconRenderer name="Archive" className="!text-primary/60" />
 						</>
 					)}
 				</ContextMenuItem>
@@ -95,11 +104,11 @@ export default function TaskControlsContext({
 				<ContextMenuSeparator />
 
 				<ContextMenuItem
-					className="!text-destructive gap-2"
+					className="!text-destructive justify-between gap-2"
 					onClick={() => handleDelete(task)}
 				>
-					<IconRenderer name="Trash2" className="!text-destructive" />
 					<span>Delete</span>
+					<IconRenderer name="Trash2" className="!text-destructive" />
 				</ContextMenuItem>
 			</ContextMenuContent>
 		</ContextMenu>

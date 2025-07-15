@@ -51,7 +51,7 @@ export default function DraggableTaskItem({ task }: Props) {
 			<TaskControlsContext task={task}>
 				<div
 					className={cn(
-						"group relative flex w-full select-none flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-primary",
+						"group relative flex w-full select-none flex-col gap-1 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 						hasMetadata && "pb-2",
 					)}
 				>

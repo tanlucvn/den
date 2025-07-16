@@ -16,6 +16,10 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"a11y": {
+				"noStaticElementInteractions": "off",
+				"useKeyWithClickEvents": "off"
+			},
 			"suspicious": {
 				"noArrayIndexKey": "off",
 				"noExplicitAny": "off"

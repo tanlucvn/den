@@ -6,10 +6,15 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { taskLists } from "@/db/schema/task-lists";
 
 export const tasks = pgTable("tasks", {
 	id: uuid().primaryKey().defaultRandom(),
 	userId: text().notNull(),
+
+	listId: uuid("listId").references(() => taskLists.id, {
+		onDelete: "cascade",
+	}),
 
 	title: text().notNull(),
 	note: text(),

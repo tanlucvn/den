@@ -1,6 +1,6 @@
 "use client";
 
-import NewTaskForm from "@/components/forms/new-task-form";
+import NewTaskListForm from "@/components/forms/new-task-list-form";
 import { Button } from "@/components/ui/button";
 import {
 	Modal,
@@ -13,18 +13,18 @@ import {
 } from "@/components/ui/modals";
 import { useDialogStore } from "@/store/use-dialog-store";
 
-export default function NewTaskModal() {
-	const { isNewTaskOpen, setIsNewTaskOpen } = useDialogStore();
+export default function NewTaskListModal() {
+	const { isNewTaskListOpen, setIsNewTaskListOpen } = useDialogStore();
 
 	return (
-		<Modal open={isNewTaskOpen} onOpenChange={setIsNewTaskOpen}>
+		<Modal open={isNewTaskListOpen} onOpenChange={setIsNewTaskListOpen}>
 			<ModalContent className="sm:max-w-md">
 				<ModalHeader>
-					<ModalTitle>New Task</ModalTitle>
-					<ModalDescription>Plan something new</ModalDescription>
+					<ModalTitle>New List</ModalTitle>
+					<ModalDescription>Create new list</ModalDescription>
 				</ModalHeader>
 
-				<NewTaskForm />
+				<NewTaskListForm />
 
 				<ModalFooter className="md:grid md:grid-cols-2">
 					<ModalClose asChild>
@@ -32,7 +32,7 @@ export default function NewTaskModal() {
 							Cancel
 						</Button>
 					</ModalClose>
-					<Button type="submit" form="new-task-form" className="w-full">
+					<Button type="submit" form="new-task-list-form" className="w-full">
 						Add New
 					</Button>
 				</ModalFooter>

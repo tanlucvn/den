@@ -2,13 +2,18 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import type { NewTask, Task } from "@/db/schema/tasks";
 
-// ! Config
-const TASKS_KEY = ["tasks"];
+// ========== CONFIG ==========
+const TASKS_KEY = "tasks";
 
-// * Fetch all tasks
+function getTaskQueryKey(listId?: string | null) {
+	return listId ? [TASKS_KEY, { listId }] : [TASKS_KEY];
+}
+
+// ========== QUERIES ==========
+
 export function useTasks() {
 	return useQuery<Task[]>({
-		queryKey: TASKS_KEY,
+		queryKey: getTaskQueryKey(),
 		queryFn: async () => (await axios.get("/api/tasks")).data,
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: true,
@@ -16,7 +21,20 @@ export function useTasks() {
 	});
 }
 
-// * Create task (optimistic)
+export function useTasksByListId(listId: string | null) {
+	return useQuery<Task[]>({
+		enabled: !!listId,
+		queryKey: getTaskQueryKey(listId),
+		queryFn: async () =>
+			(await axios.get("/api/tasks", { params: { listId } })).data,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: true,
+		refetchOnMount: false,
+	});
+}
+
+// ========== MUTATIONS ==========
+
 export function useCreateTask() {
 	const queryClient = useQueryClient();
 
@@ -25,13 +43,15 @@ export function useCreateTask() {
 			(await axios.post("/api/tasks", task)).data,
 
 		onMutate: async (task) => {
-			await queryClient.cancelQueries({ queryKey: TASKS_KEY });
+			const queryKey = getTaskQueryKey(task.listId);
+			await queryClient.cancelQueries({ queryKey });
 
-			const prev = queryClient.getQueryData<Task[]>(TASKS_KEY);
+			const prev = queryClient.getQueryData<Task[]>(queryKey);
 
 			const newTask: Task = {
 				id: crypto.randomUUID(),
 				userId: task.userId,
+				listId: task.listId ?? null,
 				title: task.title,
 				note: task.note ?? null,
 				priority: task.priority ?? "none",
@@ -46,27 +66,27 @@ export function useCreateTask() {
 				updatedAt: new Date(),
 			};
 
-			queryClient.setQueryData<Task[]>(TASKS_KEY, (old = []) => [
+			queryClient.setQueryData<Task[]>(queryKey, (old = []) => [
 				newTask,
 				...old,
 			]);
 
-			return { prev };
+			return { prev, queryKey };
 		},
 
 		onError: (_err, _task, ctx) => {
-			if (ctx?.prev) {
-				queryClient.setQueryData(TASKS_KEY, ctx.prev);
+			if (ctx?.prev && ctx?.queryKey) {
+				queryClient.setQueryData(ctx.queryKey, ctx.prev);
 			}
 		},
 
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+		onSettled: (_data, _err, task) => {
+			const queryKey = getTaskQueryKey(task.listId);
+			queryClient.invalidateQueries({ queryKey });
 		},
 	});
 }
 
-// * Update task (optimistic)
 export function useUpdateTask() {
 	const queryClient = useQueryClient();
 
@@ -75,64 +95,66 @@ export function useUpdateTask() {
 			(await axios.put(`/api/tasks/${task.id}`, task)).data,
 
 		onMutate: async (task) => {
-			await queryClient.cancelQueries({ queryKey: TASKS_KEY });
+			const queryKey = getTaskQueryKey(task.listId);
+			await queryClient.cancelQueries({ queryKey });
 
-			const prev = queryClient.getQueryData<Task[]>(TASKS_KEY);
+			const prev = queryClient.getQueryData<Task[]>(queryKey);
 
-			queryClient.setQueryData<Task[]>(TASKS_KEY, (old = []) =>
+			queryClient.setQueryData<Task[]>(queryKey, (old = []) =>
 				old.map((t) => (t.id === task.id ? { ...t, ...task } : t)),
 			);
 
-			return { prev };
+			return { prev, queryKey };
 		},
 
 		onError: (_err, _task, ctx) => {
-			if (ctx?.prev) {
-				queryClient.setQueryData(TASKS_KEY, ctx.prev);
+			if (ctx?.prev && ctx?.queryKey) {
+				queryClient.setQueryData(ctx.queryKey, ctx.prev);
 			}
 		},
 
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+		onSettled: (_data, _err, task) => {
+			const queryKey = getTaskQueryKey(task.listId);
+			queryClient.invalidateQueries({ queryKey });
 		},
 	});
 }
 
-// * Delete task (optimistic)
 export function useDeleteTask() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (id: string) => {
-			await axios.delete(`/api/tasks/${id}`);
-			return id;
+		mutationFn: async (task: Task) => {
+			await axios.delete(`/api/tasks/${task.id}`);
+			return task;
 		},
 
-		onMutate: async (id) => {
-			await queryClient.cancelQueries({ queryKey: TASKS_KEY });
+		onMutate: async (task) => {
+			const queryKey = getTaskQueryKey(task.listId);
+			await queryClient.cancelQueries({ queryKey });
 
-			const prev = queryClient.getQueryData<Task[]>(TASKS_KEY);
+			const prev = queryClient.getQueryData<Task[]>(queryKey);
 
-			queryClient.setQueryData<Task[]>(TASKS_KEY, (old = []) =>
-				old.filter((t) => t.id !== id),
+			queryClient.setQueryData<Task[]>(queryKey, (old = []) =>
+				old.filter((t) => t.id !== task.id),
 			);
 
-			return { prev };
+			return { prev, queryKey };
 		},
 
-		onError: (_err, _id, ctx) => {
-			if (ctx?.prev) {
-				queryClient.setQueryData(TASKS_KEY, ctx.prev);
+		onError: (_err, _task, ctx) => {
+			if (ctx?.prev && ctx?.queryKey) {
+				queryClient.setQueryData(ctx.queryKey, ctx.prev);
 			}
 		},
 
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+		onSettled: (_data, _err, task) => {
+			const queryKey = getTaskQueryKey(task.listId);
+			queryClient.invalidateQueries({ queryKey });
 		},
 	});
 }
 
-// * Batch update (optimistic)
 export function useBatchUpdateTasks() {
 	const queryClient = useQueryClient();
 
@@ -141,30 +163,44 @@ export function useBatchUpdateTasks() {
 			await axios.put("/api/tasks/batch", tasks);
 		},
 
-		onMutate: async (updated) => {
-			await queryClient.cancelQueries({ queryKey: TASKS_KEY });
+		onMutate: async (tasksToUpdate) => {
+			const backupTasks = new Map();
 
-			const prev = queryClient.getQueryData<Task[]>(TASKS_KEY);
+			for (const task of tasksToUpdate) {
+				const queryKey = getTaskQueryKey(task.listId);
+				await queryClient.cancelQueries({ queryKey });
 
-			const updateMap = new Map(updated.map((t) => [t.id, t]));
+				const currentTasks = queryClient.getQueryData<Task[]>(queryKey);
+				backupTasks.set(queryKey.toString(), currentTasks);
 
-			queryClient.setQueryData<Task[]>(TASKS_KEY, (old = []) =>
-				old.map((t) =>
-					updateMap.has(t.id) ? { ...t, ...updateMap.get(t.id)! } : t,
-				),
-			);
+				const taskMap = new Map(tasksToUpdate.map((t) => [t.id, t]));
 
-			return { prev };
+				queryClient.setQueryData<Task[]>(queryKey, (existingTasks = []) =>
+					existingTasks.map((task) =>
+						taskMap.has(task.id) ? { ...task, ...taskMap.get(task.id)! } : task,
+					),
+				);
+			}
+
+			return { backupTasks };
 		},
 
 		onError: (_err, _tasks, ctx) => {
-			if (ctx?.prev) {
-				queryClient.setQueryData(TASKS_KEY, ctx.prev);
+			if (!ctx?.backupTasks) return;
+
+			for (const [queryKeyStr, backupData] of ctx.backupTasks.entries()) {
+				const queryKey = queryKeyStr.split(",");
+				queryClient.setQueryData(queryKey, backupData);
 			}
 		},
 
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: TASKS_KEY });
+		onSettled: (_data, _err, updatedTasks) => {
+			const uniqueListIds = new Set(updatedTasks.map((t) => t.listId ?? null));
+
+			for (const listId of uniqueListIds) {
+				const queryKey = getTaskQueryKey(listId);
+				queryClient.invalidateQueries({ queryKey });
+			}
 		},
 	});
 }

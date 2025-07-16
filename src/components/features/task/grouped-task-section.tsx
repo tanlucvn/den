@@ -15,6 +15,7 @@ interface GroupedTaskSectionProps {
 	tasks: Task[];
 	isLoading: boolean;
 	isFetched: boolean;
+	listId?: string;
 	className?: string;
 }
 
@@ -24,6 +25,7 @@ export default function GroupedTaskSection({
 	tasks,
 	isLoading,
 	isFetched,
+	listId,
 	className,
 }: GroupedTaskSectionProps) {
 	const { searchTerm } = useAppStore();
@@ -77,7 +79,7 @@ export default function GroupedTaskSection({
 			</div>
 
 			{/* Quick add form */}
-			<QuickAddTaskForm />
+			<QuickAddTaskForm listId={listId} />
 
 			{/* Loading state */}
 			{isLoading && (

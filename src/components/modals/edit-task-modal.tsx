@@ -261,11 +261,17 @@ export default function EditTaskModal() {
 							/>
 						</div>
 
-						<ModalFooter>
+						<ModalFooter className="md:grid md:grid-cols-2">
 							<ModalClose asChild>
-								<Button variant="outline">Cancel</Button>
+								<Button variant="outline" className="w-full">
+									Cancel
+								</Button>
 							</ModalClose>
-							<Button type="submit" disabled={form.formState.isSubmitting}>
+							<Button
+								type="submit"
+								disabled={form.formState.isSubmitting}
+								className="w-full"
+							>
 								Add New
 							</Button>
 						</ModalFooter>

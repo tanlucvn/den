@@ -20,7 +20,11 @@ import {
 } from "@/lib/validators/quick-new-task";
 import { useDialogStore } from "@/store/use-dialog-store";
 
-export default function QuickAddTaskForm() {
+interface QuickAddTaskFormProps {
+	listId?: string;
+}
+
+export default function QuickAddTaskForm({ listId }: QuickAddTaskFormProps) {
 	const { data } = useSession();
 	const { onCreate } = useTaskActions();
 	const { setIsNewTaskOpen } = useDialogStore();
@@ -36,6 +40,7 @@ export default function QuickAddTaskForm() {
 		if (!data) return;
 
 		await onCreate({
+			listId: listId,
 			title: values.title.trim(),
 			userId: data.user.id,
 			isCompleted: false,

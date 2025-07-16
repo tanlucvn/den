@@ -4,7 +4,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { type Task, tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
-import { parseTaskArrayDates } from "@/lib/utils";
 
 export async function PUT(req: NextRequest) {
 	const session = await auth.api.getSession({ headers: await headers() });
@@ -18,11 +17,17 @@ export async function PUT(req: NextRequest) {
 		return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 	}
 
-	const updates = parseTaskArrayDates(body);
-
 	const results: Task[] = [];
 
-	for (const updatedTask of updates) {
+	for (const task of body) {
+		const updatedTask = {
+			...task,
+			createdAt: new Date(task.createdAt),
+			updatedAt: new Date(task.updatedAt),
+			remindAt: task.remindAt ? new Date(task.remindAt) : null,
+			deletedAt: task.deletedAt ? new Date(task.deletedAt) : null,
+		};
+
 		const result = await db
 			.update(tasks)
 			.set(updatedTask)

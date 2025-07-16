@@ -4,7 +4,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
-import { parseTaskDates } from "@/lib/utils";
 
 export async function PUT(
 	req: NextRequest,
@@ -18,9 +17,17 @@ export async function PUT(
 	const { id } = await params;
 	const body = await req.json();
 
+	const updatedData = {
+		...body,
+		createdAt: new Date(body.createdAt),
+		updatedAt: new Date(body.updatedAt),
+		remindAt: body.remindAt ? new Date(body.remindAt) : null,
+		deletedAt: body.deletedAt ? new Date(body.deletedAt) : null,
+	};
+
 	const result = await db
 		.update(tasks)
-		.set(parseTaskDates(body))
+		.set(updatedData)
 		.where(and(eq(tasks.id, id), eq(tasks.userId, session.user.id)))
 		.returning();
 

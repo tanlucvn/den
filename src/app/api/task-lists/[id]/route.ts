@@ -37,9 +37,15 @@ export async function PUT(
 	const { id } = await params;
 	const body = await req.json();
 
+	const updatedData = {
+		...body,
+		createdAt: new Date(body.createdAt),
+		updatedAt: new Date(body.updatedAt),
+	};
+
 	const result = await db
 		.update(taskLists)
-		.set({ ...body })
+		.set(updatedData)
 		.where(and(eq(taskLists.id, id), eq(taskLists.userId, session.user.id)))
 		.returning();
 

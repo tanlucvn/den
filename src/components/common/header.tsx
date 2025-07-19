@@ -3,14 +3,12 @@
 import Link from "next/link";
 import { AppLogo } from "@/components/app-logo";
 import { IconRenderer } from "@/components/icon-renderer";
+import AppModal from "@/components/modals/app-modal";
 import { ThemeSwitcher } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import UserButton from "@/components/user-button";
-import { useDialogStore } from "@/store/use-dialog-store";
 
 export default function AppHeader() {
-	const { setIsAppModalOpen } = useDialogStore();
-
 	return (
 		<div className="flex w-full items-center justify-between">
 			<div className="flex items-center gap-1">
@@ -20,13 +18,11 @@ export default function AppHeader() {
 					</Link>
 				</Button>
 
-				<Button
-					variant="ghost"
-					size="icon"
-					onClick={() => setIsAppModalOpen(true)}
-				>
-					<IconRenderer name="AlignLeft" />
-				</Button>
+				<AppModal>
+					<Button variant="ghost" size="icon">
+						<IconRenderer name="AlignLeft" />
+					</Button>
+				</AppModal>
 			</div>
 
 			<div className="flex items-center gap-2">

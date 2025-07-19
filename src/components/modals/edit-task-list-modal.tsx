@@ -1,6 +1,6 @@
 "use client";
 
-import EditTaskForm from "@/components/forms/edit-task-form";
+import EditTaskListForm from "@/components/forms/edit-task-list-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,42 +13,40 @@ import {
 } from "@/components/ui/modal";
 import { useAppStore } from "@/store/use-app-store";
 
-interface EditTaskModalProps {
+interface EditTaskListModalProps {
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 }
 
-export default function EditTaskModal({
+export default function EditTaskListModal({
 	open,
 	onOpenChange,
-}: EditTaskModalProps) {
-	const { editTask } = useAppStore();
-	const formId = "modal-edit-task-form";
+}: EditTaskListModalProps) {
+	const { editTaskList } = useAppStore();
+	const formId = "modal-edit-task-list-form";
 
-	if (!editTask) return null;
+	if (!editTaskList) return null;
 
 	return (
 		<Modal open={open} onOpenChange={onOpenChange}>
 			<ModalContent className="sm:max-w-md">
-				<div className="flex flex-col gap-2">
+				<div className="flex flex-col items-center justify-center gap-2">
 					<div
 						className="flex size-11 shrink-0 items-center justify-center rounded-full border"
 						aria-hidden="true"
 					>
-						<IconRenderer name="Pencil" className="size-5 opacity-80" />
+						<IconRenderer name="FolderPen" className="size-5 opacity-80" />
 					</div>
 
-					<ModalHeader className="p-0">
-						<ModalTitle className="text-left">Edit Task</ModalTitle>
-						<ModalDescription className="text-left">
-							Update your plan
-						</ModalDescription>
+					<ModalHeader className="items-center justify-center p-0">
+						<ModalTitle>Edit Task List</ModalTitle>
+						<ModalDescription>Update your task list name</ModalDescription>
 					</ModalHeader>
 				</div>
 
-				<EditTaskForm
+				<EditTaskListForm
 					formId={formId}
-					initialData={editTask}
+					initialData={editTaskList}
 					onFinish={(resetForm) => {
 						resetForm();
 						onOpenChange?.(false);

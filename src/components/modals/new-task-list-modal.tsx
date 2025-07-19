@@ -4,36 +4,45 @@ import NewTaskListForm from "@/components/forms/new-task-list-form";
 import { Button } from "@/components/ui/button";
 import {
 	Modal,
-	ModalClose,
 	ModalContent,
 	ModalDescription,
 	ModalFooter,
 	ModalHeader,
 	ModalTitle,
-} from "@/components/ui/modals";
-import { useDialogStore } from "@/store/use-dialog-store";
+	ModalTrigger,
+} from "@/components/ui/modal";
+import { IconRenderer } from "../icon-renderer";
 
-export default function NewTaskListModal() {
-	const { isNewTaskListOpen, setIsNewTaskListOpen } = useDialogStore();
+interface NewTaskListModalProps {
+	children: React.ReactNode;
+}
 
+export default function NewTaskListModal({ children }: NewTaskListModalProps) {
 	return (
-		<Modal open={isNewTaskListOpen} onOpenChange={setIsNewTaskListOpen}>
+		<Modal>
+			<ModalTrigger asChild>{children}</ModalTrigger>
 			<ModalContent className="sm:max-w-md">
-				<ModalHeader>
-					<ModalTitle>New List</ModalTitle>
-					<ModalDescription>Create new list</ModalDescription>
-				</ModalHeader>
+				<div className="flex flex-col items-center justify-center gap-2">
+					<div
+						className="flex size-11 shrink-0 items-center justify-center rounded-full border"
+						aria-hidden="true"
+					>
+						<IconRenderer name="FolderPlus" className="size-5 opacity-80" />
+					</div>
+
+					<ModalHeader className="items-center justify-center p-0">
+						<ModalTitle>New List</ModalTitle>
+						<ModalDescription>
+							Organize your tasks by creating a new list.
+						</ModalDescription>
+					</ModalHeader>
+				</div>
 
 				<NewTaskListForm />
 
-				<ModalFooter className="md:grid md:grid-cols-2">
-					<ModalClose asChild>
-						<Button variant="outline" className="w-full">
-							Cancel
-						</Button>
-					</ModalClose>
+				<ModalFooter className="p-0">
 					<Button type="submit" form="new-task-list-form" className="w-full">
-						Add New
+						Create
 					</Button>
 				</ModalFooter>
 			</ModalContent>

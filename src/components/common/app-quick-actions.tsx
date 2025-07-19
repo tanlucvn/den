@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
+import NewTaskListModal from "@/components/modals/new-task-list-modal";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -26,7 +27,6 @@ import { useTasks } from "@/hooks/use-tasks";
 import { authClient } from "@/lib/auth-client";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
-import { useDialogStore } from "@/store/use-dialog-store";
 
 export function AppQuickActions() {
 	const router = useRouter();
@@ -34,7 +34,6 @@ export function AppQuickActions() {
 	const { data: tasks = [] } = useTasks();
 
 	const { searchTerm, setSearchTerm } = useAppStore();
-	const { setIsNewTaskOpen } = useDialogStore();
 
 	const { handleEdit } = useTaskActions();
 
@@ -111,10 +110,14 @@ export function AppQuickActions() {
 						<CommandSeparator />
 
 						<CommandGroup heading="Suggestions">
-							<CommandItem onSelect={() => setIsNewTaskOpen(true)}>
-								<IconRenderer name="Plus" />
-								<span>Create new task</span>
-							</CommandItem>
+							<NewTaskListModal>
+								<div>
+									<CommandItem>
+										<IconRenderer name="Plus" />
+										<span>Create new task</span>
+									</CommandItem>
+								</div>
+							</NewTaskListModal>
 						</CommandGroup>
 
 						<CommandSeparator />

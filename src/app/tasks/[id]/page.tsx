@@ -52,7 +52,7 @@ export default function TaskListPage() {
 					<BreadcrumbSeparator />
 					<BreadcrumbItem>
 						<DropdownMenu>
-							<DropdownMenuTrigger className="flex items-center gap-2 text-muted-foreground text-sm hover:text-foreground">
+							<DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 text-muted-foreground text-sm hover:text-foreground">
 								<IconRenderer name="Signpost" />
 								Task Lists
 							</DropdownMenuTrigger>
@@ -92,7 +92,7 @@ export default function TaskListPage() {
 			</Breadcrumb>
 
 			<GroupedTaskSection
-				iconName="Folders"
+				iconName="Folder"
 				title={currentList?.title ?? "Untitled"}
 				tasks={tasks}
 				isLoading={isLoading}

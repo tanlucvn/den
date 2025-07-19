@@ -28,48 +28,46 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { NewTask } from "@/db/schema/tasks";
+import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
-import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
-	type NewTaskFormValues,
-	newTaskSchema,
-} from "@/lib/validators/new-task";
+	type EditTaskFormValues,
+	editTaskSchema,
+} from "@/lib/validators/edit-task";
 
-interface NewTaskFormProps {
+interface EditTaskFormProps {
 	formId: string;
+	initialData: Task;
 	onFinish: (reset: () => void) => void;
 }
 
-export default function NewTaskForm({ formId, onFinish }: NewTaskFormProps) {
-	const { data } = useSession();
+export default function EditTaskForm({
+	formId,
+	initialData,
+	onFinish,
+}: EditTaskFormProps) {
+	const { onUpdate } = useTaskActions();
 
-	const { onCreate } = useTaskActions();
-
-	const form = useForm<NewTaskFormValues>({
-		resolver: zodResolver(newTaskSchema),
+	const form = useForm<EditTaskFormValues>({
+		resolver: zodResolver(editTaskSchema),
 		defaultValues: {
-			title: "",
-			note: "",
-			location: "",
-			priority: "none",
-			remindAt: null,
+			title: initialData.title,
+			note: initialData.note ?? "",
+			location: initialData.location ?? "",
+			priority: initialData.priority,
+			remindAt: initialData.remindAt,
 		},
 	});
 
-	const handleSubmit = async (values: NewTaskFormValues) => {
-		if (!data) return;
+	const handleSubmit = async (values: EditTaskFormValues) => {
+		if (!initialData) return;
 
-		const newTask: NewTask = {
+		await onUpdate({
+			...initialData,
 			...values,
-			userId: data.user.id,
-			isCompleted: false,
-			isPinned: false,
-			remindAt: values.remindAt,
-		};
-
-		await onCreate(newTask);
+			remindAt: values.remindAt ?? null,
+		});
 
 		onFinish(() => form.reset());
 	};

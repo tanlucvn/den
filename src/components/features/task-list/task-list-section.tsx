@@ -1,61 +1,60 @@
 import { IconRenderer } from "@/components/icon-renderer";
+import NewTaskListModal from "@/components/modals/new-task-list-modal";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import type { TaskList } from "@/db/schema/task-lists";
 import type { Task } from "@/db/schema/tasks";
 import { cn } from "@/lib/utils";
-import { useDialogStore } from "@/store/use-dialog-store";
+import { TaskListItem } from "./task-list-item";
 
 interface Props {
-	taskLists: TaskList[];
+	iconName?: string;
+	title: string;
 	tasks: Task[];
-	onSelect?: (id: string) => void;
+	taskLists: TaskList[];
 }
 
-export function TaskListsSection({ taskLists, tasks, onSelect }: Props) {
-	const { setIsNewTaskListOpen } = useDialogStore();
-
+export function TaskListsSection({
+	iconName = "",
+	title = "",
+	taskLists,
+	tasks,
+}: Props) {
 	return (
 		<section className="flex flex-col gap-4 rounded-xl border bg-secondary/20 p-3">
 			{/* Header */}
 			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
-				<IconRenderer name="List" className="!text-primary/60" />
-				<span className="text-foreground">All Lists</span>
+				<IconRenderer name={iconName} className="!text-primary/60" />
+				<span className="text-foreground">{title}</span>
 				<NumberFlowBadge value={taskLists.length} />
 			</div>
 
-			<div className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-lg border sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+			{/* Task List Item */}
+			<div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
 				{taskLists.map((list) => {
 					const taskCount = tasks.filter((t) => t.listId === list.id).length;
 
 					return (
-						<button
-							type="button"
+						<TaskListItem
 							key={list.id}
-							onClick={() => onSelect?.(list.id)}
-							className="bg-card p-4 text-left transition hover:bg-muted"
-						>
-							<p className="truncate font-medium text-foreground text-sm">
-								{list.title}
-							</p>
-							<p className="mt-1 text-muted-foreground text-xs">
-								{taskCount} {taskCount === 1 ? "task" : "tasks"}
-							</p>
-						</button>
+							taskList={list}
+							taskCounts={taskCount}
+						/>
 					);
 				})}
 
-				<button
-					type="button"
-					onClick={() => setIsNewTaskListOpen(true)}
-					className={cn(
-						"flex flex-col items-center justify-center",
-						"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
-						"h-20 text-muted-foreground text-xs transition hover:bg-muted",
-					)}
-				>
-					<IconRenderer name="Plus" className="mb-1" />
-					New list
-				</button>
+				{/* Create Task List Button */}
+				<NewTaskListModal>
+					<div
+						className={cn(
+							"flex cursor-pointer flex-col items-center justify-center rounded-md border",
+							"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
+							"h-20 text-muted-foreground text-xs transition hover:bg-muted hover:text-foreground",
+						)}
+					>
+						<IconRenderer name="Plus" className="mb-1" />
+						New list
+					</div>
+				</NewTaskListModal>
 			</div>
 		</section>
 	);

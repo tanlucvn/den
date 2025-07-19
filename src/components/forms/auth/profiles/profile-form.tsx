@@ -22,10 +22,11 @@ import {
 	Modal,
 	ModalContent,
 	ModalDescription,
+	ModalFooter,
 	ModalHeader,
 	ModalTitle,
 	ModalTrigger,
-} from "@/components/ui/modals";
+} from "@/components/ui/modal";
 import { authClient, type Session } from "@/lib/auth-client";
 import {
 	type EmailFormValues,
@@ -135,16 +136,25 @@ export function ProfileForm({ data }: ProfileFormProps) {
 							</Button>
 						</ModalTrigger>
 						<ModalContent className="sm:max-w-md">
-							<ModalHeader>
-								<ModalTitle>Update your name</ModalTitle>
-								<ModalDescription>
-									This name will be visible across your account.
-								</ModalDescription>
-							</ModalHeader>
+							<div className="flex flex-col items-center justify-center gap-2">
+								<div
+									className="flex size-11 shrink-0 items-center justify-center rounded-full border"
+									aria-hidden="true"
+								>
+									<IconRenderer name="UserPen" className="size-5 opacity-80" />
+								</div>
+
+								<ModalHeader className="items-center justify-center p-0">
+									<ModalTitle>Update your name</ModalTitle>
+									<ModalDescription>
+										This name will be visible across your account.
+									</ModalDescription>
+								</ModalHeader>
+							</div>
 							<Form {...nameForm}>
 								<form
 									onSubmit={nameForm.handleSubmit(onUpdateName)}
-									className="space-y-6"
+									className="space-y-4"
 								>
 									<FormField
 										control={nameForm.control}
@@ -159,17 +169,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
 											</FormItem>
 										)}
 									/>
-									<div className="flex gap-2">
-										<Button
-											type="button"
-											variant="outline"
-											className="w-full"
-											onClick={() =>
-												setOpenModals((prev) => ({ ...prev, name: false }))
-											}
-										>
-											Cancel
-										</Button>
+									<ModalFooter className="p-0">
 										<Button
 											type="submit"
 											className="w-full"
@@ -183,7 +183,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
 											)}
 											Save
 										</Button>
-									</div>
+									</ModalFooter>
 								</form>
 							</Form>
 						</ModalContent>
@@ -221,17 +221,26 @@ export function ProfileForm({ data }: ProfileFormProps) {
 							</Button>
 						</ModalTrigger>
 						<ModalContent className="sm:max-w-md">
-							<ModalHeader>
-								<ModalTitle>Update email address</ModalTitle>
-								<ModalDescription>
-									You will receive a verification email if the new email is
-									valid.
-								</ModalDescription>
-							</ModalHeader>
+							<div className="flex flex-col items-center justify-center gap-2">
+								<div
+									className="flex size-11 shrink-0 items-center justify-center rounded-full border"
+									aria-hidden="true"
+								>
+									<IconRenderer name="UserPen" className="size-5 opacity-80" />
+								</div>
+
+								<ModalHeader className="items-center justify-center p-0">
+									<ModalTitle>Update email address</ModalTitle>
+									<ModalDescription>
+										You will receive a verification email if the new email is
+										valid.
+									</ModalDescription>
+								</ModalHeader>
+							</div>
 							<Form {...emailForm}>
 								<form
 									onSubmit={emailForm.handleSubmit(onUpdateEmail)}
-									className="space-y-6"
+									className="space-y-4"
 								>
 									<FormField
 										control={emailForm.control}
@@ -250,17 +259,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
 											</FormItem>
 										)}
 									/>
-									<div className="flex gap-2">
-										<Button
-											type="button"
-											variant="outline"
-											className="w-full"
-											onClick={() =>
-												setOpenModals((prev) => ({ ...prev, email: false }))
-											}
-										>
-											Cancel
-										</Button>
+									<ModalFooter className="p-0">
 										<Button
 											type="submit"
 											className="w-full"
@@ -274,7 +273,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
 											)}
 											Save
 										</Button>
-									</div>
+									</ModalFooter>
 								</form>
 							</Form>
 						</ModalContent>

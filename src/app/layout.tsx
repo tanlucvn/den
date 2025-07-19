@@ -29,7 +29,9 @@ export default function RootLayout({
 			<body
 				className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
 			>
-				<Providers>{children}</Providers>
+				<div data-vaul-drawer-wrapper="" className="bg-background">
+					<Providers>{children}</Providers>
+				</div>
 			</body>
 		</html>
 	);

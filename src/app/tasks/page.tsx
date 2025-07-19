@@ -12,7 +12,7 @@ import { useTaskLists } from "@/hooks/use-task-lists";
 import { useTasks } from "@/hooks/use-tasks";
 
 export default function Page() {
-	const router = useRouter();
+	const _router = useRouter();
 
 	const { data: allTaskLists = [] } = useTaskLists();
 	const { data: allTasks = [], isLoading, isFetched } = useTasks();
@@ -26,9 +26,10 @@ export default function Page() {
 			</Breadcrumb>
 
 			<TaskListsSection
+				iconName="Folders"
+				title="All Lists"
 				taskLists={allTaskLists}
 				tasks={allTasks}
-				onSelect={(id) => router.push(`/tasks/${id}`)}
 			/>
 
 			{allTasks.some((task) => task.listId === null) && (

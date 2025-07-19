@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
 import {
@@ -10,18 +10,23 @@ import {
 	useUpdateTaskList,
 } from "@/hooks/use-task-lists";
 import { useAppStore } from "@/store/use-app-store";
-// import { useDialogStore } from "@/store/use-dialog-store";
 
 export const useTaskListActions = () => {
 	const router = useRouter();
+	const pathname = usePathname();
 
 	const { setEditTaskList } = useAppStore();
-	// const { setIsEditTaskListOpen } = useDialogStore();
 
 	const { mutateAsync: createTaskList } = useCreateTaskList();
 	const { mutateAsync: updateTaskList } = useUpdateTaskList();
 	const { mutateAsync: deleteTaskList } = useDeleteTaskList();
 	const { refetch: fetchTaskLists } = useTaskLists();
+
+	const onSelect = (taskList: TaskList) => {
+		if (pathname !== `/tasks/${taskList.id}`) {
+			router.push(`/tasks/${taskList.id}`);
+		}
+	};
 
 	const onCreate = async (list: NewTaskList) => {
 		if (!list.title.trim()) return;
@@ -57,10 +62,10 @@ export const useTaskListActions = () => {
 
 	const handleEdit = (list: TaskList) => {
 		setEditTaskList(list);
-		// setIsEditTaskListOpen?.(true);
 	};
 
 	return {
+		onSelect,
 		onCreate,
 		onUpdate,
 		onDelete,

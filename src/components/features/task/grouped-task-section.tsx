@@ -1,5 +1,5 @@
+import QuickAddTask from "@/components/features/task/quick-add-task";
 import TaskSectionCollapsible from "@/components/features/task/task-section-collapsible";
-import QuickAddTaskForm from "@/components/forms/quick-add-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Separator } from "@/components/ui/separator";
@@ -21,7 +21,7 @@ interface GroupedTaskSectionProps {
 
 export default function GroupedTaskSection({
 	iconName = "",
-	title,
+	title = "",
 	tasks,
 	isLoading,
 	isFetched,
@@ -78,8 +78,8 @@ export default function GroupedTaskSection({
 				<NumberFlowBadge value={totalTasks} />
 			</div>
 
-			{/* Quick add form */}
-			<QuickAddTaskForm listId={listId} />
+			{/* Quick add */}
+			<QuickAddTask listId={listId} />
 
 			{/* Loading state */}
 			{isLoading && (

@@ -283,12 +283,7 @@ function DropDrawerContent({
 			>
 				<DrawerContent
 					data-slot="drop-drawer-content"
-					className={cn(
-						"max-h-[90vh]",
-						"!right-2 !bottom-2 !left-2 !rounded-2xl bg-card after:hidden after:content-none max-md:border",
-						className,
-					)}
-					showHandle
+					className={cn("max-h-[90vh] bg-card", className)}
 					{...props}
 				>
 					{activeSubmenu ? (

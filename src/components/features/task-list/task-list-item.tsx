@@ -1,35 +1,54 @@
 import { IconRenderer } from "@/components/icon-renderer";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardAction,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import type { TaskList } from "@/db/schema/task-lists";
+import { useTaskListActions } from "@/hooks/use-task-list-actions";
 import { cn } from "@/lib/utils";
+import TaskListControlsDropdown from "./task-list-controls-dropdown";
 
 interface TaskListItemProps {
-	title: string;
-	onClick?: () => void;
+	taskList: TaskList;
+	taskCounts: number;
 	className?: string;
 }
 
-export function TaskListItem({ title, onClick, className }: TaskListItemProps) {
+export function TaskListItem({
+	taskList,
+	taskCounts,
+	className,
+}: TaskListItemProps) {
+	const { onSelect } = useTaskListActions();
+
 	return (
 		<Card
-			onClick={onClick}
 			className={cn(
-				"group w-full cursor-pointer border border-muted bg-background transition-all hover:border-primary hover:bg-muted/40 hover:shadow-sm",
+				"relative size-full cursor-pointer rounded-md p-4 shadow-none",
+				"hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 				className,
 			)}
+			onClick={() => onSelect(taskList)}
 		>
-			<CardContent className="space-y-2 p-4">
-				<div className="flex items-center justify-between">
-					<span className="truncate font-medium text-sm group-hover:text-primary">
-						{title}
-					</span>
-					<IconRenderer
-						name="ChevronRight"
-						className="h-4 w-4 text-muted-foreground group-hover:text-primary"
-					/>
-				</div>
-				{/* Placeholder for future info like task count, createdAt, etc. */}
-				<p className="text-muted-foreground text-xs">Click to view tasks</p>
-			</CardContent>
+			<CardHeader className="p-0">
+				<CardTitle className="text-sm">{taskList.title}</CardTitle>
+				<CardDescription className="text-xs">
+					{taskCounts} {taskCounts === 1 ? "task" : "tasks"}
+				</CardDescription>
+				<CardAction>
+					<div onClick={(e) => e.stopPropagation()}>
+						<TaskListControlsDropdown taskList={taskList}>
+							<Button variant="ghost" size="icon" className="size-6">
+								<IconRenderer name="MoreHorizontal" />
+							</Button>
+						</TaskListControlsDropdown>
+					</div>
+				</CardAction>
+			</CardHeader>
 		</Card>
 	);
 }

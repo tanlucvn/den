@@ -10,43 +10,49 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { NewTaskList } from "@/db/schema/task-lists";
+import type { TaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/use-task-list-actions";
-import { useSession } from "@/lib/auth-client";
 import {
-	type NewTaskListFormValues,
-	newTaskListSchema,
-} from "@/lib/validators/new-task-list";
+	type EditTaskListValues,
+	editTaskListSchema,
+} from "@/lib/validators/edit-task-list";
 
-export default function NewTaskListForm() {
-	const { data: session } = useSession();
+interface EditTaskListFormProps {
+	formId: string;
+	initialData: TaskList;
+	onFinish: (reset: () => void) => void;
+}
 
-	const { onCreate } = useTaskListActions();
+export default function EditTaskListForm({
+	formId,
+	initialData,
+	onFinish,
+}: EditTaskListFormProps) {
+	const { onUpdate } = useTaskListActions();
 
-	const form = useForm<NewTaskListFormValues>({
-		resolver: zodResolver(newTaskListSchema),
+	const form = useForm<EditTaskListValues>({
+		resolver: zodResolver(editTaskListSchema),
 		defaultValues: {
-			title: "",
+			title: initialData.title,
 		},
 	});
 
-	const onSubmit = async (values: NewTaskListFormValues) => {
-		if (!session) return;
+	const handleSubmit = async (values: EditTaskListValues) => {
+		if (!initialData) return;
 
-		const newList: NewTaskList = {
+		await onUpdate({
+			...initialData,
 			...values,
-			userId: session.user.id,
-		};
+		});
 
-		await onCreate(newList);
-		form.reset();
+		onFinish(() => form.reset());
 	};
 
 	return (
 		<Form {...form}>
 			<form
-				id="new-task-list-form"
-				onSubmit={form.handleSubmit(onSubmit)}
+				id={formId}
+				onSubmit={form.handleSubmit(handleSubmit)}
 				className="space-y-4"
 			>
 				<FormField
@@ -59,7 +65,7 @@ export default function NewTaskListForm() {
 								Title
 							</FormLabel>
 							<FormControl>
-								<Input placeholder="New list title" {...field} />
+								<Input placeholder="New task list title.." {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

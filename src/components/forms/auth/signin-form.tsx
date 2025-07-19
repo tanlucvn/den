@@ -31,7 +31,7 @@ import {
 	ModalHeader,
 	ModalTitle,
 	ModalTrigger,
-} from "@/components/ui/modals";
+} from "@/components/ui/modal";
 import { authClient } from "@/lib/auth-client";
 import {
 	type ForgotPasswordFormValues,

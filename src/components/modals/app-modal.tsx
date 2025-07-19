@@ -1,37 +1,38 @@
 import type React from "react";
-import { Drawer } from "vaul";
-import { useDialogStore } from "@/store/use-dialog-store";
-import { AppSwitcher } from "../common/app-switcher";
+import { AppSwitcher } from "@/components/common/app-switcher";
+import {
+	Modal,
+	ModalContent,
+	ModalDescription,
+	ModalHeader,
+	ModalTitle,
+	ModalTrigger,
+} from "@/components/ui/modal";
 
-export default function AppModal() {
-	const { isAppModalOpen, setIsAppModalOpen } = useDialogStore();
+interface AppModalProps {
+	children: React.ReactNode;
+}
 
+export default function AppModal({ children }: AppModalProps) {
 	return (
-		<Drawer.Root
-			open={isAppModalOpen}
-			onOpenChange={setIsAppModalOpen}
-			direction="left"
-		>
-			<Drawer.Overlay className="fixed inset-0 z-10 bg-black/40" />
-			<Drawer.Content
-				data-sidebar="sidebar"
-				data-slot="sidebar"
-				data-mobile="true"
-				className="fixed top-2 bottom-2 left-2 z-20 h-[98%] w-(--sidebar-width) rounded-xl border bg-sidebar text-sidebar-foreground shadow-xl after:hidden after:content-none [&>button]:hidden"
-				style={
-					{
-						"--sidebar-width": "18rem",
-					} as React.CSSProperties
-				}
+		<Modal direction="left" shouldScaleBackground={false} onlyDrawer>
+			<ModalTrigger asChild>{children}</ModalTrigger>
+			<ModalContent
+				overlayClassName="z-30"
+				className="z-40 rounded-lg p-0 after:hidden after:content-none"
+				showCloseButton={false}
 			>
-				<Drawer.Title className="sr-only">Sidebar</Drawer.Title>
-				<Drawer.Description className="sr-only">
-					Displays the mobile sidebar.
-				</Drawer.Description>
+				<ModalHeader className="sr-only">
+					<ModalTitle className="sr-only">Sidebar</ModalTitle>
+					<ModalDescription className="sr-only">
+						Displays the mobile sidebar.
+					</ModalDescription>
+				</ModalHeader>
+
 				<div className="flex h-full w-full flex-col p-2">
 					<AppSwitcher />
 				</div>
-			</Drawer.Content>
-		</Drawer.Root>
+			</ModalContent>
+		</Modal>
 	);
 }

@@ -12,14 +12,12 @@ import {
 } from "@/hooks/use-tasks";
 import { useSession } from "@/lib/auth-client";
 import { useAppStore } from "@/store/use-app-store";
-import { useDialogStore } from "@/store/use-dialog-store";
 
 export const useTaskActions = () => {
 	const router = useRouter();
 	const { data } = useSession();
 
 	const { setEditTask } = useAppStore();
-	const { setIsEditTaskOpen } = useDialogStore();
 
 	const { mutateAsync: createTask } = useCreateTask();
 	const { mutateAsync: updateTask } = useUpdateTask();
@@ -113,7 +111,6 @@ export const useTaskActions = () => {
 
 	const handleEdit = (task: Task) => {
 		setEditTask(task);
-		setIsEditTaskOpen(true);
 	};
 
 	const handlePinToggle = (task: Task) => {

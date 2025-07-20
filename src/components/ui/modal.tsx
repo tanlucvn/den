@@ -187,7 +187,7 @@ const ModalClose = ({
 };
 ModalClose.displayName = "ModalClose";
 
-const ModalContentVariants = cva("fixed z-[9999] bg-card", {
+const ModalContentVariants = cva("fixed z-50 bg-card", {
 	variants: {
 		device: {
 			desktop:

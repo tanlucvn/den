@@ -122,7 +122,13 @@ export default function TaskControlsDropdown({
 				</DropDrawerContent>
 			</DropDrawer>
 
-			<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
+			<div
+				onContextMenu={(e) => {
+					e.preventDefault();
+				}}
+			>
+				<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
+			</div>
 		</>
 	);
 }

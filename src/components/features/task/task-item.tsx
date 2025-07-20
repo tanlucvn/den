@@ -47,7 +47,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 				)}
 			>
 				{/* Main row */}
-				<div className="flex items-center justify-between gap-2">
+				<div className="flex items-center justify-between">
 					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<Checkbox
 							checked={task.isCompleted}
@@ -66,7 +66,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 					</div>
 
 					<TaskControlsDropdown task={task}>
-						<Button variant="ghost" size="icon">
+						<Button variant="ghost" size="icon" className="rounded-full">
 							<MoreHorizontalIcon />
 						</Button>
 					</TaskControlsDropdown>

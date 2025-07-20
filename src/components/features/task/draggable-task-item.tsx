@@ -56,7 +56,7 @@ export default function DraggableTaskItem({ task }: Props) {
 					)}
 				>
 					{/* Main row */}
-					<div className="flex items-center justify-between gap-2">
+					<div className="flex items-center justify-between">
 						<div className="flex w-full items-center gap-2 overflow-hidden">
 							<div className="flex items-center gap-1">
 								<button
@@ -88,7 +88,7 @@ export default function DraggableTaskItem({ task }: Props) {
 						</div>
 
 						<TaskControlsDropdown task={task}>
-							<Button variant="ghost" size="icon">
+							<Button variant="ghost" size="icon" className="rounded-full">
 								<MoreHorizontalIcon />
 							</Button>
 						</TaskControlsDropdown>

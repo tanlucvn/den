@@ -1,6 +1,7 @@
 import QuickAddTask from "@/components/features/task/quick-add-task";
 import TaskSectionCollapsible from "@/components/features/task/task-section-collapsible";
 import { IconRenderer } from "@/components/icon-renderer";
+import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,11 +35,13 @@ export default function GroupedTaskSection({
 	const filteredPinnedTasks = filterTasks(pinned, searchTerm);
 	const filteredActiveTasks = filterTasks(active, searchTerm);
 	const filteredCompletedTasks = filterTasks(completed, searchTerm);
+	const filteredArchivedTasks = filterTasks(archive, searchTerm);
 
 	const totalTasks =
 		filteredPinnedTasks.length +
 		filteredActiveTasks.length +
-		filteredCompletedTasks.length;
+		filteredCompletedTasks.length +
+		filteredArchivedTasks.length;
 
 	const sections = [
 		{ title: "Pinned", icon: "Pin", tasks: filteredPinnedTasks },
@@ -56,11 +59,7 @@ export default function GroupedTaskSection({
 		},
 	];
 
-	const showNoTasks =
-		isFetched &&
-		!isLoading &&
-		totalTasks === 0 &&
-		(!archive || archive.length === 0);
+	const showNoTasks = isFetched && !isLoading && totalTasks === 0;
 
 	return (
 		<section
@@ -92,7 +91,7 @@ export default function GroupedTaskSection({
 			)}
 
 			{/* Task sections */}
-			{!isLoading && totalTasks > 0 && (
+			{!isLoading && (
 				<div className="space-y-4">
 					{sections.map(({ title, icon, tasks, defaultOpen }) =>
 						tasks.length > 0 ? (
@@ -127,9 +126,11 @@ export default function GroupedTaskSection({
 
 			{/* No tasks fallback */}
 			{showNoTasks && (
-				<p className="text-center text-muted-foreground text-sm">
-					No tasks found.
-				</p>
+				<EmptyState
+					title="No tasks yet."
+					description="Add a task using the input above."
+					className="h-40"
+				/>
 			)}
 		</section>
 	);

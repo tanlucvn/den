@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import GroupedTaskSection from "@/components/features/task/grouped-task-section";
 import { TaskListsSection } from "@/components/features/task-list/task-list-section";
 import {
@@ -12,8 +11,6 @@ import { useTaskLists } from "@/hooks/use-task-lists";
 import { useTasks } from "@/hooks/use-tasks";
 
 export default function Page() {
-	const _router = useRouter();
-
 	const { data: allTaskLists = [] } = useTaskLists();
 	const { data: allTasks = [], isLoading, isFetched } = useTasks();
 
@@ -32,15 +29,13 @@ export default function Page() {
 				tasks={allTasks}
 			/>
 
-			{allTasks.some((task) => task.listId === null) && (
-				<GroupedTaskSection
-					iconName="Inbox"
-					title="Inbox"
-					tasks={allTasks.filter((t) => t.listId === null)}
-					isLoading={isLoading}
-					isFetched={isFetched}
-				/>
-			)}
+			<GroupedTaskSection
+				iconName="Inbox"
+				title="Inbox"
+				tasks={allTasks.filter((t) => t.listId === null)}
+				isLoading={isLoading}
+				isFetched={isFetched}
+			/>
 		</div>
 	);
 }

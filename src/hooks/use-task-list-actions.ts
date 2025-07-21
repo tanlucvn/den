@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
 import {
@@ -13,7 +13,6 @@ import { useAppStore } from "@/store/use-app-store";
 
 export const useTaskListActions = () => {
 	const router = useRouter();
-	const pathname = usePathname();
 
 	const { setEditTaskList } = useAppStore();
 
@@ -21,12 +20,6 @@ export const useTaskListActions = () => {
 	const { mutateAsync: updateTaskList } = useUpdateTaskList();
 	const { mutateAsync: deleteTaskList } = useDeleteTaskList();
 	const { refetch: fetchTaskLists } = useTaskLists();
-
-	const onSelect = (taskList: TaskList) => {
-		if (pathname !== `/tasks/${taskList.id}`) {
-			router.push(`/tasks/${taskList.id}`);
-		}
-	};
 
 	const onCreate = async (list: NewTaskList) => {
 		if (!list.title.trim()) return;
@@ -65,7 +58,6 @@ export const useTaskListActions = () => {
 	};
 
 	return {
-		onSelect,
 		onCreate,
 		onUpdate,
 		onDelete,

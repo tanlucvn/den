@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,9 +9,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import type { TaskList } from "@/db/schema/task-lists";
-import { useTaskListActions } from "@/hooks/use-task-list-actions";
 import { cn } from "@/lib/utils";
-import TaskListControlsContext from "./task-list-controls-context";
 import TaskListControlsDropdown from "./task-list-controls-dropdown";
 
 interface TaskListItemProps {
@@ -24,34 +23,33 @@ export function TaskListItem({
 	taskCounts,
 	className,
 }: TaskListItemProps) {
-	const { onSelect } = useTaskListActions();
-
 	return (
-		<TaskListControlsContext taskList={taskList}>
-			<Card
-				className={cn(
-					"relative size-full cursor-pointer rounded-md p-4 shadow-none",
-					"hover:border-ring hover:ring-[3px] hover:ring-ring/20",
-					className,
-				)}
-				onClick={() => onSelect(taskList)}
-			>
-				<CardHeader className="p-0">
+		<Card
+			className={cn(
+				"relative size-full rounded-md p-4 shadow-none",
+				"hover:border-ring hover:ring-[3px] hover:ring-ring/20",
+				className,
+			)}
+		>
+			<CardHeader className="p-0">
+				<Link
+					href={`/tasks/${taskList.id}`}
+					className="no-underline hover:no-underline"
+				>
 					<CardTitle className="text-sm">{taskList.title}</CardTitle>
 					<CardDescription className="text-xs">
 						{taskCounts} {taskCounts === 1 ? "task" : "tasks"}
 					</CardDescription>
-					<CardAction>
-						<div onClick={(e) => e.stopPropagation()}>
-							<TaskListControlsDropdown taskList={taskList}>
-								<Button variant="ghost" size="icon" className="size-6">
-									<IconRenderer name="MoreHorizontal" />
-								</Button>
-							</TaskListControlsDropdown>
-						</div>
-					</CardAction>
-				</CardHeader>
-			</Card>
-		</TaskListControlsContext>
+				</Link>
+
+				<CardAction>
+					<TaskListControlsDropdown taskList={taskList}>
+						<Button variant="ghost" size="icon" className="size-6">
+							<IconRenderer name="MoreHorizontal" />
+						</Button>
+					</TaskListControlsDropdown>
+				</CardAction>
+			</CardHeader>
+		</Card>
 	);
 }

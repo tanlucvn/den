@@ -28,12 +28,7 @@ export default function TaskListControlsDropdown({
 	const { handleEdit, onDelete } = useTaskListActions();
 
 	return (
-		<div
-			/* Ignore task list item context menu here */
-			onContextMenu={(e) => {
-				e.preventDefault();
-			}}
-		>
+		<>
 			<DropDrawer>
 				<DropDrawerTrigger asChild>{children}</DropDrawerTrigger>
 				<DropDrawerContent className="min-w-44" side="bottom" forceMount>
@@ -65,6 +60,6 @@ export default function TaskListControlsDropdown({
 			</DropDrawer>
 
 			<EditTaskListModal open={openModal} onOpenChange={setOpenModal} />
-		</div>
+		</>
 	);
 }

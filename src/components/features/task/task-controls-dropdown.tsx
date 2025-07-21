@@ -34,7 +34,12 @@ export default function TaskControlsDropdown({
 	} = useTaskActions();
 
 	return (
-		<>
+		<div
+			/* Ignore task item context menu here */
+			onContextMenu={(e) => {
+				e.preventDefault();
+			}}
+		>
 			<DropDrawer>
 				<DropDrawerTrigger asChild>{children}</DropDrawerTrigger>
 				<DropDrawerContent className="min-w-44" side="bottom" forceMount>
@@ -122,13 +127,7 @@ export default function TaskControlsDropdown({
 				</DropDrawerContent>
 			</DropDrawer>
 
-			<div
-				onContextMenu={(e) => {
-					e.preventDefault();
-				}}
-			>
-				<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
-			</div>
-		</>
+			<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
+		</div>
 	);
 }

@@ -18,8 +18,7 @@ export default function AppModal({ children }: AppModalProps) {
 		<Modal direction="left" shouldScaleBackground={false} onlyDrawer>
 			<ModalTrigger asChild>{children}</ModalTrigger>
 			<ModalContent
-				overlayClassName="z-30"
-				className="z-40 rounded-lg p-0 after:hidden after:content-none"
+				className="rounded-lg p-0 after:hidden after:content-none"
 				showCloseButton={false}
 			>
 				<ModalHeader className="sr-only">

@@ -18,7 +18,9 @@
 			"recommended": true,
 			"a11y": {
 				"noStaticElementInteractions": "off",
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"noSvgWithoutTitle": "off",
+				"useMediaCaption": "off"
 			},
 			"suspicious": {
 				"noArrayIndexKey": "off",

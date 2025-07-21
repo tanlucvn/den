@@ -3,9 +3,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { isToday } from "date-fns";
-import { MoreHorizontalIcon } from "lucide-react";
 import TaskControlsDropdown from "@/components/features/task/task-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
+import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -87,11 +87,22 @@ export default function DraggableTaskItem({ task }: Props) {
 							</div>
 						</div>
 
-						<TaskControlsDropdown task={task}>
-							<Button variant="ghost" size="icon" className="rounded-full">
-								<MoreHorizontalIcon />
-							</Button>
-						</TaskControlsDropdown>
+						<div className="flex items-center gap-1">
+							<PomodoroTimerDialog
+								title={task.title}
+								onFinish={() => onToggle({ ...task, isCompleted: true })}
+							>
+								<Button variant="ghost" size="icon" className="rounded-full">
+									<IconRenderer name="Timer" />
+								</Button>
+							</PomodoroTimerDialog>
+
+							<TaskControlsDropdown task={task}>
+								<Button variant="ghost" size="icon" className="rounded-full">
+									<IconRenderer name="MoreHorizontal" />
+								</Button>
+							</TaskControlsDropdown>
+						</div>
 					</div>
 
 					{/* Metadata row */}

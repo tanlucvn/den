@@ -1,8 +1,9 @@
 "use client";
 
 import { format, isToday, isTomorrow } from "date-fns";
-import { MoreHorizontalIcon } from "lucide-react";
+import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
+import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,6 +18,7 @@ interface TaskItemProps {
 }
 
 export default function TaskItem({ task }: TaskItemProps) {
+	const [_isOpen, _setIsOpenn] = useState(false);
 	const { onToggle } = useTaskActions();
 
 	const isRemindPast = (date: string | Date) => {
@@ -65,11 +67,22 @@ export default function TaskItem({ task }: TaskItemProps) {
 						</div>
 					</div>
 
-					<TaskControlsDropdown task={task}>
-						<Button variant="ghost" size="icon" className="rounded-full">
-							<MoreHorizontalIcon />
-						</Button>
-					</TaskControlsDropdown>
+					<div className="flex items-center gap-1">
+						<PomodoroTimerDialog
+							title={task.title}
+							onFinish={() => onToggle(task)}
+						>
+							<Button variant="ghost" size="icon" className="rounded-full">
+								<IconRenderer name="Timer" />
+							</Button>
+						</PomodoroTimerDialog>
+
+						<TaskControlsDropdown task={task}>
+							<Button variant="ghost" size="icon" className="rounded-full">
+								<IconRenderer name="MoreHorizontal" />
+							</Button>
+						</TaskControlsDropdown>
+					</div>
 				</div>
 
 				{/* Metadata row */}

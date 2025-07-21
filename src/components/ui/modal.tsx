@@ -145,15 +145,8 @@ const ModalOverlay = ({
 	className,
 	...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) => {
-	const { onlyDrawer, onlyDialog } = useModal();
-	const isMobile = useIsMobile();
-
-	const shouldUseDialog = onlyDialog || (!onlyDrawer && !isMobile);
-	const ModalOverlay = shouldUseDialog
-		? DialogPrimitive.Overlay
-		: DrawerPrimitive.Overlay;
 	return (
-		<ModalOverlay
+		<DialogPrimitive.Overlay
 			{...props}
 			className={cn(
 				"sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 sm:data-[state=closed]:animate-out sm:data-[state=open]:animate-in",
@@ -237,35 +230,35 @@ const ModalContent = React.forwardRef<
 	HTMLDivElement,
 	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
 		showCloseButton?: boolean;
-		overlayClassName?: string;
 	}
->(
-	(
-		{ className, children, showCloseButton = true, overlayClassName, ...props },
-		ref,
-	) => {
-		const { direction, modal, dismissible, alert, onlyDrawer, onlyDialog } =
-			useModal();
+>(({ className, children, showCloseButton = true, ...props }, ref) => {
+	const { direction, modal, dismissible, alert, onlyDrawer, onlyDialog } =
+		useModal();
 
-		const isMobile = useIsMobile();
-		const shouldUseDialog = onlyDialog || (!onlyDrawer && !isMobile);
-		const ModalContent = shouldUseDialog
-			? DialogPrimitive.Content
-			: VaulDrawerContent;
+	const isMobile = useIsMobile();
+	const shouldUseDialog = onlyDialog || (!onlyDrawer && !isMobile);
+	const ModalContent = shouldUseDialog
+		? DialogPrimitive.Content
+		: VaulDrawerContent;
 
-		const shouldShowCloseButton = !alert && showCloseButton;
-		const shouldPreventEscape = !dismissible && !alert;
-		const shouldPreventOutsideInteraction =
-			!modal || (!dismissible && !alert) || alert;
+	const shouldShowCloseButton = !alert && showCloseButton;
+	const shouldPreventEscape = !dismissible && !alert;
+	const shouldPreventOutsideInteraction =
+		!modal || (!dismissible && !alert) || alert;
 
-		return (
+	return (
+		<>
 			<ModalPortal>
-				<ModalOverlay className={cn(overlayClassName)} />
+				<ModalOverlay />
+			</ModalPortal>
+			<ModalPortal>
 				<ModalContent
 					ref={ref}
 					{...props}
 					{...(shouldPreventEscape &&
-						shouldUseDialog && { onEscapeKeyDown: (e) => e.preventDefault() })}
+						shouldUseDialog && {
+							onEscapeKeyDown: (e) => e.preventDefault(),
+						})}
 					{...(shouldPreventOutsideInteraction &&
 						shouldUseDialog && {
 							onInteractOutside: (e) => e.preventDefault(),
@@ -280,7 +273,7 @@ const ModalContent = React.forwardRef<
 							device: shouldUseDialog ? "desktop" : "mobile",
 							direction,
 						}),
-						"flex flex-col gap-4 bg-card p-6",
+						"flex flex-col gap-4 bg-card px-6 py-4",
 						className,
 					)}
 				>
@@ -296,9 +289,9 @@ const ModalContent = React.forwardRef<
 					)}
 				</ModalContent>
 			</ModalPortal>
-		);
-	},
-);
+		</>
+	);
+});
 ModalContent.displayName = "ModalContent";
 
 const ModalHeader = ({

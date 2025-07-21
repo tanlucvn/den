@@ -283,7 +283,7 @@ function DropDrawerContent({
 			>
 				<DrawerContent
 					data-slot="drop-drawer-content"
-					className={cn("max-h-[90vh] bg-card", className)}
+					className={cn("max-h-[90vh] bg-card px-4", className)}
 					{...props}
 				>
 					{activeSubmenu ? (
@@ -449,8 +449,6 @@ function DropDrawerItem({
 
 		// Only wrap in DrawerClose if it's not a submenu item
 		const content = (
-			// biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
-			// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 			<div
 				ref={itemRef}
 				data-slot="drop-drawer-item"
@@ -895,8 +893,6 @@ function DropDrawerSubTrigger({
 
 		// Don't wrap in DrawerClose for submenu triggers
 		return (
-			// biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
-			// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 			<div
 				ref={itemRef}
 				data-slot="drop-drawer-sub-trigger"

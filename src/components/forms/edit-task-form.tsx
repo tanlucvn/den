@@ -85,7 +85,13 @@ export default function EditTaskForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="PencilLine" />
+								<IconRenderer
+									name="Pen"
+									className={cn(
+										"text-primary/60",
+										form.formState.errors.title && "text-destructive",
+									)}
+								/>
 								Title
 							</FormLabel>
 							<FormControl>
@@ -102,9 +108,9 @@ export default function EditTaskForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="Captions" />
+								<IconRenderer name="Captions" className="text-primary/60" />
 								Note
-								<span className="text-muted-foreground text-xs">
+								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
 								</span>
 							</FormLabel>
@@ -126,9 +132,9 @@ export default function EditTaskForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="MapPin" />
+								<IconRenderer name="MapPin" className="text-primary/60" />
 								Location
-								<span className="text-muted-foreground text-xs">
+								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
 								</span>
 							</FormLabel>
@@ -149,7 +155,7 @@ export default function EditTaskForm({
 							<FormItem>
 								<FormLabel>
 									Priority
-									<span className="text-muted-foreground text-xs">
+									<span className="font-normal text-muted-foreground text-xs">
 										(optional)
 									</span>
 								</FormLabel>
@@ -194,7 +200,7 @@ export default function EditTaskForm({
 							<FormItem className="flex flex-col">
 								<FormLabel>
 									Remind me on
-									<span className="text-muted-foreground text-xs">
+									<span className="font-normal text-muted-foreground text-xs">
 										(optional)
 									</span>
 								</FormLabel>

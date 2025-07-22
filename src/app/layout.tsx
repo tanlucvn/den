@@ -6,11 +6,13 @@ import { Providers } from "@/components/providers";
 
 const inter = Inter({
 	variable: "--font-inter",
+	display: "swap",
 	subsets: ["latin"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
 	variable: "--font-mono",
+	display: "swap",
 	subsets: ["latin"],
 });
 
@@ -29,9 +31,7 @@ export default function RootLayout({
 			<body
 				className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
 			>
-				<div data-vaul-drawer-wrapper="" className="bg-background">
-					<Providers>{children}</Providers>
-				</div>
+				<Providers>{children}</Providers>
 			</body>
 		</html>
 	);

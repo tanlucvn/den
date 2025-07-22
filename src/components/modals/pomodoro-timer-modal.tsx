@@ -15,6 +15,7 @@ import {
 	ModalTrigger,
 } from "@/components/ui/modal";
 import { useSound } from "@/hooks/use-sounds";
+import { IconRenderer } from "../icon-renderer";
 
 const QUOTES = [
 	{
@@ -117,98 +118,109 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 	};
 
 	return (
-		<Modal open={isOpen} onOpenChange={setIsOpen}>
-			<ModalTrigger asChild>{children}</ModalTrigger>
-			<ModalContent className="sm:max-w-xl">
-				<ModalHeader>
-					<ModalTitle>{title}</ModalTitle>
-					<ModalDescription>
-						Focus for
-						<span className="ml-1 font-semibold text-primary">
-							{formatTime(duration * 60)}
-						</span>
-					</ModalDescription>
-				</ModalHeader>
+		<div
+			/* Ignore task item context menu here */
+			onContextMenu={(e) => {
+				e.preventDefault();
+			}}
+		>
+			<Modal open={isOpen} onOpenChange={setIsOpen}>
+				<ModalTrigger asChild>{children}</ModalTrigger>
+				<ModalContent className="sm:max-w-xl">
+					<ModalHeader>
+						<ModalTitle>{title}</ModalTitle>
+						<ModalDescription>
+							Focus for
+							<span className="ml-1 font-semibold text-primary">
+								{formatTime(duration * 60)}
+							</span>
+						</ModalDescription>
+					</ModalHeader>
 
-				<div className="flex flex-col items-center gap-4 py-2">
-					<AnimatedCircularProgressBar
-						value={timeLeft}
-						max={duration * 60}
-						min={0}
-						className="size-40"
-						reverse
-						gaugePrimaryColor="var(--primary)"
-						gaugeSecondaryColor="var(--muted)"
-					>
-						<motion.span
-							animate={{ scale: isRunning ? [1, 1.05, 1] : 1 }}
-							transition={{ duration: 1, repeat: isRunning ? Infinity : 0 }}
-							className="text-2xl"
+					<div className="flex flex-col items-center gap-4 py-2">
+						<AnimatedCircularProgressBar
+							value={timeLeft}
+							max={duration * 60}
+							min={0}
+							className="size-40"
+							reverse
+							gaugePrimaryColor="var(--primary)"
+							gaugeSecondaryColor="var(--muted)"
 						>
-							{formatTime(timeLeft)}
-						</motion.span>
-					</AnimatedCircularProgressBar>
+							<motion.span
+								animate={{ scale: isRunning ? [1, 1.05, 1] : 1 }}
+								transition={{ duration: 1, repeat: isRunning ? Infinity : 0 }}
+								className="text-2xl"
+							>
+								{formatTime(timeLeft)}
+							</motion.span>
+						</AnimatedCircularProgressBar>
 
-					<AnimatePresence mode="wait">
-						<motion.div
-							key={quoteIndex}
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -10 }}
-							transition={{ duration: 0.5 }}
-							className="h-12 space-y-0.5 text-center"
-						>
-							<p className="text-muted-foreground text-sm italic">
-								"{QUOTES[quoteIndex].text}"
-							</p>
-							<p className="text-muted-foreground/60 text-xs">
-								– {QUOTES[quoteIndex].author}
-							</p>
-						</motion.div>
-					</AnimatePresence>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={quoteIndex}
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -10 }}
+								transition={{ duration: 0.5 }}
+								className="h-12 space-y-0.5 text-center"
+							>
+								<p className="text-muted-foreground text-sm italic">
+									"{QUOTES[quoteIndex].text}"
+								</p>
+								<p className="text-muted-foreground/60 text-xs">
+									– {QUOTES[quoteIndex].author}
+								</p>
+							</motion.div>
+						</AnimatePresence>
 
-					<div className="grid w-full grid-cols-3 items-end gap-2">
-						<div className="col-span-1 space-y-2">
-							<Label htmlFor="duration" className="font-medium text-sm">
-								Duration (minutes)
-							</Label>
-							<Input
-								id="duration"
-								type="number"
-								value={duration}
-								onChange={(e) => handleDurationChange(e.target.value)}
-								min={1}
-								max={60}
-								disabled={isRunning}
-							/>
+						<div className="grid w-full grid-cols-3 items-end gap-2">
+							<div className="space-y-2">
+								<Label htmlFor="duration" className="flex items-center text-sm">
+									<IconRenderer name="Timer" className="text-primary/60" />
+									Duration
+									<span className="font-normal text-muted-foreground text-xs">
+										(minutes)
+									</span>
+								</Label>
+								<Input
+									id="duration"
+									type="number"
+									value={duration}
+									onChange={(e) => handleDurationChange(e.target.value)}
+									min={1}
+									max={60}
+									disabled={isRunning}
+								/>
+							</div>
+
+							<Button
+								variant="outline"
+								className="w-full"
+								onClick={() => setIsRunning((r) => !r)}
+							>
+								{isRunning ? (
+									<Pause className="size-4" />
+								) : (
+									<Play className="size-4" />
+								)}
+							</Button>
+
+							<Button
+								variant="outline"
+								className="w-full"
+								onClick={() => setMuted((m) => !m)}
+							>
+								{muted ? (
+									<VolumeX className="size-4" />
+								) : (
+									<Volume2 className="size-4" />
+								)}
+							</Button>
 						</div>
-
-						<Button
-							variant="outline"
-							className="w-full"
-							onClick={() => setIsRunning((r) => !r)}
-						>
-							{isRunning ? (
-								<Pause className="size-4" />
-							) : (
-								<Play className="size-4" />
-							)}
-						</Button>
-
-						<Button
-							variant="outline"
-							className="w-full"
-							onClick={() => setMuted((m) => !m)}
-						>
-							{muted ? (
-								<VolumeX className="size-4" />
-							) : (
-								<Volume2 className="size-4" />
-							)}
-						</Button>
 					</div>
-				</div>
-			</ModalContent>
-		</Modal>
+				</ModalContent>
+			</Modal>
+		</div>
 	);
 }

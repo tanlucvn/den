@@ -29,7 +29,7 @@ export default function EditTaskModal({
 
 	return (
 		<Modal open={open} onOpenChange={onOpenChange}>
-			<ModalContent className="sm:max-w-md">
+			<ModalContent className="sm:max-w-[400px]">
 				<div className="flex flex-col gap-2">
 					<div
 						className="flex size-11 shrink-0 items-center justify-center rounded-full border"

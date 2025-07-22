@@ -63,7 +63,7 @@ const Modal = ({
 	onlyDrawer = false,
 	onlyDialog = false,
 	alert = false,
-	shouldScaleBackground = true,
+	shouldScaleBackground = false,
 	open: controlledOpen,
 	onOpenChange: controlledOnOpenChange,
 	...props

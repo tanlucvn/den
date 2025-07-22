@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { TaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/use-task-list-actions";
+import { cn } from "@/lib/utils";
 import {
 	type EditTaskListValues,
 	editTaskListSchema,
@@ -61,7 +62,13 @@ export default function EditTaskListForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="PencilLine" />
+								<IconRenderer
+									name="Pencil"
+									className={cn(
+										"text-primary/60",
+										form.formState.errors.title && "text-destructive",
+									)}
+								/>
 								Title
 							</FormLabel>
 							<FormControl>

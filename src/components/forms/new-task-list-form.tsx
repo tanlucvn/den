@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import type { NewTaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/use-task-list-actions";
 import { useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 import {
 	type NewTaskListFormValues,
 	newTaskListSchema,
@@ -55,7 +56,13 @@ export default function NewTaskListForm() {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="PencilLine" />
+								<IconRenderer
+									name="Pencil"
+									className={cn(
+										"text-primary/60",
+										form.formState.errors.title && "text-destructive",
+									)}
+								/>
 								Title
 							</FormLabel>
 							<FormControl>

@@ -7,16 +7,17 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export const filterTasks = (tasks: Task[], query: string): Task[] => {
-	const q = query.trim().toLowerCase();
+export function filterTasks(tasks: Task[], searchTerm: string): Task[] {
+	if (!searchTerm.trim()) return tasks;
+	const lowerSearch = searchTerm.toLowerCase();
 
 	return tasks.filter((task) => {
-		const title = task.title?.toLowerCase();
-		const matchesSearch = q ? title.includes(q) : true;
-
-		return matchesSearch;
+		return (
+			task.title.toLowerCase().includes(lowerSearch) ||
+			task.note?.toLowerCase().includes(lowerSearch)
+		);
 	});
-};
+}
 
 export const formatDate = (date: string | Date) => {
 	const d = new Date(date);

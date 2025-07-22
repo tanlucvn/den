@@ -7,7 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Task } from "@/db/schema/tasks";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
-import { cn, filterTasks } from "@/lib/utils";
+import { useSections } from "@/hooks/use-sections";
+import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";
 
 interface GroupedTaskSectionProps {
@@ -30,36 +31,46 @@ export default function GroupedTaskSection({
 	className,
 }: GroupedTaskSectionProps) {
 	const { searchTerm } = useAppStore();
+
+	const { filtered } = useSections(tasks, searchTerm);
 	const { pinned, active, completed, archive } = useGroupedTasks(tasks);
 
-	const filteredPinnedTasks = filterTasks(pinned, searchTerm);
-	const filteredActiveTasks = filterTasks(active, searchTerm);
-	const filteredCompletedTasks = filterTasks(completed, searchTerm);
-	const filteredArchivedTasks = filterTasks(archive, searchTerm);
+	const totalOriginalTasks =
+		pinned.length + active.length + completed.length + archive.length;
 
-	const totalTasks =
-		filteredPinnedTasks.length +
-		filteredActiveTasks.length +
-		filteredCompletedTasks.length +
-		filteredArchivedTasks.length;
+	const totalFilteredTasks =
+		filtered.pinned.length +
+		filtered.active.length +
+		filtered.completed.length +
+		filtered.archive.length;
+
+	const showNoResults =
+		isFetched &&
+		!isLoading &&
+		totalOriginalTasks > 0 &&
+		totalFilteredTasks === 0;
+
+	const showNoTasks =
+		isFetched &&
+		!isLoading &&
+		totalOriginalTasks === 0 &&
+		searchTerm.trim() === "";
 
 	const sections = [
-		{ title: "Pinned", icon: "Pin", tasks: filteredPinnedTasks },
+		{ title: "Pinned", icon: "Pin", tasks: filtered.pinned },
 		{
 			title: "Active",
 			icon: "Flame",
-			tasks: filteredActiveTasks,
+			tasks: filtered.active,
 			defaultOpen: true,
 		},
 		{
 			title: "Completed",
 			icon: "CircleCheck",
-			tasks: filteredCompletedTasks,
+			tasks: filtered.completed,
 			defaultOpen: true,
 		},
 	];
-
-	const showNoTasks = isFetched && !isLoading && totalTasks === 0;
 
 	return (
 		<section
@@ -74,7 +85,7 @@ export default function GroupedTaskSection({
 					<IconRenderer name={iconName} className="!text-primary/60" />
 				)}
 				<span className="text-foreground">{title}</span>
-				<NumberFlowBadge value={totalTasks} />
+				<NumberFlowBadge value={totalFilteredTasks} />
 			</div>
 
 			{/* Quick add */}
@@ -91,7 +102,7 @@ export default function GroupedTaskSection({
 			)}
 
 			{/* Task sections */}
-			{!isLoading && (
+			{!isLoading && totalFilteredTasks > 0 && (
 				<div className="space-y-4">
 					{sections.map(({ title, icon, tasks, defaultOpen }) =>
 						tasks.length > 0 ? (
@@ -106,30 +117,36 @@ export default function GroupedTaskSection({
 					)}
 
 					{/* Archive section */}
-					{archive.length > 0 && (
+					{filtered.archive.length > 0 && (
 						<div className="flex flex-col gap-4">
 							<Separator />
 
-							{archive.length > 0 && (
-								<TaskSectionCollapsible
-									key="archive"
-									icon={<IconRenderer name="Archive" />}
-									title="Archive"
-									tasks={archive}
-									defaultOpen
-								/>
-							)}
+							<TaskSectionCollapsible
+								key="archive"
+								icon={<IconRenderer name="Archive" />}
+								title="Archive"
+								tasks={filtered.archive}
+								defaultOpen
+							/>
 						</div>
 					)}
 				</div>
 			)}
 
-			{/* No tasks fallback */}
+			{/* No results  */}
+			{showNoResults && (
+				<EmptyState
+					icon="SearchX"
+					title="No matching tasks"
+					description="Try a different keyword."
+				/>
+			)}
+
+			{/* No tasks */}
 			{showNoTasks && (
 				<EmptyState
 					title="No tasks yet."
 					description="Add a task using the input above."
-					className="h-40"
 				/>
 			)}
 		</section>

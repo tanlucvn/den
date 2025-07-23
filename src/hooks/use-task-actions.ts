@@ -19,10 +19,11 @@ export const useTaskActions = () => {
 
 	const { setEditTask } = useAppStore();
 
-	const { mutateAsync: createTask } = useCreateTask();
-	const { mutateAsync: updateTask } = useUpdateTask();
-	const { mutateAsync: deleteTask } = useDeleteTask();
-	const { mutateAsync: batchUpdateTasks } = useBatchUpdateTasks();
+	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask();
+	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask();
+	const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTask();
+	const { mutateAsync: batchUpdateTasks, isPending: isBatching } =
+		useBatchUpdateTasks();
 	const { refetch: fetchTasks } = useTasks();
 
 	const onCreate = async (task: NewTask) => {
@@ -122,6 +123,7 @@ export const useTaskActions = () => {
 	};
 
 	return {
+		loading: isCreating || isUpdating || isDeleting || isBatching,
 		onCreate,
 		onToggle,
 		onArchive,

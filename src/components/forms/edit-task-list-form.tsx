@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
+import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -19,17 +20,15 @@ import {
 } from "@/lib/validators/edit-task-list";
 
 interface EditTaskListFormProps {
-	formId: string;
 	initialData: TaskList;
 	onFinish: (reset: () => void) => void;
 }
 
 export default function EditTaskListForm({
-	formId,
 	initialData,
 	onFinish,
 }: EditTaskListFormProps) {
-	const { onUpdate } = useTaskListActions();
+	const { loading, onUpdate } = useTaskListActions();
 
 	const form = useForm<EditTaskListValues>({
 		resolver: zodResolver(editTaskListSchema),
@@ -51,11 +50,7 @@ export default function EditTaskListForm({
 
 	return (
 		<Form {...form}>
-			<form
-				id={formId}
-				onSubmit={form.handleSubmit(handleSubmit)}
-				className="space-y-4"
-			>
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -78,6 +73,11 @@ export default function EditTaskListForm({
 						</FormItem>
 					)}
 				/>
+
+				<Button type="submit" className="w-full" disabled={loading}>
+					{loading && <IconRenderer name="Loader2" className="animate-spin" />}
+					Save
+				</Button>
 			</form>
 		</Form>
 	);

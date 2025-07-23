@@ -37,17 +37,15 @@ import {
 } from "@/lib/validators/edit-task";
 
 interface EditTaskFormProps {
-	formId: string;
 	initialData: Task;
 	onFinish: (reset: () => void) => void;
 }
 
 export default function EditTaskForm({
-	formId,
 	initialData,
 	onFinish,
 }: EditTaskFormProps) {
-	const { onUpdate } = useTaskActions();
+	const { loading, onUpdate } = useTaskActions();
 
 	const form = useForm<EditTaskFormValues>({
 		resolver: zodResolver(editTaskSchema),
@@ -74,11 +72,7 @@ export default function EditTaskForm({
 
 	return (
 		<Form {...form}>
-			<form
-				id={formId}
-				onSubmit={form.handleSubmit(handleSubmit)}
-				className="space-y-4"
-			>
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -235,6 +229,11 @@ export default function EditTaskForm({
 						)}
 					/>
 				</div>
+
+				<Button type="submit" className="w-full" disabled={loading}>
+					{loading && <IconRenderer name="Loader2" className="animate-spin" />}
+					Save
+				</Button>
 			</form>
 		</Form>
 	);

@@ -2,12 +2,10 @@
 
 import EditTaskForm from "@/components/forms/edit-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
-import { Button } from "@/components/ui/button";
 import {
 	Modal,
 	ModalContent,
 	ModalDescription,
-	ModalFooter,
 	ModalHeader,
 	ModalTitle,
 } from "@/components/ui/modal";
@@ -23,7 +21,6 @@ export default function EditTaskModal({
 	onOpenChange,
 }: EditTaskModalProps) {
 	const { editTask } = useAppStore();
-	const formId = "modal-edit-task-form";
 
 	if (!editTask) return null;
 
@@ -47,19 +44,12 @@ export default function EditTaskModal({
 				</div>
 
 				<EditTaskForm
-					formId={formId}
 					initialData={editTask}
 					onFinish={(resetForm) => {
 						resetForm();
 						onOpenChange?.(false);
 					}}
 				/>
-
-				<ModalFooter className="p-0">
-					<Button type="submit" form={formId} className="w-full">
-						Save
-					</Button>
-				</ModalFooter>
 			</ModalContent>
 		</Modal>
 	);

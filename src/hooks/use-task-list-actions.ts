@@ -16,9 +16,12 @@ export const useTaskListActions = () => {
 
 	const { setEditTaskList } = useAppStore();
 
-	const { mutateAsync: createTaskList } = useCreateTaskList();
-	const { mutateAsync: updateTaskList } = useUpdateTaskList();
-	const { mutateAsync: deleteTaskList } = useDeleteTaskList();
+	const { mutateAsync: createTaskList, isPending: isCreating } =
+		useCreateTaskList();
+	const { mutateAsync: updateTaskList, isPending: isUpdating } =
+		useUpdateTaskList();
+	const { mutateAsync: deleteTaskList, isPending: isDeleting } =
+		useDeleteTaskList();
 	const { refetch: fetchTaskLists } = useTaskLists();
 
 	const onCreate = async (list: NewTaskList) => {
@@ -58,6 +61,7 @@ export const useTaskListActions = () => {
 	};
 
 	return {
+		loading: isCreating || isUpdating || isDeleting,
 		onCreate,
 		onUpdate,
 		onDelete,

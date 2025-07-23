@@ -1,25 +1,26 @@
 "use client";
 
+import { useState } from "react";
 import NewTaskListForm from "@/components/forms/new-task-list-form";
-import { Button } from "@/components/ui/button";
+import { IconRenderer } from "@/components/icon-renderer";
 import {
 	Modal,
 	ModalContent,
 	ModalDescription,
-	ModalFooter,
 	ModalHeader,
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
-import { IconRenderer } from "../icon-renderer";
 
 interface NewTaskListModalProps {
 	children: React.ReactNode;
 }
 
 export default function NewTaskListModal({ children }: NewTaskListModalProps) {
+	const [isOpen, setIsOpen] = useState(false);
+
 	return (
-		<Modal>
+		<Modal open={isOpen} onOpenChange={setIsOpen}>
 			<ModalTrigger asChild>{children}</ModalTrigger>
 			<ModalContent className="sm:max-w-[400px]">
 				<div className="flex flex-col items-center justify-center gap-2">
@@ -38,13 +39,11 @@ export default function NewTaskListModal({ children }: NewTaskListModalProps) {
 					</ModalHeader>
 				</div>
 
-				<NewTaskListForm />
-
-				<ModalFooter className="p-0">
-					<Button type="submit" form="new-task-list-form" className="w-full">
-						Create
-					</Button>
-				</ModalFooter>
+				<NewTaskListForm
+					onFinish={() => {
+						setIsOpen(false);
+					}}
+				/>
 			</ModalContent>
 		</Modal>
 	);

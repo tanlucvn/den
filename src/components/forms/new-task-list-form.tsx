@@ -18,11 +18,16 @@ import {
 	type NewTaskListFormValues,
 	newTaskListSchema,
 } from "@/lib/validators/new-task-list";
+import { Button } from "../ui/button";
 
-export default function NewTaskListForm() {
+interface NewTaskListFormProps {
+	onFinish: () => void;
+}
+
+export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 	const { data: session } = useSession();
 
-	const { onCreate } = useTaskListActions();
+	const { loading, onCreate } = useTaskListActions();
 
 	const form = useForm<NewTaskListFormValues>({
 		resolver: zodResolver(newTaskListSchema),
@@ -40,16 +45,14 @@ export default function NewTaskListForm() {
 		};
 
 		await onCreate(newList);
+
 		form.reset();
+		onFinish?.();
 	};
 
 	return (
 		<Form {...form}>
-			<form
-				id="new-task-list-form"
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-4"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -72,6 +75,11 @@ export default function NewTaskListForm() {
 						</FormItem>
 					)}
 				/>
+
+				<Button type="submit" className="w-full" disabled={loading}>
+					{loading && <IconRenderer name="Loader2" className="animate-spin" />}
+					Create
+				</Button>
 			</form>
 		</Form>
 	);

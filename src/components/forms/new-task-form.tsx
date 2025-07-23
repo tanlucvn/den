@@ -38,14 +38,13 @@ import {
 } from "@/lib/validators/new-task";
 
 interface NewTaskFormProps {
-	formId: string;
-	onFinish: (reset: () => void) => void;
+	onFinish: () => void;
 }
 
-export default function NewTaskForm({ formId, onFinish }: NewTaskFormProps) {
+export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
 	const { data } = useSession();
 
-	const { onCreate } = useTaskActions();
+	const { loading, onCreate } = useTaskActions();
 
 	const form = useForm<NewTaskFormValues>({
 		resolver: zodResolver(newTaskSchema),
@@ -70,17 +69,14 @@ export default function NewTaskForm({ formId, onFinish }: NewTaskFormProps) {
 		};
 
 		await onCreate(newTask);
+		form.reset();
 
-		onFinish(() => form.reset());
+		onFinish();
 	};
 
 	return (
 		<Form {...form}>
-			<form
-				id={formId}
-				onSubmit={form.handleSubmit(handleSubmit)}
-				className="space-y-4"
-			>
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -237,6 +233,11 @@ export default function NewTaskForm({ formId, onFinish }: NewTaskFormProps) {
 						)}
 					/>
 				</div>
+
+				<Button type="submit" className="w-full" disabled={loading}>
+					{loading && <IconRenderer name="Loader2" className="animate-spin" />}
+					Add
+				</Button>
 			</form>
 		</Form>
 	);

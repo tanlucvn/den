@@ -16,6 +16,8 @@ import {
 	type QuickNewTaskFormValues,
 	quickNewTaskSchema,
 } from "@/lib/validators/quick-new-task";
+import { IconRenderer } from "../icon-renderer";
+import { Button } from "../ui/button";
 
 interface QuickAddFormProps {
 	formId: string;
@@ -29,7 +31,7 @@ export default function QuickAddTaskForm({
 	onFinish,
 }: QuickAddFormProps) {
 	const { data } = useSession();
-	const { onCreate } = useTaskActions();
+	const { loading, onCreate } = useTaskActions();
 
 	const form = useForm<QuickNewTaskFormValues>({
 		resolver: zodResolver(quickNewTaskSchema),
@@ -75,6 +77,21 @@ export default function QuickAddTaskForm({
 						</FormItem>
 					)}
 				/>
+
+				<Button
+					size="sm"
+					type="submit"
+					form={formId}
+					className="absolute top-1 right-1 h-7 gap-1 rounded-full text-xs"
+					disabled={loading}
+				>
+					Add
+					{loading ? (
+						<IconRenderer name="Loader2" className="size-3.5 animate-spin" />
+					) : (
+						<IconRenderer name="Plus" className="size-3.5" />
+					)}
+				</Button>
 			</form>
 		</Form>
 	);

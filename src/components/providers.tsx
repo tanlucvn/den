@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 				<SidebarProvider>
 					{children}
 
-					<Toaster position="bottom-center" closeButton />
+					<Toaster position="bottom-right" closeButton />
 					<Analytics />
 				</SidebarProvider>
 			</TooltipProvider>

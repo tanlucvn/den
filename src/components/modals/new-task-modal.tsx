@@ -4,12 +4,10 @@ import type React from "react";
 import { useState } from "react";
 import NewTaskForm from "@/components/forms/new-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
-import { Button } from "@/components/ui/button";
 import {
 	Modal,
 	ModalContent,
 	ModalDescription,
-	ModalFooter,
 	ModalHeader,
 	ModalTitle,
 	ModalTrigger,
@@ -21,8 +19,6 @@ interface NewTaskModalProps {
 
 export default function NewTaskModal({ children }: NewTaskModalProps) {
 	const [isOpen, setIsOpen] = useState(false);
-
-	const formId = "modal-new-task-form";
 
 	return (
 		<Modal open={isOpen} onOpenChange={setIsOpen}>
@@ -45,18 +41,10 @@ export default function NewTaskModal({ children }: NewTaskModalProps) {
 				</div>
 
 				<NewTaskForm
-					formId={formId}
-					onFinish={(resetForm) => {
-						resetForm();
+					onFinish={() => {
 						setIsOpen(false);
 					}}
 				/>
-
-				<ModalFooter className="p-0">
-					<Button type="submit" form={formId} className="w-full">
-						Add
-					</Button>
-				</ModalFooter>
 			</ModalContent>
 		</Modal>
 	);

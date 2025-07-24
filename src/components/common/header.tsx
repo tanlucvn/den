@@ -7,6 +7,7 @@ import AppModal from "@/components/modals/app-modal";
 import { ThemeSwitcher } from "@/components/theme";
 import { Button } from "@/components/ui/button";
 import UserButton from "@/components/user-button";
+import SettingsModal from "../modals/settings";
 
 export default function AppHeader() {
 	return (
@@ -28,6 +29,11 @@ export default function AppHeader() {
 			<div className="flex items-center gap-2">
 				<ThemeSwitcher />
 				<UserButton />
+				<SettingsModal>
+					<Button variant="outline" size="icon">
+						<IconRenderer name="Settings" />
+					</Button>
+				</SettingsModal>
 			</div>
 		</div>
 	);

@@ -40,12 +40,16 @@ export function ThemeSwitcher({ className }: { className?: string }) {
 	);
 }
 
-function ThemeButton({
+export function ThemeButton({
 	iconName,
 	themeTitle,
+	className,
+	activeClassName = "border-foreground/20 text-foreground",
 }: {
 	iconName: string;
 	themeTitle: "light" | "dark" | "system";
+	className?: string;
+	activeClassName?: string;
 }) {
 	const { theme, setTheme } = useTheme();
 	const [mounted, setMounted] = useState(false);
@@ -65,7 +69,8 @@ function ThemeButton({
 						size="sm"
 						className={cn(
 							"aspect-square size-5 rounded-full border border-transparent p-0 transition-all hover:bg-transparent hover:text-foreground [&_svg]:size-3",
-							isActive && "border-foreground/20 text-foreground",
+							isActive && activeClassName,
+							className,
 						)}
 						onClick={() => setTheme(themeTitle)}
 					>

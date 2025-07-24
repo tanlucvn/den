@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import { ExpandableTabs } from "@/components/ui/expandable-tabs";
 import {
 	Modal,
 	ModalContent,
@@ -11,29 +10,29 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AISection from "./sections/ai-section";
 import AppearanceSection from "./sections/appearance-section";
+import TagManagerSection from "./sections/tag-manager-section";
 
 const tabConfigs = [
 	{
+		value: "appearance",
 		title: "Appearance",
-		icon: <IconRenderer name="Palette" />,
+		icon: "Palette",
 		content: <AppearanceSection />,
 	},
 	{
+		value: "ai",
 		title: "AI",
-		icon: <IconRenderer name="Bot" />,
+		icon: "Bot",
 		content: <AISection />,
 	},
 	{
-		title: "Feedback",
-		icon: <IconRenderer name="MessageSquare" />,
-		content: <div>Document settings and storage.</div>,
-	},
-	{
-		title: "Data",
-		icon: <IconRenderer name="Database" />,
-		content: <div>Privacy preferences and permissions.</div>,
+		value: "tags",
+		title: "Tags",
+		icon: "Tags",
+		content: <TagManagerSection />,
 	},
 ];
 
@@ -42,7 +41,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal = ({ children }: SettingsModalProps) => {
-	const [selectedTab, setSelectedTab] = useState<number | null>(0);
+	const [selectedTab, setSelectedTab] = useState("appearance");
 
 	return (
 		<Modal>
@@ -53,13 +52,34 @@ const SettingsModal = ({ children }: SettingsModalProps) => {
 					<ModalDescription>Customize your app experience.</ModalDescription>
 				</ModalHeader>
 
-				<ExpandableTabs
-					tabs={tabConfigs.map(({ title, icon }) => ({ title, icon }))}
+				<Tabs
 					value={selectedTab}
-					onChange={(index) => setSelectedTab(index)}
-				/>
+					onValueChange={setSelectedTab}
+					className="min-h-0 space-y-4"
+				>
+					<TabsList className="flex w-full items-center justify-evenly gap-0 rounded-full border p-0">
+						{tabConfigs.map((tab) => (
+							<TabsTrigger
+								key={tab.value}
+								value={tab.value}
+								className="w-full max-w-[200px] shrink rounded-full"
+							>
+								<IconRenderer name={tab.icon} className="h-4 w-4" />
+								{selectedTab === tab.value && tab.title}
+							</TabsTrigger>
+						))}
+					</TabsList>
 
-				{selectedTab !== null && tabConfigs[selectedTab].content}
+					{tabConfigs.map((tab) => (
+						<TabsContent
+							key={tab.value}
+							value={tab.value}
+							className="min-h-0 overflow-y-auto"
+						>
+							{tab.content}
+						</TabsContent>
+					))}
+				</Tabs>
 			</ModalContent>
 		</Modal>
 	);

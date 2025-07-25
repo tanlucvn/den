@@ -230,7 +230,11 @@ export default function EditTaskForm({
 					/>
 				</div>
 
-				<Button type="submit" className="w-full" disabled={loading}>
+				<Button
+					type="submit"
+					className="w-full"
+					disabled={loading || !form.formState.isDirty}
+				>
 					{loading && <IconRenderer name="Loader2" className="animate-spin" />}
 					Save
 				</Button>

@@ -6,38 +6,46 @@ import { type Task, tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
 
 export async function PUT(req: NextRequest) {
-	const session = await auth.api.getSession({ headers: await headers() });
+	try {
+		const session = await auth.api.getSession({ headers: await headers() });
 
-	if (!session)
-		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		if (!session)
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-	const body = await req.json(); // Task[]
+		const body = await req.json(); // Task[]
 
-	if (!Array.isArray(body)) {
-		return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+		if (!Array.isArray(body)) {
+			return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+		}
+
+		const results: Task[] = [];
+
+		for (const task of body) {
+			const updatedTask = {
+				...task,
+				createdAt: new Date(task.createdAt),
+				updatedAt: new Date(task.updatedAt),
+				remindAt: task.remindAt ? new Date(task.remindAt) : null,
+				deletedAt: task.deletedAt ? new Date(task.deletedAt) : null,
+			};
+
+			const result = await db
+				.update(tasks)
+				.set(updatedTask)
+				.where(
+					and(eq(tasks.id, updatedTask.id), eq(tasks.userId, session.user.id)),
+				)
+				.returning();
+
+			if (result[0]) results.push(result[0]);
+		}
+
+		return NextResponse.json(results);
+	} catch (error) {
+		console.error("PUT /api/tasks/batch error:", error);
+		return NextResponse.json(
+			{ error: "Internal Server Error" },
+			{ status: 500 },
+		);
 	}
-
-	const results: Task[] = [];
-
-	for (const task of body) {
-		const updatedTask = {
-			...task,
-			createdAt: new Date(task.createdAt),
-			updatedAt: new Date(task.updatedAt),
-			remindAt: task.remindAt ? new Date(task.remindAt) : null,
-			deletedAt: task.deletedAt ? new Date(task.deletedAt) : null,
-		};
-
-		const result = await db
-			.update(tasks)
-			.set(updatedTask)
-			.where(
-				and(eq(tasks.id, updatedTask.id), eq(tasks.userId, session.user.id)),
-			)
-			.returning();
-
-		if (result[0]) results.push(result[0]);
-	}
-
-	return NextResponse.json(results);
 }

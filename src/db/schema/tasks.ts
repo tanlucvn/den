@@ -7,6 +7,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { taskLists } from "@/db/schema/task-lists";
+import type { Tag } from "./tags";
 
 export const tasks = pgTable("tasks", {
 	id: uuid().primaryKey().defaultRandom(),
@@ -41,3 +42,7 @@ export const tasks = pgTable("tasks", {
 
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
+
+export type TaskWithTags = Task & {
+	tags?: Tag[];
+};

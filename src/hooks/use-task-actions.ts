@@ -9,6 +9,7 @@ import {
 	useDeleteTask,
 	useTasks,
 	useUpdateTask,
+	useUpdateTaskTags,
 } from "@/hooks/use-tasks";
 import { useSession } from "@/lib/auth-client";
 import { useAppStore } from "@/store/use-app-store";
@@ -20,6 +21,8 @@ export const useTaskActions = () => {
 	const { setEditTask } = useAppStore();
 
 	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask();
+	const { mutateAsync: updateTaskTags, isPending: isUpdatingTags } =
+		useUpdateTaskTags();
 	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask();
 	const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTask();
 	const { mutateAsync: batchUpdateTasks, isPending: isBatching } =
@@ -49,6 +52,18 @@ export const useTaskActions = () => {
 			success: task.isArchived ? "Task unarchived!" : "Task archived!",
 			error: "Failed to update task archive status.",
 		});
+		await promise;
+	};
+
+	const onUpdateTags = async (taskId: string, tagIds: string[]) => {
+		const promise = updateTaskTags({ taskId, tagIds });
+
+		toast.promise(promise, {
+			loading: "Updating tags...",
+			success: "Tags updated!",
+			error: "Failed to update tags.",
+		});
+
 		await promise;
 	};
 
@@ -123,10 +138,12 @@ export const useTaskActions = () => {
 	};
 
 	return {
-		loading: isCreating || isUpdating || isDeleting || isBatching,
+		loading:
+			isCreating || isUpdatingTags || isUpdating || isDeleting || isBatching,
 		onCreate,
 		onToggle,
 		onArchive,
+		onUpdateTags,
 		onUpdate,
 		onDelete,
 		onClearCompleted,

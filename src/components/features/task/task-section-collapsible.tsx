@@ -24,7 +24,7 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import type { Task } from "@/db/schema/tasks";
+import type { TaskWithTags } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import { sortTasks } from "@/lib/helpers/sort-tasks";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ import DraggableTaskItem from "./draggable-task-item";
 type TaskSectionCollapsibleProps = {
 	icon: React.ReactNode;
 	title: string;
-	tasks: Task[];
+	tasks: TaskWithTags[];
 	defaultOpen?: boolean;
 };
 
@@ -44,7 +44,7 @@ export default function TaskSectionCollapsible({
 	defaultOpen,
 }: TaskSectionCollapsibleProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	const [items, setItems] = useState<Task[]>([]);
+	const [items, setItems] = useState<TaskWithTags[]>([]);
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const { onSort } = useTaskActions();
 
@@ -80,7 +80,7 @@ export default function TaskSectionCollapsible({
 			.filter((tasks) => tasks !== null);
 
 		if (updatedTasks.length > 0) {
-			await onSort(updatedTasks as Task[]);
+			await onSort(updatedTasks as TaskWithTags[]);
 		}
 	};
 

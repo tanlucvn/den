@@ -9,18 +9,19 @@ import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Task } from "@/db/schema/tasks";
+import type { TaskWithTags } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/use-task-actions";
 import { cn, formatDate } from "@/lib/utils";
+import TagChipCombobox from "../tags/tag-combobox";
 import TaskControlsContext from "./task-controls-context";
 
 type Props = {
-	task: Task;
+	task: TaskWithTags;
 	noContext?: boolean;
 };
 
 export default function DraggableTaskItem({ task }: Props) {
-	const { onToggle } = useTaskActions();
+	const { onToggle, onUpdateTags } = useTaskActions();
 
 	const {
 		attributes,
@@ -88,6 +89,12 @@ export default function DraggableTaskItem({ task }: Props) {
 						</div>
 
 						<div className="flex items-center gap-1">
+							<TagChipCombobox
+								tags={task.tags ?? []}
+								selectedIds={task.tags?.map((t) => t.id)}
+								onChange={(tagIds) => onUpdateTags(task.id, tagIds)}
+							/>
+
 							<PomodoroTimerDialog
 								title={task.title}
 								onFinish={() => onToggle({ ...task, isCompleted: true })}

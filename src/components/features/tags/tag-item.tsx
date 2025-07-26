@@ -15,14 +15,14 @@ export default function TagItem({ tag }: TagItemProps) {
 	return (
 		<div
 			className={cn(
-				"relative flex select-none items-center justify-between rounded-2xl border bg-card px-3 py-1.5 shadow-xs transition hover:border-ring hover:ring-[3px] hover:ring-ring/20",
+				"relative flex select-none items-center justify-between rounded-lg border bg-card px-3 py-1.5 shadow-xs transition hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 			)}
 		>
 			<div className="flex items-center gap-2 overflow-hidden">
 				{tag.color ? (
 					<TagIcon className="size-4 shrink-0" style={{ color: tag.color }} />
 				) : (
-					<IconRenderer name="Tag" className="shrink-0" />
+					<IconRenderer name="Tag" className="shrink-0 text-primary/60" />
 				)}
 
 				<h3 className="truncate font-medium text-sm">{tag.title}</h3>

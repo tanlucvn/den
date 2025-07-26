@@ -1,4 +1,4 @@
-import type { Task } from "@/db/schema/tasks";
+import type { TaskWithTags } from "@/db/schema/tasks";
 
 export type TaskSortOption =
 	| "created-desc"
@@ -14,7 +14,7 @@ export type TaskSortOption =
 	| "sortIndex-asc"
 	| "sortIndex-desc";
 
-export const sortTasks = (tasks: Task[], option: TaskSortOption) => {
+export const sortTasks = (tasks: TaskWithTags[], option: TaskSortOption) => {
 	const priorityMap = {
 		none: 0,
 		low: 1,

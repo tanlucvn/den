@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import type { NewTask, Task } from "@/db/schema/tasks";
+import type { NewTask, Task, TaskWithTags } from "@/db/schema/tasks";
 
 // ========== CONFIG ==========
 const TASKS_KEY = "tasks";
@@ -12,7 +12,7 @@ function getTaskQueryKey(listId?: string | null) {
 // ========== QUERIES ==========
 
 export function useTasks() {
-	return useQuery<Task[]>({
+	return useQuery<TaskWithTags[]>({
 		queryKey: getTaskQueryKey(),
 		queryFn: async () => (await axios.get("/api/tasks")).data,
 		refetchOnWindowFocus: false,
@@ -48,7 +48,7 @@ export function useCreateTask() {
 
 			const prev = queryClient.getQueryData<Task[]>(queryKey);
 
-			const newTask: Task = {
+			const newTask: TaskWithTags = {
 				id: crypto.randomUUID(),
 				userId: task.userId,
 				listId: task.listId ?? null,
@@ -64,6 +64,8 @@ export function useCreateTask() {
 				remindAt: task.remindAt ?? null,
 				createdAt: new Date(),
 				updatedAt: new Date(),
+
+				tags: [],
 			};
 
 			queryClient.setQueryData<Task[]>(queryKey, (old = []) => [
@@ -83,6 +85,47 @@ export function useCreateTask() {
 		onSettled: (_data, _err, task) => {
 			const queryKey = getTaskQueryKey(task.listId);
 			queryClient.invalidateQueries({ queryKey });
+		},
+	});
+}
+
+export function useUpdateTaskTags() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({
+			taskId,
+			tagIds,
+		}: {
+			taskId: string;
+			tagIds: string[];
+		}) => {
+			const res = await axios.post("/api/task-tags", { taskId, tagIds });
+			return res.data;
+		},
+
+		onMutate: async ({ taskId, tagIds }) => {
+			await queryClient.cancelQueries({ queryKey: ["task", taskId] });
+
+			const previousTask = queryClient.getQueryData<any>(["task", taskId]);
+
+			queryClient.setQueryData(["task", taskId], (old: any) => ({
+				...old,
+				tags: tagIds.map((id) => ({ id })),
+			}));
+
+			return { previousTask };
+		},
+
+		onError: (_err, { taskId }, context) => {
+			if (context?.previousTask) {
+				queryClient.setQueryData(["task", taskId], context.previousTask);
+			}
+		},
+
+		onSettled: (_data, _err, { taskId }) => {
+			queryClient.invalidateQueries({ queryKey: ["task", taskId] });
+			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 		},
 	});
 }

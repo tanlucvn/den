@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Task } from "@/db/schema/tasks";
+import type { TaskWithTags } from "@/db/schema/tasks";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
 import { useSections } from "@/hooks/use-sections";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ import { useAppStore } from "@/store/use-app-store";
 interface GroupedTaskSectionProps {
 	iconName?: string;
 	title: string;
-	tasks: Task[];
+	tasks: TaskWithTags[];
 	isLoading: boolean;
 	isFetched: boolean;
 	listId?: string;

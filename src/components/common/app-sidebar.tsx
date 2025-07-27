@@ -1,19 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { AppLogo } from "@/components/app-logo";
+import { IconRenderer } from "@/components/icon-renderer";
+import SettingsModal from "@/components/modals/settings";
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
-import { AppLogo } from "../app-logo";
-import { IconRenderer } from "../icon-renderer";
-import SettingsModal from "../modals/settings";
+import { NavUser } from "./nav-user";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 	return (
@@ -56,6 +57,10 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 					</SidebarMenu>
 				</SidebarGroup>
 			</SidebarContent>
+
+			<SidebarFooter>
+				<NavUser />
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

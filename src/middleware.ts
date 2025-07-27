@@ -11,13 +11,6 @@ export default function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 	const sessionCookie = getSessionCookie(request);
 
-	// ! If user is logged in, they shouldn't access auth routes
-	if (sessionCookie && isAuthRoute(pathname)) {
-		if (pathname !== "/profile") {
-			return NextResponse.redirect(new URL("/profile", request.url));
-		}
-	}
-
 	// ! If user is not logged in and trying to access protected routes
 	if (!sessionCookie && !isAuthRoute(pathname) && !isPublicRoute(pathname)) {
 		if (pathname !== "/signin") {

@@ -30,7 +30,7 @@ export default function TagItem({ tag }: TagItemProps) {
 
 			<TagControlsDropdown tag={tag}>
 				<Button variant="ghost" size="icon" className="rounded-full">
-					<IconRenderer name="MoreHorizontal" />
+					<IconRenderer name="EllipsisVertical" />
 				</Button>
 			</TagControlsDropdown>
 		</div>

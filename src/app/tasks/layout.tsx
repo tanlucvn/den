@@ -1,6 +1,8 @@
-import AppProviders from "@/components/app-providers";
-import { AppQuickActions } from "@/components/common/app-quick-actions";
-import AppHeader from "@/components/common/header";
+import ClientProviders from "@/components/client-providers";
+import { AppSidebar } from "@/components/common/app-sidebar";
+import AppLayout from "@/components/layouts/app-layout";
+
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -8,20 +10,24 @@ interface LayoutProps {
 
 export default async function Layout({ children }: LayoutProps) {
 	return (
-		<AppProviders>
-			<div className="relative flex min-h-screen flex-col gap-6 bg-background">
-				<header className="px-4">
-					<AppHeader />
-				</header>
+		<AppLayout>
+			<ClientProviders>
+				<SidebarProvider
+					style={
+						{
+							"--sidebar-width": "19rem",
+						} as React.CSSProperties
+					}
+				>
+					<AppSidebar />
 
-				<div className="sticky top-2 z-10 w-full px-4">
-					<AppQuickActions />
-				</div>
-
-				<main className="flex-1 px-4">
-					<div className="mx-auto w-full max-w-4xl">{children}</div>
-				</main>
-			</div>
-		</AppProviders>
+					<SidebarInset>
+						<div className="relative mx-auto min-h-screen w-full max-w-3xl">
+							{children}
+						</div>
+					</SidebarInset>
+				</SidebarProvider>
+			</ClientProviders>
+		</AppLayout>
 	);
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import AppProviders from "@/components/app-providers";
+import AppProviders from "@/components/client-providers";
+import AppHeader from "@/components/common/app-header";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
-import AppHeader from "@/components/common/header";
 
 interface SettingsLayoutProps {
 	children: React.ReactNode;

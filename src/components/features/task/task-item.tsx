@@ -77,7 +77,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 
 						<TaskControlsDropdown task={task}>
 							<Button variant="ghost" size="icon" className="rounded-full">
-								<IconRenderer name="MoreHorizontal" />
+								<IconRenderer name="EllipsisVertical" />
 							</Button>
 						</TaskControlsDropdown>
 					</div>

@@ -72,6 +72,8 @@ export default function GroupedTaskSection({
 		},
 	];
 
+	if (isLoading) return <GroupedTaskSectionSkeleton />;
+
 	return (
 		<section
 			className={cn(
@@ -82,7 +84,7 @@ export default function GroupedTaskSection({
 			{/* Header */}
 			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
 				{iconName && (
-					<IconRenderer name={iconName} className="!text-primary/60" />
+					<IconRenderer name={iconName} className="text-primary/60" />
 				)}
 				<span className="text-foreground">{title}</span>
 				<NumberFlowBadge value={totalFilteredTasks} />
@@ -91,18 +93,8 @@ export default function GroupedTaskSection({
 			{/* Quick add */}
 			<QuickAddTask listId={listId} />
 
-			{/* Loading state */}
-			{isLoading && (
-				<div className="space-y-4">
-					<Skeleton className="h-6 w-20" />
-					<Skeleton className="h-28 w-full rounded-xl" />
-					<Skeleton className="h-6 w-20" />
-					<Skeleton className="h-28 w-full rounded-xl" />
-				</div>
-			)}
-
 			{/* Task sections */}
-			{!isLoading && totalFilteredTasks > 0 && (
+			{totalFilteredTasks > 0 && (
 				<div className="space-y-4">
 					{sections.map(({ title, icon, tasks, defaultOpen }) =>
 						tasks.length > 0 ? (
@@ -116,11 +108,9 @@ export default function GroupedTaskSection({
 						) : null,
 					)}
 
-					{/* Archive section */}
 					{filtered.archive.length > 0 && (
 						<div className="flex flex-col gap-4">
 							<Separator />
-
 							<TaskSectionCollapsible
 								key="archive"
 								icon={<IconRenderer name="Archive" />}
@@ -133,7 +123,7 @@ export default function GroupedTaskSection({
 				</div>
 			)}
 
-			{/* No results  */}
+			{/* No results */}
 			{showNoResults && (
 				<EmptyState
 					icon="SearchX"
@@ -150,5 +140,20 @@ export default function GroupedTaskSection({
 				/>
 			)}
 		</section>
+	);
+}
+
+export function GroupedTaskSectionSkeleton() {
+	return (
+		<div className="flex flex-col gap-4 rounded-xl border bg-secondary/20 p-3">
+			<Skeleton className="h-5 w-32" />
+			<Skeleton className="h-8 w-full" />
+			<div className="space-y-4">
+				<Skeleton className="h-6 w-20" />
+				<Skeleton className="h-28 w-full rounded-xl" />
+				<Skeleton className="h-6 w-20" />
+				<Skeleton className="h-28 w-full rounded-xl" />
+			</div>
+		</div>
 	);
 }

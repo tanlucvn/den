@@ -106,7 +106,7 @@ export default function DraggableTaskItem({ task }: Props) {
 
 							<TaskControlsDropdown task={task}>
 								<Button variant="ghost" size="icon" className="rounded-full">
-									<IconRenderer name="MoreHorizontal" />
+									<IconRenderer name="EllipsisVertical" />
 								</Button>
 							</TaskControlsDropdown>
 						</div>

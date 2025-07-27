@@ -1,29 +1,34 @@
 "use client";
 
-import Link from "next/link";
-import { AppLogo } from "@/components/app-logo";
 import { IconRenderer } from "@/components/icon-renderer";
-import AppModal from "@/components/modals/app-modal";
+import SettingsModal from "@/components/modals/settings";
 import { ThemeSwitcher } from "@/components/theme";
+import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbList,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import UserButton from "@/components/user-button";
-import SettingsModal from "../modals/settings";
 
 export default function AppHeader() {
 	return (
 		<div className="flex w-full items-center justify-between">
-			<div className="flex items-center gap-1">
-				<Button size="icon" asChild>
-					<Link href="/tasks">
-						<AppLogo />
-					</Link>
-				</Button>
+			<div className="flex items-center gap-2">
+				<SidebarTrigger className="-ml-1" />
 
-				<AppModal>
-					<Button variant="ghost" size="icon">
-						<IconRenderer name="AlignLeft" />
-					</Button>
-				</AppModal>
+				<Separator
+					orientation="vertical"
+					className="mr-2 data-[orientation=vertical]:h-4"
+				/>
+
+				<Breadcrumb>
+					<BreadcrumbList>
+						<BreadcrumbItem>Home</BreadcrumbItem>
+					</BreadcrumbList>
+				</Breadcrumb>
 			</div>
 
 			<div className="flex items-center gap-2">

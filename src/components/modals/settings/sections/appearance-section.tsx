@@ -64,19 +64,19 @@ const AppearanceSection = () => {
 							iconName="Sun"
 							themeTitle="light"
 							className="size-8 rounded-md border-border shadow-xs"
-							activeClassName="!bg-secondary border-border"
+							activeClassName="!bg-primary !text-primary-foreground border-border"
 						/>
 						<ThemeButton
 							iconName="Moon"
 							themeTitle="dark"
 							className="size-8 rounded-md border-border shadow-xs"
-							activeClassName="!bg-secondary border-border"
+							activeClassName="!bg-primary !text-primary-foreground border-border"
 						/>
 						<ThemeButton
 							iconName="Laptop"
 							themeTitle="system"
 							className="size-8 rounded-md border-border shadow-xs"
-							activeClassName="!bg-secondary border-border"
+							activeClassName="!bg-primary !text-primary-foreground border-border"
 						/>
 					</div>
 				</div>

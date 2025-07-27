@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import useSound from "use-sound";
+import { IconRenderer } from "@/components/icon-renderer";
 import AnimatedCircularProgressBar from "@/components/ui/animated-circular-progress-bar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +15,6 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
-import { useSound } from "@/hooks/use-sounds";
-import { IconRenderer } from "../icon-renderer";
 
 const QUOTES = [
 	{
@@ -52,12 +51,17 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 	const [timeLeft, setTimeLeft] = useState(1500);
 	const [isRunning, setIsRunning] = useState(false);
 	const [quoteIndex, setQuoteIndex] = useState(0);
+	const [muted, setMuted] = useState(false);
 
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 	const quoteRef = useRef<NodeJS.Timeout | null>(null);
 	const hasCompletedRef = useRef(false);
 
-	const { play, muted, setMuted } = useSound("/sounds/complete.mp3");
+	const [play] = useSound("/sounds/complete.mp3", {
+		volume: 0.5,
+		soundEnabled: !muted,
+		preload: true,
+	});
 
 	const formatTime = (s: number) =>
 		`${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
@@ -200,9 +204,9 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 								onClick={() => setIsRunning((r) => !r)}
 							>
 								{isRunning ? (
-									<Pause className="size-4" />
+									<IconRenderer name="Pause" />
 								) : (
-									<Play className="size-4" />
+									<IconRenderer name="Play" />
 								)}
 							</Button>
 
@@ -212,9 +216,9 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 								onClick={() => setMuted((m) => !m)}
 							>
 								{muted ? (
-									<VolumeX className="size-4" />
+									<IconRenderer name="VolumeX" />
 								) : (
-									<Volume2 className="size-4" />
+									<IconRenderer name="Volume2" />
 								)}
 							</Button>
 						</div>

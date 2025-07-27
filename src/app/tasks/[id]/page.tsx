@@ -18,8 +18,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTaskLists } from "@/hooks/use-task-lists";
-import { useTasksByListId } from "@/hooks/use-tasks";
+import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
+import { useTasksByListId } from "@/hooks/mutations/use-task-mutation";
 import { cn } from "@/lib/utils";
 
 export default function TaskListPage() {

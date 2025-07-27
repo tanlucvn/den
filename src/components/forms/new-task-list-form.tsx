@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { NewTaskList } from "@/db/schema/task-lists";
-import { useTaskListActions } from "@/hooks/use-task-list-actions";
+import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
@@ -27,7 +27,7 @@ interface NewTaskListFormProps {
 export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 	const { data: session } = useSession();
 
-	const { loading, onCreate } = useTaskListActions();
+	const { loading, handleCreate } = useTaskListActions();
 
 	const form = useForm<NewTaskListFormValues>({
 		resolver: zodResolver(newTaskListSchema),
@@ -44,7 +44,7 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 			userId: session.user.id,
 		};
 
-		await onCreate(newList);
+		await handleCreate(newList);
 
 		form.reset();
 		onFinish?.();

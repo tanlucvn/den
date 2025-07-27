@@ -1,14 +1,13 @@
 "use client";
 
 import { format, isToday, isTomorrow } from "date-fns";
-import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Task } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { cn } from "@/lib/utils";
 import TaskControlsContext from "./task-controls-context";
 import TaskControlsDropdown from "./task-controls-dropdown";
@@ -18,8 +17,7 @@ interface TaskItemProps {
 }
 
 export default function TaskItem({ task }: TaskItemProps) {
-	const [_isOpen, _setIsOpenn] = useState(false);
-	const { onToggle } = useTaskActions();
+	const { handleToggle } = useTaskActions();
 
 	const isRemindPast = (date: string | Date) => {
 		const d = new Date(date);
@@ -53,7 +51,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<Checkbox
 							checked={task.isCompleted}
-							onCheckedChange={() => onToggle(task)}
+							onCheckedChange={() => handleToggle(task)}
 							className="size-6 rounded-full"
 						/>
 
@@ -70,7 +68,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 					<div className="flex items-center gap-1">
 						<PomodoroTimerDialog
 							title={task.title}
-							onFinish={() => onToggle(task)}
+							onFinish={() => handleToggle(task)}
 						>
 							<Button variant="ghost" size="icon" className="rounded-full">
 								<IconRenderer name="Timer" />

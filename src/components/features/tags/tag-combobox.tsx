@@ -18,7 +18,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import type { Tag } from "@/db/schema/tags";
-import { useTags } from "@/hooks/use-tags";
+import { useTags } from "@/hooks/mutations/use-tag-mutation";
 import TagChip from "./tag-chip";
 
 interface Props {

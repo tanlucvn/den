@@ -9,7 +9,7 @@ import {
 	DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
 import type { Tag } from "@/db/schema/tags";
-import { useTagActions } from "@/hooks/use-tag-actions";
+import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { formatDate } from "@/lib/utils";
 
 interface TagControlsDropdownProps {
@@ -23,7 +23,7 @@ export default function TagControlsDropdown({
 }: TagControlsDropdownProps) {
 	const [openModal, setOpenModal] = useState(false);
 
-	const { handleEdit, onDelete } = useTagActions();
+	const { handleEdit, handleDelete } = useTagActions();
 
 	return (
 		<>
@@ -49,7 +49,7 @@ export default function TagControlsDropdown({
 					<DropDrawerItem
 						className="!text-destructive gap-2"
 						icon={<IconRenderer name="Trash2" className="!text-destructive" />}
-						onClick={() => onDelete(tag)}
+						onClick={() => handleDelete(tag)}
 					>
 						<span>Delete</span>
 					</DropDrawerItem>

@@ -9,7 +9,7 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import type { Task } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { formatDate } from "@/lib/utils";
 
 interface TaskControlsContextProps {
@@ -26,10 +26,10 @@ export default function TaskControlsContext({
 	const {
 		handleEdit,
 		handlePinToggle,
-		onArchive,
+		handleArchive,
 		handleDelete,
-		onDuplicate,
-		onCopyToClipboard,
+		handleDuplicate,
+		handleCopyToClipboard,
 	} = useTaskActions();
 
 	return (
@@ -54,7 +54,7 @@ export default function TaskControlsContext({
 
 					<ContextMenuItem
 						className="justify-between gap-2"
-						onClick={() => onDuplicate(task)}
+						onClick={() => handleDuplicate(task)}
 					>
 						<span>Duplicate</span>
 						<IconRenderer name="CopyPlus" className="!text-primary/60" />
@@ -62,7 +62,7 @@ export default function TaskControlsContext({
 
 					<ContextMenuItem
 						className="justify-between gap-2"
-						onClick={() => onCopyToClipboard(task)}
+						onClick={() => handleCopyToClipboard(task)}
 					>
 						<span>Copy Task</span>
 						<IconRenderer name="Clipboard" className="!text-primary/60" />
@@ -93,7 +93,7 @@ export default function TaskControlsContext({
 
 					<ContextMenuItem
 						className="justify-between gap-2"
-						onClick={() => onArchive(task)}
+						onClick={() => handleArchive(task)}
 					>
 						{task.isArchived ? (
 							<>

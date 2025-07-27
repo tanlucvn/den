@@ -10,7 +10,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { useSession } from "@/lib/auth-client";
 import {
 	type QuickNewTaskFormValues,
@@ -31,7 +31,7 @@ export default function QuickAddTaskForm({
 	onFinish,
 }: QuickAddFormProps) {
 	const { data } = useSession();
-	const { loading, onCreate } = useTaskActions();
+	const { loading, handleCreate } = useTaskActions();
 
 	const form = useForm<QuickNewTaskFormValues>({
 		resolver: zodResolver(quickNewTaskSchema),
@@ -43,7 +43,7 @@ export default function QuickAddTaskForm({
 	const handleSubmit = async (values: QuickNewTaskFormValues) => {
 		if (!data) return;
 
-		await onCreate({
+		await handleCreate({
 			listId,
 			title: values.title.trim(),
 			userId: data.user.id,

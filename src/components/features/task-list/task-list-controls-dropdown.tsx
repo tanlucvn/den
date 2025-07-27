@@ -11,7 +11,7 @@ import {
 	DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
 import type { TaskList } from "@/db/schema/task-lists";
-import { useTaskListActions } from "@/hooks/use-task-list-actions";
+import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
 import { formatDate } from "@/lib/utils";
 
 interface TaskListControlsDropdownProps {
@@ -25,7 +25,7 @@ export default function TaskListControlsDropdown({
 }: TaskListControlsDropdownProps) {
 	const [openModal, setOpenModal] = useState(false);
 
-	const { handleEdit, onDelete } = useTaskListActions();
+	const { handleEdit, handleDelete } = useTaskListActions();
 
 	return (
 		<>
@@ -52,7 +52,7 @@ export default function TaskListControlsDropdown({
 					<DropDrawerItem
 						className="!text-destructive gap-2"
 						icon={<IconRenderer name="Trash2" className="!text-destructive" />}
-						onClick={() => onDelete(taskList.id)}
+						onClick={() => handleDelete(taskList)}
 					>
 						<span>Delete</span>
 					</DropDrawerItem>

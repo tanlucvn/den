@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { NewTag } from "@/db/schema/tags";
-import { useTagActions } from "@/hooks/use-tag-actions";
+import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { type NewTagValues, newTagSchema } from "@/lib/validators/new-tag";
@@ -28,7 +28,7 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 	const { data: session } = useSession();
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	const { loading, onCreate } = useTagActions();
+	const { loading, handleCreate } = useTagActions();
 
 	const form = useForm<NewTagValues>({
 		resolver: zodResolver(newTagSchema),
@@ -47,7 +47,7 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 			color: values.color?.trim() || undefined,
 		};
 
-		await onCreate(newTag);
+		await handleCreate(newTag);
 
 		form.reset();
 		onFinish?.();

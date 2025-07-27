@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TaskWithTags } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { cn, formatDate } from "@/lib/utils";
 import TagChipCombobox from "../tags/tag-combobox";
 import TaskControlsContext from "./task-controls-context";
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export default function DraggableTaskItem({ task }: Props) {
-	const { onToggle, onUpdateTags } = useTaskActions();
+	const { handleToggle, handleUpdateTags } = useTaskActions();
 
 	const {
 		attributes,
@@ -73,7 +73,7 @@ export default function DraggableTaskItem({ task }: Props) {
 
 								<Checkbox
 									checked={task.isCompleted}
-									onCheckedChange={() => onToggle(task)}
+									onCheckedChange={() => handleToggle(task)}
 									className="size-6 rounded-full"
 								/>
 							</div>
@@ -92,12 +92,12 @@ export default function DraggableTaskItem({ task }: Props) {
 							<TagChipCombobox
 								tags={task.tags ?? []}
 								selectedIds={task.tags?.map((t) => t.id)}
-								onChange={(tagIds) => onUpdateTags(task.id, tagIds)}
+								onChange={(tagIds) => handleUpdateTags(task.id, tagIds)}
 							/>
 
 							<PomodoroTimerDialog
 								title={task.title}
-								onFinish={() => onToggle({ ...task, isCompleted: true })}
+								onFinish={() => handleToggle({ ...task, isCompleted: true })}
 							>
 								<Button variant="ghost" size="icon" className="rounded-full">
 									<IconRenderer name="Timer" />

@@ -22,7 +22,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { useTasks } from "@/hooks/use-tasks";
+import { useTasks } from "@/hooks/mutations/use-task-mutation";
 import { authClient } from "@/lib/auth-client";
 import { filterTasks } from "@/lib/utils";
 import { useAppStore } from "@/store/use-app-store";

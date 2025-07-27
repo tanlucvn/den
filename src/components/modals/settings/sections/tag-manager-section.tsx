@@ -6,7 +6,7 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTags } from "@/hooks/use-tags";
+import { useTags } from "@/hooks/mutations/use-tag-mutation";
 import { cn } from "@/lib/utils";
 
 interface TagManagerSectionProps {

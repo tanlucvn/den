@@ -12,7 +12,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useTagActions } from "@/hooks/use-tag-actions";
+import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
 import {
 	type QuickNewTagValues,
@@ -29,7 +29,7 @@ export default function QuickAddTagForm({
 	onFinish,
 }: QuickAddTagFormProps) {
 	const { data } = useSession();
-	const { loading, onCreate } = useTagActions();
+	const { loading, handleCreate } = useTagActions();
 
 	const form = useForm<QuickNewTagValues>({
 		resolver: zodResolver(quickNewTagSchema),
@@ -41,7 +41,7 @@ export default function QuickAddTagForm({
 	const handleSubmit = async (values: QuickNewTagValues) => {
 		if (!data) return;
 
-		await onCreate({
+		await handleCreate({
 			title: values.title.trim(),
 			userId: data.user.id,
 		});

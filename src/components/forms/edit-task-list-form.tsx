@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { TaskList } from "@/db/schema/task-lists";
-import { useTaskListActions } from "@/hooks/use-task-list-actions";
+import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
 import { cn } from "@/lib/utils";
 import {
 	type EditTaskListValues,
@@ -28,7 +28,7 @@ export default function EditTaskListForm({
 	initialData,
 	onFinish,
 }: EditTaskListFormProps) {
-	const { loading, onUpdate } = useTaskListActions();
+	const { loading, handleUpdate } = useTaskListActions();
 
 	const form = useForm<EditTaskListValues>({
 		resolver: zodResolver(editTaskListSchema),
@@ -40,7 +40,7 @@ export default function EditTaskListForm({
 	const handleSubmit = async (values: EditTaskListValues) => {
 		if (!initialData) return;
 
-		await onUpdate({
+		await handleUpdate({
 			...initialData,
 			...values,
 		});

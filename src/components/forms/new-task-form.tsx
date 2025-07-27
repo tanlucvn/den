@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { NewTask } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
@@ -44,7 +44,7 @@ interface NewTaskFormProps {
 export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
 	const { data } = useSession();
 
-	const { loading, onCreate } = useTaskActions();
+	const { loading, handleCreate } = useTaskActions();
 
 	const form = useForm<NewTaskFormValues>({
 		resolver: zodResolver(newTaskSchema),
@@ -68,7 +68,7 @@ export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
 			remindAt: values.remindAt,
 		};
 
-		await onCreate(newTask);
+		await handleCreate(newTask);
 		form.reset();
 
 		onFinish();

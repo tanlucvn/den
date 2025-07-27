@@ -7,8 +7,8 @@ import {
 	BreadcrumbItem,
 	BreadcrumbList,
 } from "@/components/ui/breadcrumb";
-import { useTaskLists } from "@/hooks/use-task-lists";
-import { useTasks } from "@/hooks/use-tasks";
+import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
+import { useTasks } from "@/hooks/mutations/use-task-mutation";
 
 export default function Page() {
 	const { data: allTaskLists = [] } = useTaskLists();

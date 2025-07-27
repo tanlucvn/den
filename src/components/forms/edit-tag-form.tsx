@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Tag } from "@/db/schema/tags";
-import { useTagActions } from "@/hooks/use-tag-actions";
+import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { cn } from "@/lib/utils";
 import {
 	type EditTagFormValues,
@@ -31,7 +31,7 @@ export default function EditTagForm({
 	initialData,
 	onFinish,
 }: EditTagFormProps) {
-	const { loading, onUpdate } = useTagActions();
+	const { loading, handleUpdate } = useTagActions();
 	const [isCollapsed, setIsCollapsed] = useState(!!initialData.color);
 
 	const form = useForm<EditTagFormValues>({
@@ -45,7 +45,7 @@ export default function EditTagForm({
 	const handleSubmit = async (values: EditTagFormValues) => {
 		if (!initialData) return;
 
-		await onUpdate({
+		await handleUpdate({
 			...initialData,
 			...values,
 			color: values.color?.trim() || null,

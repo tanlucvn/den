@@ -10,7 +10,7 @@ import {
 	DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
 import type { Task } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { formatDate } from "@/lib/utils";
 
 interface TaskControlsDropdownProps {
@@ -27,10 +27,10 @@ export default function TaskControlsDropdown({
 	const {
 		handleEdit,
 		handlePinToggle,
-		onArchive,
+		handleArchive,
 		handleDelete,
-		onDuplicate,
-		onCopyToClipboard,
+		handleDuplicate,
+		handleCopyToClipboard,
 	} = useTaskActions();
 
 	return (
@@ -63,7 +63,7 @@ export default function TaskControlsDropdown({
 							icon={
 								<IconRenderer name="CopyPlus" className="!text-primary/60" />
 							}
-							onClick={() => onDuplicate(task)}
+							onClick={() => handleDuplicate(task)}
 						>
 							<span>Duplicate</span>
 						</DropDrawerItem>
@@ -73,7 +73,7 @@ export default function TaskControlsDropdown({
 							icon={
 								<IconRenderer name="Clipboard" className="!text-primary/60" />
 							}
-							onClick={() => onCopyToClipboard(task)}
+							onClick={() => handleCopyToClipboard(task)}
 						>
 							<span>Copy Task</span>
 						</DropDrawerItem>
@@ -109,7 +109,7 @@ export default function TaskControlsDropdown({
 									<IconRenderer name="Archive" className="!text-primary/60" />
 								)
 							}
-							onClick={() => onArchive(task)}
+							onClick={() => handleArchive(task)}
 						>
 							{task.isArchived ? <span>Unarchive</span> : <span>Archive</span>}
 						</DropDrawerItem>

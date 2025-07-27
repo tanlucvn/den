@@ -5,20 +5,21 @@ import type { NewTag, Tag } from "@/db/schema/tags";
 import {
 	useCreateTag,
 	useDeleteTag,
-	useTags,
 	useUpdateTag,
-} from "@/hooks/use-tags";
+} from "@/hooks/mutations/use-tag-mutation";
 import { useAppStore } from "@/store/use-app-store";
 
+//* Custom hook for tag actions (CRUD, refresh, edit modal)
+//* Use mutation logic with toast notifications
 export const useTagActions = () => {
 	const { setEditTag } = useAppStore();
 
+	// Tag mutation hooks
 	const { mutateAsync: createTag, isPending: isCreating } = useCreateTag();
 	const { mutateAsync: updateTag, isPending: isUpdating } = useUpdateTag();
 	const { mutateAsync: deleteTag, isPending: isDeleting } = useDeleteTag();
-	const { refetch: refetchTags } = useTags();
 
-	const onCreate = async (tag: NewTag) => {
+	const handleCreate = async (tag: NewTag) => {
 		if (!tag.title.trim()) return;
 
 		const promise = createTag(tag);
@@ -30,7 +31,7 @@ export const useTagActions = () => {
 		await promise;
 	};
 
-	const onUpdate = async (tag: Tag) => {
+	const handleUpdate = async (tag: Tag) => {
 		const promise = updateTag(tag);
 		toast.promise(promise, {
 			loading: "Updating tag...",
@@ -40,7 +41,7 @@ export const useTagActions = () => {
 		await promise;
 	};
 
-	const onDelete = async (tag: Tag) => {
+	const handleDelete = async (tag: Tag) => {
 		const promise = deleteTag(tag);
 		toast.promise(promise, {
 			loading: "Deleting tag...",
@@ -50,20 +51,15 @@ export const useTagActions = () => {
 		await promise;
 	};
 
-	const onRefresh = async () => {
-		await refetchTags();
-	};
-
 	const handleEdit = (tag: Tag) => {
 		setEditTag(tag);
 	};
 
 	return {
 		loading: isCreating || isUpdating || isDeleting,
-		onCreate,
-		onUpdate,
-		onDelete,
-		onRefresh,
+		handleCreate,
+		handleUpdate,
+		handleDelete,
 		handleEdit,
 	};
 };

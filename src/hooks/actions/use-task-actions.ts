@@ -1,25 +1,26 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
 import type { NewTask, Task } from "@/db/schema/tasks";
+
+import { useSession } from "@/lib/auth-client";
+import { useAppStore } from "@/store/use-app-store";
 import {
 	useBatchUpdateTasks,
 	useCreateTask,
 	useDeleteTask,
-	useTasks,
 	useUpdateTask,
 	useUpdateTaskTags,
-} from "@/hooks/use-tasks";
-import { useSession } from "@/lib/auth-client";
-import { useAppStore } from "@/store/use-app-store";
+} from "../mutations/use-task-mutation";
 
+//* Custom hook for task-related actions (CRUD, tags, archive, etc.)
+//* Use mutation logic with toast notifications
 export const useTaskActions = () => {
-	const router = useRouter();
-	const { data } = useSession();
-
+	const { data: session } = useSession();
 	const { setEditTask } = useAppStore();
 
+	// Task mutation hooks
 	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask();
 	const { mutateAsync: updateTaskTags, isPending: isUpdatingTags } =
 		useUpdateTaskTags();
@@ -27,52 +28,58 @@ export const useTaskActions = () => {
 	const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTask();
 	const { mutateAsync: batchUpdateTasks, isPending: isBatching } =
 		useBatchUpdateTasks();
-	const { refetch: fetchTasks } = useTasks();
 
-	const onCreate = async (task: NewTask) => {
+	const handleCreate = async (task: NewTask) => {
 		if (!task.title.trim()) return;
 
 		const promise = createTask(task);
+		toast.promise(promise, {
+			loading: "Creating task...",
+			success: "Task created!",
+			error: "Failed to create task.",
+		});
 		await promise;
 	};
 
-	const onToggle = async (task: Task) => {
+	const handleToggle = async (task: Task) => {
 		const updated = { ...task, isCompleted: !task.isCompleted };
-
-		const promise = updateTask(updated);
-		await promise;
+		await updateTask(updated);
 	};
 
-	const onArchive = async (task: Task) => {
+	const handleArchive = async (task: Task) => {
 		const updated = { ...task, isArchived: !task.isArchived };
-
 		const promise = updateTask(updated);
+
 		toast.promise(promise, {
 			loading: task.isArchived ? "Unarchiving task..." : "Archiving task...",
 			success: task.isArchived ? "Task unarchived!" : "Task archived!",
 			error: "Failed to update task archive status.",
 		});
+
 		await promise;
 	};
 
-	const onUpdateTags = async (taskId: string, tagIds: string[]) => {
+	const handleUpdateTags = async (taskId: string, tagIds: string[]) => {
 		const promise = updateTaskTags({ taskId, tagIds });
-
 		toast.promise(promise, {
 			loading: "Updating tags...",
 			success: "Tags updated!",
 			error: "Failed to update tags.",
 		});
-
 		await promise;
 	};
 
-	const onUpdate = async (task: Task) => {
+	const handleUpdate = async (task: Task) => {
 		const promise = updateTask(task);
+		toast.promise(promise, {
+			loading: "Updating task...",
+			success: "Task updated!",
+			error: "Failed to update task.",
+		});
 		await promise;
 	};
 
-	const onDelete = async (task: Task) => {
+	const handleDelete = async (task: Task) => {
 		const promise = deleteTask(task);
 		toast.promise(promise, {
 			loading: "Deleting task...",
@@ -80,27 +87,26 @@ export const useTaskActions = () => {
 			error: "Failed to delete task.",
 		});
 		await promise;
-
-		// ? Optional: redirect if you're on the deleted task page
-		if (router && window.location.pathname.includes(`/tasks/${task.id}`)) {
-			router.push("/");
-		}
 	};
 
-	const onClearCompleted = async (tasks: Task[]) => {
+	const handleClearCompleted = async (tasks: Task[]) => {
 		const toDelete = tasks.filter((t) => t.isCompleted);
 		await Promise.all(toDelete.map((t) => deleteTask(t)));
 	};
 
-	const onSort = async (tasks: Task[]) => {
-		return batchUpdateTasks(tasks);
+	const handleSort = async (tasks: Task[]) => {
+		await batchUpdateTasks(tasks);
 	};
 
-	const onDuplicate = async (task: NewTask) => {
-		if (!data) return;
+	const debouncedSort = useDebouncedCallback((tasks: Task[]) => {
+		handleSort(tasks);
+	}, 500);
+
+	const handleDuplicate = async (task: NewTask) => {
+		if (!session) return;
 
 		const duplicatedTask: NewTask = {
-			userId: data.user.id,
+			userId: session.user.id,
 			listId: task.listId,
 			title: task.title,
 			note: task.note || "",
@@ -111,18 +117,14 @@ export const useTaskActions = () => {
 			priority: task.priority,
 		};
 
-		await onCreate(duplicatedTask);
+		await handleCreate(duplicatedTask);
 		toast.success("Task duplicated!");
 	};
 
-	const onCopyToClipboard = async (task: Task) => {
+	const handleCopyToClipboard = async (task: Task) => {
 		const content = `${task.title}\n${task.note ?? ""}`;
 		await navigator.clipboard.writeText(content);
 		toast.success("Task copied to clipboard!");
-	};
-
-	const onRefresh = async () => {
-		await fetchTasks();
 	};
 
 	const handleEdit = (task: Task) => {
@@ -130,29 +132,30 @@ export const useTaskActions = () => {
 	};
 
 	const handlePinToggle = (task: Task) => {
-		onUpdate({ ...task, isPinned: !task.isPinned });
-	};
-
-	const handleDelete = (task: Task) => {
-		onDelete(task);
+		const promise = updateTask({ ...task, isPinned: !task.isPinned });
+		toast.promise(promise, {
+			loading: task.isPinned ? "Unpinning task..." : "Pinning task...",
+			success: task.isPinned ? "Task unpinned!" : "Task pinned!",
+			error: "Failed to update pin status.",
+		});
 	};
 
 	return {
 		loading:
 			isCreating || isUpdatingTags || isUpdating || isDeleting || isBatching,
-		onCreate,
-		onToggle,
-		onArchive,
-		onUpdateTags,
-		onUpdate,
-		onDelete,
-		onClearCompleted,
-		onSort,
-		onDuplicate,
-		onCopyToClipboard,
-		onRefresh,
+
+		handleCreate,
+		handleToggle,
+		handleArchive,
+		handleUpdateTags,
+		handleUpdate,
+		handleDelete,
+		handleClearCompleted,
+		handleSort,
+		handleDuplicate,
+		handleCopyToClipboard,
 		handleEdit,
 		handlePinToggle,
-		handleDelete,
+		debouncedSort,
 	};
 };

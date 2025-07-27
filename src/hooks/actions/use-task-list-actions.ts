@@ -6,40 +6,48 @@ import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
 import {
 	useCreateTaskList,
 	useDeleteTaskList,
-	useTaskLists,
 	useUpdateTaskList,
-} from "@/hooks/use-task-lists";
+} from "@/hooks/mutations/use-task-list-mutation";
 import { useAppStore } from "@/store/use-app-store";
 
+//* Custom hook for task list actions (CRUD, refresh, edit modal)
+//* Use mutation logic with toast notifications
 export const useTaskListActions = () => {
 	const router = useRouter();
-
 	const { setEditTaskList } = useAppStore();
 
+	// Task list mutation hooks
 	const { mutateAsync: createTaskList, isPending: isCreating } =
 		useCreateTaskList();
 	const { mutateAsync: updateTaskList, isPending: isUpdating } =
 		useUpdateTaskList();
 	const { mutateAsync: deleteTaskList, isPending: isDeleting } =
 		useDeleteTaskList();
-	const { refetch: fetchTaskLists } = useTaskLists();
 
-	const onCreate = async (list: NewTaskList) => {
+	const handleCreate = async (list: NewTaskList) => {
 		if (!list.title.trim()) return;
 
 		const promise = createTaskList(list);
+		toast.promise(promise, {
+			loading: "Creating task list...",
+			success: "Task list created!",
+			error: "Failed to create task list.",
+		});
 		await promise;
-		toast.success("Task list created!");
 	};
 
-	const onUpdate = async (list: TaskList) => {
+	const handleUpdate = async (list: TaskList) => {
 		const promise = updateTaskList(list);
+		toast.promise(promise, {
+			loading: "Updating task list...",
+			success: "Task list updated!",
+			error: "Failed to update task list.",
+		});
 		await promise;
-		toast.success("Task list updated!");
 	};
 
-	const onDelete = async (id: string) => {
-		const promise = deleteTaskList(id);
+	const handleDelete = async (list: TaskList) => {
+		const promise = deleteTaskList(list);
 		toast.promise(promise, {
 			loading: "Deleting task list...",
 			success: "Task list deleted!",
@@ -47,13 +55,10 @@ export const useTaskListActions = () => {
 		});
 		await promise;
 
-		if (router && window.location.pathname.includes(`/task-lists/${id}`)) {
+		// Redirect if user is on the deleted list page
+		if (window.location.pathname.includes(`/task-lists/${list.id}`)) {
 			router.push("/");
 		}
-	};
-
-	const onRefresh = async () => {
-		await fetchTaskLists();
 	};
 
 	const handleEdit = (list: TaskList) => {
@@ -62,10 +67,9 @@ export const useTaskListActions = () => {
 
 	return {
 		loading: isCreating || isUpdating || isDeleting,
-		onCreate,
-		onUpdate,
-		onDelete,
-		onRefresh,
+		handleCreate,
+		handleUpdate,
+		handleDelete,
 		handleEdit,
 	};
 };

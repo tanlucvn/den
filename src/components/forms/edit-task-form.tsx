@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { Task } from "@/db/schema/tasks";
-import { useTaskActions } from "@/hooks/use-task-actions";
+import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { cn } from "@/lib/utils";
 import {
 	type EditTaskFormValues,
@@ -45,7 +45,7 @@ export default function EditTaskForm({
 	initialData,
 	onFinish,
 }: EditTaskFormProps) {
-	const { loading, onUpdate } = useTaskActions();
+	const { loading, handleUpdate } = useTaskActions();
 
 	const form = useForm<EditTaskFormValues>({
 		resolver: zodResolver(editTaskSchema),
@@ -61,7 +61,7 @@ export default function EditTaskForm({
 	const handleSubmit = async (values: EditTaskFormValues) => {
 		if (!initialData) return;
 
-		await onUpdate({
+		await handleUpdate({
 			...initialData,
 			...values,
 			remindAt: values.remindAt ?? null,

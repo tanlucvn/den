@@ -13,9 +13,7 @@ export default function middleware(request: NextRequest) {
 
 	// ! If user is not logged in and trying to access protected routes
 	if (!sessionCookie && !isAuthRoute(pathname) && !isPublicRoute(pathname)) {
-		if (pathname !== "/signin") {
-			return NextResponse.redirect(new URL("/signin", request.url));
-		}
+		return NextResponse.redirect(new URL("/signin", request.url));
 	}
 
 	return NextResponse.next();

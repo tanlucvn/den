@@ -25,3 +25,17 @@ export const formatDate = (date: string | Date) => {
 	if (isTomorrow(d)) return "tomorrow";
 	return format(d, "MMMM do yyyy");
 };
+
+export function getURL(): string {
+	if (typeof window !== "undefined") {
+		// Client-side
+		return window.location.origin;
+	}
+
+	// Server-side: get from local env NEXT_PUBLIC_APP_URL or fallback localhost
+	const base =
+		process.env.NEXT_PUBLIC_APP_URL ?? // eg. https://den-demo.vercel.app
+		"http://localhost:3000";
+
+	return base.startsWith("http") ? base : `https://${base}`;
+}

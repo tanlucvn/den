@@ -3,10 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,10 +28,15 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { type SignUpFormValues, signUpSchema } from "@/lib/validators/auth";
 
+type LoadingProvider = "email" | "google" | "github" | null;
+
 export function SignUpForm() {
-	const [isEmailLoading, setIsEmailLoading] = useState(false);
-	const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-	const [isGithubLoading, setIsGithubLoading] = useState(false);
+	const router = useRouter();
+
+	const [loadingProvider, setLoadingProvider] = useState<LoadingProvider>(null);
+
+	const isLoading = (provider: LoadingProvider) => loadingProvider === provider;
+	const isAnyLoading = loadingProvider !== null;
 
 	const form = useForm<SignUpFormValues>({
 		resolver: zodResolver(signUpSchema),
@@ -43,68 +48,48 @@ export function SignUpForm() {
 	});
 
 	const onSubmit = async (values: SignUpFormValues) => {
-		const { email, password, name } = values;
+		setLoadingProvider("email");
 
 		await authClient.signUp.email(
-			{ email, password, name, callbackURL: "/tasks" },
+			{ ...values },
 			{
-				onRequest: () => setIsEmailLoading(true),
 				onSuccess: () => {
 					toast.success("Account created", {
 						description: "Redirecting...",
 					});
+					router.push("/tasks");
 				},
 				onError: (ctx) => {
 					toast.error("Sign Up Error", {
 						description: ctx.error.message,
 					});
+					setLoadingProvider(null);
 				},
-				onSettled: () => setIsEmailLoading(false),
+				onSettled: () => setLoadingProvider(null),
 			},
 		);
 	};
 
-	const handleGoogleSignUp = async () => {
+	const handleOAuthSignUp = (provider: "google" | "github") => async () => {
 		await authClient.signIn.social(
-			{ provider: "google", callbackURL: "/tasks" },
+			{ provider, callbackURL: "/tasks" },
 			{
-				onRequest: () => setIsGoogleLoading(true),
+				onRequest: () => setLoadingProvider(provider),
 				onSuccess: () => {
 					toast.success("Signed up successfully", {
 						description: "Redirecting...",
 					});
 				},
 				onError: () => {
-					toast.error("Google Sign Up Error", {
-						description: "Could not sign up with Google",
+					toast.error(`${provider} Sign up failed`, {
+						description: `Could not sign up with ${provider}`,
 					});
+					setLoadingProvider(null);
 				},
-				onSettled: () => setIsGoogleLoading(false),
+				onSettled: () => setLoadingProvider(null),
 			},
 		);
 	};
-
-	const handleGithubSignUp = async () => {
-		await authClient.signIn.social(
-			{ provider: "github", callbackURL: "/tasks" },
-			{
-				onRequest: () => setIsGithubLoading(true),
-				onSuccess: () => {
-					toast.success("Signed up successfully", {
-						description: "Redirecting...",
-					});
-				},
-				onError: () => {
-					toast.error("GitHub Sign Up Error", {
-						description: "Could not sign up with GitHub",
-					});
-				},
-				onSettled: () => setIsGithubLoading(false),
-			},
-		);
-	};
-
-	const isAnyLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
 
 	return (
 		<section className="flex flex-col gap-6">
@@ -129,7 +114,7 @@ export function SignUpForm() {
 									disabled={isAnyLoading}
 									render={({ field }) => (
 										<FormItem className="grid gap-3">
-											<FormLabel className="gap-1">
+											<FormLabel>
 												Name <span className="text-destructive">*</span>
 											</FormLabel>
 											<FormControl>
@@ -139,20 +124,21 @@ export function SignUpForm() {
 										</FormItem>
 									)}
 								/>
+
 								<FormField
 									control={form.control}
 									name="email"
 									disabled={isAnyLoading}
 									render={({ field }) => (
 										<FormItem className="grid gap-3">
-											<FormLabel className="gap-1">
+											<FormLabel>
 												Email <span className="text-destructive">*</span>
 											</FormLabel>
 											<FormControl>
 												<Input
-													placeholder="den@example.com"
 													type="email"
 													autoComplete="email"
+													placeholder="den@example.com"
 													{...field}
 												/>
 											</FormControl>
@@ -160,20 +146,21 @@ export function SignUpForm() {
 										</FormItem>
 									)}
 								/>
+
 								<FormField
 									control={form.control}
 									name="password"
 									disabled={isAnyLoading}
 									render={({ field }) => (
 										<FormItem className="grid gap-3">
-											<FormLabel className="gap-1">
+											<FormLabel>
 												Password <span className="text-destructive">*</span>
 											</FormLabel>
 											<FormControl>
 												<Input
-													placeholder="********"
 													type="password"
 													autoComplete="new-password"
+													placeholder="********"
 													{...field}
 												/>
 											</FormControl>
@@ -181,12 +168,13 @@ export function SignUpForm() {
 										</FormItem>
 									)}
 								/>
+
 								<Button
 									type="submit"
 									className="w-full"
 									disabled={isAnyLoading}
 								>
-									{isEmailLoading ? (
+									{isLoading("email") ? (
 										<div className="flex items-center justify-center gap-2">
 											<Loader2 className="h-4 w-4 animate-spin" />
 											<span>Creating account...</span>
@@ -209,35 +197,31 @@ export function SignUpForm() {
 								variant="outline"
 								size="icon"
 								className="w-full"
-								onClick={handleGoogleSignUp}
+								onClick={handleOAuthSignUp("google")}
 								disabled={isAnyLoading}
 							>
-								{isGoogleLoading ? (
+								{isLoading("google") ? (
 									<IconRenderer name="Loader2" className="animate-spin" />
 								) : (
 									<IconRenderer name="Chrome" />
 								)}
 							</Button>
+
 							<Button
 								variant="outline"
 								size="icon"
 								className="w-full"
-								onClick={handleGithubSignUp}
+								onClick={handleOAuthSignUp("github")}
 								disabled={isAnyLoading}
 							>
-								{isGithubLoading ? (
+								{isLoading("github") ? (
 									<IconRenderer name="Loader2" className="animate-spin" />
 								) : (
 									<IconRenderer name="Github" />
 								)}
 							</Button>
-							<Button
-								variant="outline"
-								size="icon"
-								className="w-full"
-								onClick={handleGithubSignUp}
-								disabled={isAnyLoading}
-							>
+
+							<Button variant="outline" size="icon" className="w-full" disabled>
 								<IconRenderer name="Facebook" />
 							</Button>
 						</div>

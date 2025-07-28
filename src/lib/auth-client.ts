@@ -2,8 +2,10 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
 import type { auth } from "@/lib/auth";
+import { getURL } from "./utils";
 
 export const authClient = createAuthClient({
+	baseURL: getURL(),
 	fetchOptions: {
 		onError(e) {
 			if (e.error.status === 429) {

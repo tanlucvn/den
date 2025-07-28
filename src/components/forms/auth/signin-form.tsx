@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -40,12 +41,17 @@ import {
 	signInSchema,
 } from "@/lib/validators/auth";
 
+type Provider = "email" | "google" | "github" | null;
+
 export function SignInForm() {
-	const [isEmailLoading, setIsEmailLoading] = useState(false);
-	const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-	const [isGithubLoading, setIsGithubLoading] = useState(false);
+	const router = useRouter();
+
+	const [loadingProvider, setLoadingProvider] = useState<Provider>(null);
 	const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
 		useState(false);
+
+	const isLoading = (provider: Provider) => loadingProvider === provider;
+	const isAnyLoading = loadingProvider !== null;
 
 	const form = useForm<SignInFormValues>({
 		resolver: zodResolver(signInSchema),
@@ -63,100 +69,74 @@ export function SignInForm() {
 	});
 
 	const onSubmit = async (values: SignInFormValues) => {
-		const { email, password } = values;
+		setLoadingProvider("email");
 
 		await authClient.signIn.email(
-			{ email, password, callbackURL: "/tasks" },
+			{ ...values },
 			{
-				onRequest: () => setIsEmailLoading(true),
+				onSuccess: () => {
+					toast.success("Signed in successfully", {
+						description: "Redirecting...",
+					});
+					router.push("/tasks");
+				},
+				onError: (ctx) => {
+					toast.error("Sign in failed", {
+						description: ctx.error.message,
+					});
+					setLoadingProvider(null);
+				},
+				onSettled: () => setLoadingProvider(null),
+			},
+		);
+	};
+
+	const handleOAuthSignIn = (provider: "google" | "github") => async () => {
+		await authClient.signIn.social(
+			{ provider, callbackURL: "/tasks" },
+			{
+				onRequest: () => setLoadingProvider(provider),
 				onSuccess: () => {
 					toast.success("Signed in successfully", {
 						description: "Redirecting...",
 					});
 				},
-				onError: (ctx) => {
-					toast.error("Sign In Error", {
-						description: ctx.error.message,
+				onError: () => {
+					toast.error(`${provider} Sign in failed`, {
+						description: `Could not sign in with ${provider}`,
 					});
-					setIsEmailLoading(false);
+					setLoadingProvider(null);
 				},
-				onSettled: () => setIsEmailLoading(false),
+				onSettled: () => setLoadingProvider(null),
 			},
 		);
 	};
 
 	const onForgotPassword = async (values: ForgotPasswordFormValues) => {
-		const { email } = values;
+		setLoadingProvider("email");
 
 		try {
-			setIsEmailLoading(true);
 			await authClient.forgetPassword({
-				email,
+				email: values.email,
 				redirectTo: "/reset-password",
 			});
 
-			toast.success("Password Reset", {
-				description: "A password reset link has been sent to your email.",
+			toast.success("Password Reset Email Sent", {
+				description: "Check your inbox for the reset link.",
 			});
 
 			setIsForgotPasswordModalOpen(false);
 		} catch (error) {
-			const errorMessage =
-				error instanceof Error
-					? error.message
-					: "Unable to send password reset email";
-
 			toast.error("Reset Password Error", {
-				description: errorMessage,
+				description:
+					error instanceof Error
+						? error.message
+						: "Unable to send reset link. Try again later.",
 			});
 		} finally {
-			setIsEmailLoading(false);
+			setLoadingProvider(null);
 		}
 	};
-
-	const handleGoogleSignIn = async () => {
-		await authClient.signIn.social(
-			{ provider: "google", callbackURL: "/tasks" },
-			{
-				onRequest: () => setIsGoogleLoading(true),
-				onSuccess: () => {
-					toast.success("Signed in successfully", {
-						description: "Redirecting...",
-					});
-				},
-				onError: () => {
-					toast.error("Sign In Error", {
-						description: "Failed to sign in with Google",
-					});
-					setIsGoogleLoading(false);
-				},
-				onSettled: () => setIsGoogleLoading(false),
-			},
-		);
-	};
-
-	const handleGithubSignIn = async () => {
-		await authClient.signIn.social(
-			{ provider: "github", callbackURL: "/tasks" },
-			{
-				onRequest: () => setIsGithubLoading(true),
-				onSuccess: () => {
-					toast.success("Signed in successfully", {
-						description: "Redirecting...",
-					});
-				},
-				onError: () => {
-					toast.error("Sign In Error", {
-						description: "Failed to sign in with Github",
-					});
-					setIsGithubLoading(false);
-				},
-				onSettled: () => setIsGithubLoading(false),
-			},
-		);
-	};
-
-	const isAnyLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
 
 	return (
 		<section className="flex flex-col gap-6">
@@ -164,7 +144,7 @@ export function SignInForm() {
 				<CardHeader className="text-center">
 					<CardTitle className="text-xl">Welcome back</CardTitle>
 					<CardDescription>
-						Login with your Github or Google account
+						Login with your Google, GitHub, or email
 					</CardDescription>
 				</CardHeader>
 
@@ -178,15 +158,15 @@ export function SignInForm() {
 								<FormField
 									control={form.control}
 									name="email"
-									disabled={isAnyLoading}
 									render={({ field }) => (
 										<FormItem className="grid gap-3">
 											<FormLabel>Email</FormLabel>
 											<FormControl>
 												<Input
-													placeholder="den@example.com"
 													type="email"
 													autoComplete="email"
+													placeholder="den@example.com"
+													disabled={isAnyLoading}
 													{...field}
 												/>
 											</FormControl>
@@ -198,7 +178,6 @@ export function SignInForm() {
 								<FormField
 									control={form.control}
 									name="password"
-									disabled={isAnyLoading}
 									render={({ field }) => (
 										<FormItem className="grid gap-3">
 											<div className="flex items-center justify-between">
@@ -216,27 +195,27 @@ export function SignInForm() {
 															Forgot password?
 														</Button>
 													</ModalTrigger>
+
 													<ModalContent className="sm:max-w-md">
 														<ModalHeader>
 															<ModalTitle>Reset Your Password</ModalTitle>
 															<ModalDescription>
-																Enter your email address and we&#39;ll send you
-																a link to reset your password.
+																We'll send a reset link to your email address.
 															</ModalDescription>
 														</ModalHeader>
 
 														<Form {...forgotPasswordForm}>
-															<form className="mt-2 grid gap-6">
+															<form className="grid gap-6">
 																<FormField
 																	control={forgotPasswordForm.control}
 																	name="email"
 																	render={({ field }) => (
 																		<FormItem className="grid gap-3">
-																			<FormLabel>Email Address</FormLabel>
+																			<FormLabel>Email</FormLabel>
 																			<FormControl>
 																				<Input
-																					placeholder="Enter your email"
 																					type="email"
+																					placeholder="Enter your email"
 																					{...field}
 																				/>
 																			</FormControl>
@@ -244,15 +223,16 @@ export function SignInForm() {
 																		</FormItem>
 																	)}
 																/>
+
 																<Button
 																	type="button"
 																	className="w-full"
-																	disabled={isAnyLoading}
+																	disabled={isLoading("email")}
 																	onClick={forgotPasswordForm.handleSubmit(
 																		onForgotPassword,
 																	)}
 																>
-																	{isEmailLoading ? (
+																	{isLoading("email") ? (
 																		<div className="flex items-center justify-center gap-2">
 																			<Loader2 className="h-4 w-4 animate-spin" />
 																			<span>Sending...</span>
@@ -266,11 +246,13 @@ export function SignInForm() {
 													</ModalContent>
 												</Modal>
 											</div>
+
 											<FormControl>
 												<Input
-													placeholder="********"
 													type="password"
 													autoComplete="current-password"
+													placeholder="********"
+													disabled={isAnyLoading}
 													{...field}
 												/>
 											</FormControl>
@@ -278,12 +260,13 @@ export function SignInForm() {
 										</FormItem>
 									)}
 								/>
+
 								<Button
 									type="submit"
 									className="w-full"
 									disabled={isAnyLoading}
 								>
-									{isEmailLoading ? (
+									{isLoading("email") ? (
 										<div className="flex items-center justify-center gap-2">
 											<Loader2 className="h-4 w-4 animate-spin" />
 											<span>Signing in...</span>
@@ -306,10 +289,10 @@ export function SignInForm() {
 								variant="outline"
 								size="icon"
 								className="w-full"
-								onClick={handleGoogleSignIn}
+								onClick={handleOAuthSignIn("google")}
 								disabled={isAnyLoading}
 							>
-								{isGoogleLoading ? (
+								{isLoading("google") ? (
 									<IconRenderer name="Loader2" className="animate-spin" />
 								) : (
 									<IconRenderer name="Chrome" />
@@ -320,28 +303,18 @@ export function SignInForm() {
 								variant="outline"
 								size="icon"
 								className="w-full"
-								onClick={handleGithubSignIn}
+								onClick={handleOAuthSignIn("github")}
 								disabled={isAnyLoading}
 							>
-								{isGithubLoading ? (
+								{isLoading("github") ? (
 									<IconRenderer name="Loader2" className="animate-spin" />
 								) : (
 									<IconRenderer name="Github" />
 								)}
 							</Button>
 
-							<Button
-								variant="outline"
-								size="icon"
-								className="w-full"
-								onClick={handleGithubSignIn}
-								disabled={isAnyLoading}
-							>
-								{isGithubLoading ? (
-									<IconRenderer name="Loader2" className="animate-spin" />
-								) : (
-									<IconRenderer name="Facebook" />
-								)}
+							<Button variant="outline" size="icon" className="w-full" disabled>
+								<IconRenderer name="Facebook" />
 							</Button>
 						</div>
 

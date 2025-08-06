@@ -110,7 +110,7 @@ export default function TagChipCombobox({
 						placeholder="Search tags..."
 						className="text-sm"
 					/>
-					<CommandList>
+					<CommandList className="max-h-[150px] overflow-y-auto">
 						{isPending ? (
 							<CommandGroup>
 								{[...Array(5)].map((_, i) => (
@@ -125,12 +125,16 @@ export default function TagChipCombobox({
 								icon="SearchX"
 								title="No tags found"
 								description="Try another keyword or create a new tag."
-								className="rounded-none border-none px-2"
+								contentClassName="rounded-none border-none px-2"
 							/>
 						) : (
 							<CommandGroup>
 								{filteredTags?.map((tag) => (
-									<CommandItem key={tag.id} onSelect={() => toggleTag(tag.id)}>
+									<CommandItem
+										key={tag.id}
+										value={tag.id}
+										onSelect={() => toggleTag(tag.id)}
+									>
 										<TagChip
 											tag={tag}
 											className="cursor-default gap-2 border-none"

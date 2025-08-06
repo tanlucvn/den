@@ -13,7 +13,6 @@ import {
 	ModalDescription,
 	ModalHeader,
 	ModalTitle,
-	ModalTrigger,
 } from "@/components/ui/modal";
 
 const QUOTES = [
@@ -39,14 +38,19 @@ const QUOTES = [
 	},
 ];
 
-interface Props {
-	children: React.ReactNode;
+interface PomodoroTimerDialogProps {
 	onFinish: () => void;
 	title: string;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 }
 
-export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
-	const [isOpen, setIsOpen] = useState(false);
+export function PomodoroTimerDialog({
+	onFinish,
+	title,
+	open,
+	onOpenChange,
+}: PomodoroTimerDialogProps) {
 	const [duration, setDuration] = useState(25);
 	const [timeLeft, setTimeLeft] = useState(1500);
 	const [isRunning, setIsRunning] = useState(false);
@@ -76,11 +80,11 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 	}, []);
 
 	useEffect(() => {
-		if (isOpen) {
+		if (open) {
 			hasCompletedRef.current = false;
 			reset();
 		}
-	}, [isOpen, reset]);
+	}, [open, reset]);
 
 	useEffect(() => {
 		if (!isRunning || hasCompletedRef.current) return;
@@ -97,7 +101,7 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 						toast.success("Pomodoro completed! Task marked as done.");
 						onFinish();
 						setIsRunning(false);
-						setIsOpen(false);
+						onOpenChange(false);
 					}
 					return 0;
 				}
@@ -113,7 +117,7 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 			clearInterval(intervalRef.current!);
 			clearInterval(quoteRef.current!);
 		};
-	}, [isRunning, play, onFinish]);
+	}, [isRunning, play, onFinish, onOpenChange]);
 
 	const handleDurationChange = (val: string) => {
 		const mins = Math.max(1, Math.min(60, parseInt(val) || 25));
@@ -128,8 +132,7 @@ export function PomodoroTimerDialog({ children, onFinish, title }: Props) {
 				e.preventDefault();
 			}}
 		>
-			<Modal open={isOpen} onOpenChange={setIsOpen}>
-				<ModalTrigger asChild>{children}</ModalTrigger>
+			<Modal open={open} onOpenChange={onOpenChange}>
 				<ModalContent className="sm:max-w-xl">
 					<ModalHeader>
 						<ModalTitle>{title}</ModalTitle>

@@ -3,16 +3,15 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { isToday } from "date-fns";
+import TagChipCombobox from "@/components/features/tags/tag-combobox";
 import TaskControlsDropdown from "@/components/features/task/task-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
-import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { TaskWithTags } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { cn, formatDate } from "@/lib/utils";
-import TagChipCombobox from "../tags/tag-combobox";
 import TaskControlsContext from "./task-controls-context";
 
 type Props = {
@@ -94,15 +93,6 @@ export default function DraggableTaskItem({ task }: Props) {
 								selectedIds={task.tags?.map((t) => t.id)}
 								onChange={(tagIds) => handleUpdateTags(task.id, tagIds)}
 							/>
-
-							<PomodoroTimerDialog
-								title={task.title}
-								onFinish={() => handleToggle({ ...task, isCompleted: true })}
-							>
-								<Button variant="ghost" size="icon" className="rounded-full">
-									<IconRenderer name="Timer" />
-								</Button>
-							</PomodoroTimerDialog>
 
 							<TaskControlsDropdown task={task}>
 								<Button variant="ghost" size="icon" className="rounded-full">

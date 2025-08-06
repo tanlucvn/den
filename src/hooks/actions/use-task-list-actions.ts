@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { toast } from "sonner";
 import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
 import {
@@ -13,7 +13,7 @@ import { useAppStore } from "@/store/use-app-store";
 //* Custom hook for task list actions (CRUD, refresh, edit modal)
 //* Use mutation logic with toast notifications
 export const useTaskListActions = () => {
-	const router = useRouter();
+	const router = useTransitionRouter();
 	const { setEditTaskList } = useAppStore();
 
 	// Task list mutation hooks

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 
 import "@/styles/globals.css";
 import "@/styles/themes.css";
 import { Providers } from "@/components/providers";
 
-const inter = Inter({
-	variable: "--font-inter",
+const geist = Geist({
+	variable: "--font-geist",
 	display: "swap",
 	subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
 	variable: "--font-mono",
 	display: "swap",
 	subsets: ["latin"],
@@ -29,9 +29,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
-			>
+			<body className={`${geist.variable} ${geistMono.variable} antialiased`}>
 				<Providers>{children}</Providers>
 			</body>
 		</html>

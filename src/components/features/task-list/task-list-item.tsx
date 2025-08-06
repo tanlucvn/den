@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +40,7 @@ export function TaskListItem({
 		>
 			<CardHeader className="p-0">
 				<Link
-					href={`/tasks/${taskList.id}`}
+					href={`/lists/${taskList.id}`}
 					className="group no-underline hover:no-underline"
 				>
 					<CardTitle className="text-sm underline-offset-2 group-hover:underline">

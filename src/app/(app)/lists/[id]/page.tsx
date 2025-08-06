@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Link } from "next-view-transitions";
 import { AppQuickActions } from "@/components/common/app-quick-actions";
 import GroupedTaskSection from "@/components/features/task/grouped-task-section";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -10,7 +10,6 @@ import {
 	BreadcrumbItem,
 	BreadcrumbLink,
 	BreadcrumbList,
-	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
@@ -55,17 +54,19 @@ export default function TaskListPage() {
 					<BreadcrumbList>
 						<BreadcrumbItem>
 							<BreadcrumbLink asChild>
-								<Link href="/tasks" className="w-full">
-									Home
+								<Link href="/lists" className="w-full">
+									Lists
 								</Link>
 							</BreadcrumbLink>
 						</BreadcrumbItem>
+
 						<BreadcrumbSeparator />
+
 						<BreadcrumbItem>
 							<DropdownMenu>
 								<DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 text-muted-foreground text-sm hover:text-foreground">
-									<IconRenderer name="Signpost" />
-									Task Lists
+									{currentList?.title ?? "Untitled"}
+									<IconRenderer name="ChevronDown" />
 								</DropdownMenuTrigger>
 
 								<DropdownMenuContent
@@ -82,7 +83,7 @@ export default function TaskListPage() {
 											)}
 										>
 											<Link
-												href={`/tasks/${list.id}`}
+												href={`/lists/${list.id}`}
 												className="flex w-full items-center gap-2"
 											>
 												<IconRenderer name="List" className="text-primary/60" />
@@ -94,12 +95,6 @@ export default function TaskListPage() {
 									))}
 								</DropdownMenuContent>
 							</DropdownMenu>
-						</BreadcrumbItem>
-						<BreadcrumbSeparator />
-						<BreadcrumbItem>
-							<BreadcrumbPage>
-								{currentList?.title ?? "Untitled"}
-							</BreadcrumbPage>
 						</BreadcrumbItem>
 					</BreadcrumbList>
 				</Breadcrumb>

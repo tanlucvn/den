@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -31,7 +30,7 @@ import { type SignUpFormValues, signUpSchema } from "@/lib/validators/auth";
 type LoadingProvider = "email" | "google" | "github" | null;
 
 export function SignUpForm() {
-	const router = useRouter();
+	const router = useTransitionRouter();
 
 	const [loadingProvider, setLoadingProvider] = useState<LoadingProvider>(null);
 
@@ -57,7 +56,7 @@ export function SignUpForm() {
 					toast.success("Account created", {
 						description: "Redirecting...",
 					});
-					router.push("/tasks");
+					router.push("/dashboard");
 				},
 				onError: (ctx) => {
 					toast.error("Sign Up Error", {
@@ -72,7 +71,7 @@ export function SignUpForm() {
 
 	const handleOAuthSignUp = (provider: "google" | "github") => async () => {
 		await authClient.signIn.social(
-			{ provider, callbackURL: "/tasks" },
+			{ provider, callbackURL: "/dashboard" },
 			{
 				onRequest: () => setLoadingProvider(provider),
 				onSuccess: () => {

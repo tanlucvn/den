@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient, useSession } from "@/lib/auth-client";
@@ -21,7 +21,7 @@ export default function Page() {
 
 	return (
 		<div className="flex h-screen w-full flex-col items-center justify-center gap-4">
-			<Link href="/tasks">Open app</Link>
+			<Link href="/dashboard">Open app</Link>
 
 			{data ? (
 				<>

@@ -1,9 +1,9 @@
 "use client";
 
+import QuickAddTaskForm from "@/components/forms/quick-add-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import NewTaskModal from "@/components/modals/new-task-modal";
 import { Button } from "@/components/ui/button";
-import QuickAddTaskForm from "../../forms/quick-add-task-form";
 
 interface QuickAddTaskProps {
 	listId?: string;

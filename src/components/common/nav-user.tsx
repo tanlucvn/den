@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronsUpDown } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { signOut, useSession } from "@/lib/auth-client";
 
 export function NavUser() {
-	const router = useRouter();
+	const router = useTransitionRouter();
 
 	const { data: session } = useSession();
 	const { isMobile } = useSidebar();

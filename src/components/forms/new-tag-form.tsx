@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ColorInput } from "@/components/ui/color-input";
 import {
 	Form,
@@ -18,7 +19,6 @@ import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { type NewTagValues, newTagSchema } from "@/lib/validators/new-tag";
-import { Collapsible, CollapsibleContent } from "../ui/collapsible";
 
 interface NewTagFormProps {
 	onFinish: () => void;

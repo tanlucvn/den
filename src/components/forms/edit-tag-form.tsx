@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { ColorInput } from "@/components/ui/color-input";
 import {
 	Form,
 	FormControl,
@@ -19,8 +21,6 @@ import {
 	type EditTagFormValues,
 	editTagSchema,
 } from "@/lib/validators/edit-tag";
-import { Collapsible, CollapsibleContent } from "../ui/collapsible";
-import { ColorInput } from "../ui/color-input";
 
 interface EditTagFormProps {
 	initialData: Tag;

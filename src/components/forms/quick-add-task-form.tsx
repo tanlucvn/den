@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { IconRenderer } from "@/components/icon-renderer";
+import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -16,8 +18,6 @@ import {
 	type QuickNewTaskFormValues,
 	quickNewTaskSchema,
 } from "@/lib/validators/quick-new-task";
-import { IconRenderer } from "../icon-renderer";
-import { Button } from "../ui/button";
 
 interface QuickAddFormProps {
 	formId: string;

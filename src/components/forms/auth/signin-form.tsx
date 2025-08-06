@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -44,7 +43,7 @@ import {
 type Provider = "email" | "google" | "github" | null;
 
 export function SignInForm() {
-	const router = useRouter();
+	const router = useTransitionRouter();
 
 	const [loadingProvider, setLoadingProvider] = useState<Provider>(null);
 	const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
@@ -78,7 +77,7 @@ export function SignInForm() {
 					toast.success("Signed in successfully", {
 						description: "Redirecting...",
 					});
-					router.push("/tasks");
+					router.push("/dashboard");
 				},
 				onError: (ctx) => {
 					toast.error("Sign in failed", {
@@ -93,7 +92,7 @@ export function SignInForm() {
 
 	const handleOAuthSignIn = (provider: "google" | "github") => async () => {
 		await authClient.signIn.social(
-			{ provider, callbackURL: "/tasks" },
+			{ provider, callbackURL: "/dashboard" },
 			{
 				onRequest: () => setLoadingProvider(provider),
 				onSuccess: () => {

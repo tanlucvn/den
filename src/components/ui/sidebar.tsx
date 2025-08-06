@@ -4,9 +4,15 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
-import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Modal,
+	ModalContent,
+	ModalDescription,
+	ModalHeader,
+	ModalTitle,
+} from "@/components/ui/modal";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -175,30 +181,30 @@ function Sidebar({
 
 	if (isMobile) {
 		return (
-			<Drawer.Root
+			<Modal
 				open={openMobile}
 				onOpenChange={setOpenMobile}
 				direction="left"
+				onlyDrawer
 			>
-				<Drawer.Overlay className="fixed inset-0 z-10 bg-black/40" />
-				<Drawer.Content
+				<ModalContent
 					data-sidebar="sidebar"
 					data-slot="sidebar"
 					data-mobile="true"
-					className="fixed top-2 bottom-2 left-2 z-20 h-[98%] w-(--sidebar-width) rounded-xl border bg-sidebar text-sidebar-foreground shadow-xl after:hidden after:content-none [&>button]:hidden"
+					className="w-(--sidebar-width) rounded-lg bg-sidebar p-0 text-sidebar-foreground after:hidden after:content-none [&>button]:hidden"
 					style={
 						{
 							"--sidebar-width": SIDEBAR_WIDTH_MOBILE,
 						} as React.CSSProperties
 					}
 				>
-					<Drawer.Title className="sr-only">Sidebar</Drawer.Title>
-					<Drawer.Description className="sr-only">
-						Displays the mobile sidebar.
-					</Drawer.Description>
+					<ModalHeader className="sr-only">
+						<ModalTitle>Sidebar</ModalTitle>
+						<ModalDescription>Displays the mobile sidebar.</ModalDescription>
+					</ModalHeader>
 					<div className="flex h-full w-full flex-col">{children}</div>
-				</Drawer.Content>
-			</Drawer.Root>
+				</ModalContent>
+			</Modal>
 		);
 	}
 
@@ -471,7 +477,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 const sidebarMenuButtonVariants = cva(
-	"peer/menu-button flex w-full cursor-pointer items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+	"peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
 	{
 		variants: {
 			variant: {

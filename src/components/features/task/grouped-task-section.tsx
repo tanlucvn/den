@@ -1,6 +1,16 @@
+import { useMemo, useState } from "react";
 import QuickAddTask from "@/components/features/task/quick-add-task";
 import TaskSectionCollapsible from "@/components/features/task/task-section-collapsible";
 import { IconRenderer } from "@/components/icon-renderer";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Separator } from "@/components/ui/separator";
@@ -14,6 +24,7 @@ import { useAppStore } from "@/store/use-app-store";
 interface GroupedTaskSectionProps {
 	iconName?: string;
 	title: string;
+	description?: string[];
 	tasks: TaskWithTags[];
 	isLoading: boolean;
 	isFetched: boolean;
@@ -24,6 +35,7 @@ interface GroupedTaskSectionProps {
 export default function GroupedTaskSection({
 	iconName = "",
 	title = "",
+	description = [],
 	tasks,
 	isLoading,
 	isFetched,
@@ -31,6 +43,7 @@ export default function GroupedTaskSection({
 	className,
 }: GroupedTaskSectionProps) {
 	const { searchTerm } = useAppStore();
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
 	const { filtered } = useSections(tasks, searchTerm);
 	const { pinned, active, completed, archive } = useGroupedTasks(tasks);
@@ -72,88 +85,127 @@ export default function GroupedTaskSection({
 		},
 	];
 
-	if (isLoading) return <GroupedTaskSectionSkeleton />;
+	const randomDescription = useMemo(() => {
+		if (!description || description.length === 0) return "";
+		const index = Math.floor(Math.random() * description.length);
+		return description[index];
+	}, [description]);
+
+	if (isLoading) return <GroupedTaskSectionSkeleton className={className} />;
 
 	return (
-		<section
-			className={cn(
-				"flex flex-col gap-4 rounded-xl border bg-secondary/20 p-3",
-				className,
-			)}
-		>
-			{/* Header */}
-			<div className="flex select-none items-center gap-2 text-muted-foreground text-sm">
-				{iconName && (
+		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
+			<CardHeader className="p-0">
+				<CardTitle className="flex items-center gap-2 font-normal text-sm">
 					<IconRenderer name={iconName} className="text-primary/60" />
-				)}
-				<span className="text-foreground">{title}</span>
-				<NumberFlowBadge value={totalFilteredTasks} />
-			</div>
+					<span>{title}</span>
+					<NumberFlowBadge value={totalOriginalTasks} />
+				</CardTitle>
+				<CardDescription className="text-sm">
+					{randomDescription}
+				</CardDescription>
+				<CardAction>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="rounded-full text-muted-foreground"
+						onClick={() => setIsCollapsed(!isCollapsed)}
+					>
+						<IconRenderer
+							name={isCollapsed ? "ChevronsUpDown" : "ChevronsDownUp"}
+						/>
+					</Button>
+				</CardAction>
+			</CardHeader>
 
-			{/* Quick add */}
-			<QuickAddTask listId={listId} />
+			{!isCollapsed && (
+				<CardContent className="space-y-4 p-0">
+					{/* Quick add */}
+					<QuickAddTask listId={listId} />
 
-			{/* Task sections */}
-			{totalFilteredTasks > 0 && (
-				<div className="space-y-4">
-					{sections.map(({ title, icon, tasks, defaultOpen }) =>
-						tasks.length > 0 ? (
-							<TaskSectionCollapsible
-								key={title}
-								icon={<IconRenderer name={icon} />}
-								title={title}
-								tasks={tasks}
-								defaultOpen={defaultOpen}
-							/>
-						) : null,
-					)}
+					{/* Task sections */}
+					{totalFilteredTasks > 0 && (
+						<div className="space-y-4">
+							{sections.map(({ title, icon, tasks, defaultOpen }) =>
+								tasks.length > 0 ? (
+									<TaskSectionCollapsible
+										key={title}
+										icon={<IconRenderer name={icon} />}
+										title={title}
+										tasks={tasks}
+										defaultOpen={defaultOpen}
+									/>
+								) : null,
+							)}
 
-					{filtered.archive.length > 0 && (
-						<div className="flex flex-col gap-4">
-							<Separator />
-							<TaskSectionCollapsible
-								key="archive"
-								icon={<IconRenderer name="Archive" />}
-								title="Archive"
-								tasks={filtered.archive}
-								defaultOpen
-							/>
+							{filtered.archive.length > 0 && (
+								<div className="flex flex-col gap-4">
+									<Separator />
+									<TaskSectionCollapsible
+										key="archive"
+										icon={<IconRenderer name="Archive" />}
+										title="Archive"
+										tasks={filtered.archive}
+										defaultOpen
+									/>
+								</div>
+							)}
 						</div>
 					)}
-				</div>
-			)}
 
-			{/* No results */}
-			{showNoResults && (
-				<EmptyState
-					icon="SearchX"
-					title="No matching tasks"
-					description="Try a different keyword."
-				/>
-			)}
+					{/* No results */}
+					{showNoResults && (
+						<EmptyState
+							icon="SearchX"
+							title="No matching tasks"
+							description="Try a different keyword."
+						/>
+					)}
 
-			{/* No tasks */}
-			{showNoTasks && (
-				<EmptyState
-					title="No tasks yet."
-					description="Add a task using the input above."
-				/>
+					{/* No tasks */}
+					{showNoTasks && (
+						<EmptyState
+							title="No tasks yet."
+							description="Add a task using the input above."
+						/>
+					)}
+				</CardContent>
 			)}
-		</section>
+		</Card>
 	);
 }
 
-export function GroupedTaskSectionSkeleton() {
+export function GroupedTaskSectionSkeleton({
+	className,
+}: {
+	className?: string;
+}) {
 	return (
-		<div className="flex flex-col gap-4 rounded-xl border bg-secondary/20 p-3">
-			<Skeleton className="h-5 w-32" />
-			<Skeleton className="h-8 w-full" />
-			<div className="space-y-4">
-				<Skeleton className="h-6 w-20" />
+		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
+			<CardHeader className="space-y-1 p-0">
+				<CardTitle className="flex items-center gap-2 font-normal text-sm">
+					<Skeleton className="size-4 rounded-full" />
+					<Skeleton className="h-6 w-20" />
+					<Skeleton className="size-6" />
+				</CardTitle>
+				<CardDescription>
+					<Skeleton className="h-6 w-44" />
+				</CardDescription>
+				<CardAction>
+					<Skeleton className="size-7 rounded-full" />
+				</CardAction>
+			</CardHeader>
+
+			<CardContent className="space-y-4 p-0">
+				{/* Quick add */}
+				<Skeleton className="h-9 w-full rounded-full" />
+
+				{/* Task section collapsible */}
+				<Skeleton className="h-6 w-24" />
 				<Skeleton className="h-28 w-full rounded-xl" />
-				<Skeleton className="h-6 w-20" />
+				<Skeleton className="h-6 w-24" />
 				<Skeleton className="h-28 w-full rounded-xl" />
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { AppLogo } from "@/components/app-logo";
 import { SignInForm } from "@/components/forms/auth/signin-form";
 

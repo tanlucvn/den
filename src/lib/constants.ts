@@ -47,3 +47,10 @@ export const COLOR_OPTIONS: { label: string; value: AppColor; desc: string }[] =
 			desc: "Flat and subtle grayscale for a distraction-free experience.",
 		},
 	];
+
+export const FILTER_LABELS: Record<string, string> = {
+	all: "All",
+	today: "Today",
+	week: "This Week",
+	month: "This Month",
+};

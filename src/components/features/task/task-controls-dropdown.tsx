@@ -1,6 +1,7 @@
 import { type ReactNode, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import EditTaskModal from "@/components/modals/edit-task-modal";
+import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
 import {
 	DropDrawer,
 	DropDrawerContent,
@@ -22,7 +23,8 @@ export default function TaskControlsDropdown({
 	task,
 	children,
 }: TaskControlsDropdownProps) {
-	const [openModal, setOpenModal] = useState(false);
+	const [openEditModal, setOpenEditModal] = useState(false);
+	const [openFocusModal, setOpenFocusModal] = useState(false);
 
 	const {
 		handleEdit,
@@ -31,6 +33,7 @@ export default function TaskControlsDropdown({
 		handleDelete,
 		handleDuplicate,
 		handleCopyToClipboard,
+		handleToggle,
 	} = useTaskActions();
 
 	return (
@@ -46,13 +49,26 @@ export default function TaskControlsDropdown({
 					<p className="select-none p-2 text-muted-foreground text-xs">
 						Created at {formatDate(task.updatedAt)}.
 					</p>
+
+					<DropDrawerItem
+						className="gap-2"
+						icon={<IconRenderer name="Timer" className="!text-primary/60" />}
+						onClick={() => {
+							setOpenFocusModal(true);
+						}}
+					>
+						<span>Focus</span>
+					</DropDrawerItem>
+
+					<DropDrawerSeparator />
+
 					<DropDrawerGroup>
 						<DropDrawerItem
 							className="gap-2"
 							icon={<IconRenderer name="Pen" className="!text-primary/60" />}
 							onClick={() => {
 								handleEdit(task);
-								setOpenModal(true);
+								setOpenEditModal(true);
 							}}
 						>
 							<span>Edit</span>
@@ -127,7 +143,13 @@ export default function TaskControlsDropdown({
 				</DropDrawerContent>
 			</DropDrawer>
 
-			<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
+			<EditTaskModal open={openEditModal} onOpenChange={setOpenEditModal} />
+			<PomodoroTimerDialog
+				title={task.title}
+				onFinish={() => handleToggle({ ...task, isCompleted: true })}
+				open={openFocusModal}
+				onOpenChange={setOpenFocusModal}
+			/>
 		</div>
 	);
 }

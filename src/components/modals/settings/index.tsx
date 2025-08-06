@@ -13,7 +13,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AISection from "./sections/ai-section";
 import AppearanceSection from "./sections/appearance-section";
-import TagManagerSection from "./sections/tag-manager-section";
 
 const tabConfigs = [
 	{
@@ -27,12 +26,6 @@ const tabConfigs = [
 		title: "AI",
 		icon: "Bot",
 		content: <AISection />,
-	},
-	{
-		value: "tags",
-		title: "Tags",
-		icon: "Tags",
-		content: <TagManagerSection />,
 	},
 ];
 
@@ -62,7 +55,7 @@ const SettingsModal = ({ children }: SettingsModalProps) => {
 							<TabsTrigger
 								key={tab.value}
 								value={tab.value}
-								className="w-full max-w-[200px] shrink rounded-full"
+								className="w-full shrink rounded-full"
 							>
 								<IconRenderer name={tab.icon} className="h-4 w-4" />
 								{selectedTab === tab.value && tab.title}

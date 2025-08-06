@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useTransitionRouter } from "next-view-transitions";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
+import NewTaskListModal from "@/components/modals/new-task-list-modal";
+import NewTaskModal from "@/components/modals/new-task-modal";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -22,30 +23,19 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { useTasks } from "@/hooks/mutations/use-task-mutation";
+import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
-import { filterTasks } from "@/lib/utils";
-import { useAppStore } from "@/store/use-app-store";
-import NewTaskListModal from "../modals/new-task-list-modal";
-import NewTaskModal from "../modals/new-task-modal";
 
 export function AppQuickActions() {
-	const router = useRouter();
-	const { data: tasks = [] } = useTasks();
-	const { searchTerm, setSearchTerm } = useAppStore();
+	const router = useTransitionRouter();
 
 	const defaultInputRef = useRef<HTMLInputElement>(null);
-	const searchInputRef = useRef<HTMLInputElement>(null);
+	const aiInputRef = useRef<HTMLInputElement>(null);
 
 	const [open, setOpen] = useState(false);
-	const [mode, setMode] = useState<"default" | "search">("default");
+	const [mode, setMode] = useState<"default" | "ai">("default");
 	const [defaultInputValue, setDefaultInputValue] = useState("");
-
-	const filteredTasks = useMemo(
-		() => filterTasks(tasks, searchTerm),
-		[tasks, searchTerm],
-	);
-	const isSearching = mode === "search" && searchTerm.trim().length > 0;
+	const [aiInputValue, setAIInputValue] = useState("");
 
 	useHotkeys(
 		"ctrl+k",
@@ -56,9 +46,26 @@ export function AppQuickActions() {
 		{ enableOnFormTags: ["INPUT", "TEXTAREA"] },
 	);
 
+	useHotkeys(
+		"tab",
+		(e) => {
+			if (!open) return;
+			e.preventDefault();
+			setMode((prev) => (prev === "default" ? "ai" : "default"));
+		},
+		{
+			enableOnFormTags: ["INPUT", "TEXTAREA"],
+			enableOnContentEditable: true,
+		},
+		[open],
+	);
+
 	useEffect(() => {
-		if (mode === "search" && searchInputRef.current) {
-			searchInputRef.current.focus();
+		if (mode === "default" && defaultInputRef.current) {
+			defaultInputRef.current.focus();
+		}
+		if (mode === "ai" && aiInputRef.current) {
+			aiInputRef.current.focus();
 		}
 	}, [mode]);
 
@@ -69,7 +76,6 @@ export function AppQuickActions() {
 
 	const handleBackToMenu = () => {
 		setMode("default");
-		setSearchTerm("");
 		setDefaultInputValue("");
 		setTimeout(() => {
 			defaultInputRef.current?.focus();
@@ -83,21 +89,8 @@ export function AppQuickActions() {
 					variant="outline"
 					className="hover:!border-ring w-full justify-between rounded-full font-normal hover:ring-[3px] hover:ring-ring/20"
 				>
-					<span className="flex items-center gap-2">
-						<IconRenderer name="Command" className="!text-primary/60" />
-						{isSearching ? "Searching..." : "Quick Actions"}
-					</span>
-
-					<div className="ml-auto flex items-center gap-2">
-						{isSearching && (
-							<span className="text-muted-foreground text-xs">
-								{filteredTasks.length > 0 &&
-									`${filteredTasks.length} tasks found`}
-							</span>
-						)}
-
-						<Kbd keys="Ctrl+K" />
-					</div>
+					Quick Actions
+					<Kbd keys="Ctrl+K" className="ml-auto" />
 				</Button>
 			</PopoverTrigger>
 
@@ -112,9 +105,9 @@ export function AppQuickActions() {
 					/>
 				) : (
 					<SearchMode
-						searchInputRef={searchInputRef}
-						searchTerm={searchTerm}
-						setSearchTerm={setSearchTerm}
+						aiInputRef={aiInputRef}
+						inputValue={aiInputValue}
+						setInputValue={setAIInputValue}
 						handleBackToMenu={handleBackToMenu}
 					/>
 				)}
@@ -133,28 +126,33 @@ function DefaultMode({
 	defaultInputRef: React.RefObject<HTMLInputElement | null>;
 	defaultInputValue: string;
 	setDefaultInputValue: (value: string) => void;
-	setMode: (mode: "default" | "search") => void;
+	setMode: (mode: "default" | "ai") => void;
 	handleSignOut: () => Promise<void>;
 }) {
 	return (
 		<Command className="rounded-xl">
-			<CommandInput
-				ref={defaultInputRef}
-				value={defaultInputValue}
-				onValueChange={setDefaultInputValue}
-				placeholder="Type a command or search..."
-			/>
+			<div className="relative">
+				<CommandInput
+					ref={defaultInputRef}
+					value={defaultInputValue}
+					onValueChange={setDefaultInputValue}
+					placeholder="Type a command or search..."
+				/>
+
+				<div
+					className="absolute top-2 right-2 flex select-none items-center gap-2"
+					onClick={() => setMode("ai")}
+				>
+					<span className="text-muted-foreground text-xs">Ask AI</span>
+					<Kbd keys="Tab" />
+				</div>
+			</div>
 
 			<CommandList>
 				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandSeparator />
 
 				<CommandGroup heading="Tasks">
-					<CommandItem onSelect={() => setMode("search")}>
-						<IconRenderer name="Search" />
-						<span>Search task</span>
-					</CommandItem>
-
 					<NewTaskModal>
 						<div>
 							<CommandItem>
@@ -179,12 +177,6 @@ function DefaultMode({
 				<CommandSeparator />
 
 				<CommandGroup heading="Accounts">
-					<Link href="/profile">
-						<CommandItem>
-							<IconRenderer name="User" />
-							<span>Profile</span>
-						</CommandItem>
-					</Link>
 					<CommandItem
 						onSelect={() =>
 							toast.promise(handleSignOut, {
@@ -199,41 +191,101 @@ function DefaultMode({
 					</CommandItem>
 				</CommandGroup>
 			</CommandList>
+
+			<div className="mt-auto flex items-center justify-between border-t p-2">
+				<Kbd keys="Ctrl+K" />
+
+				<div className="flex h-6 items-center gap-2">
+					<span className="select-none text-muted-foreground text-xs">
+						Navigate
+					</span>
+					<Kbd className="size-5 p-0">
+						<IconRenderer name="ArrowUp" className="size-3" />
+					</Kbd>
+					<Kbd className="size-5 p-0">
+						<IconRenderer name="ArrowDown" className="size-3" />
+					</Kbd>
+
+					<Separator orientation="vertical" />
+
+					<span className="select-none text-muted-foreground text-xs">
+						Execute
+					</span>
+					<Kbd className="size-5 p-0">
+						<IconRenderer name="CornerDownLeft" className="size-3" />
+					</Kbd>
+				</div>
+			</div>
 		</Command>
 	);
 }
 
 function SearchMode({
-	searchInputRef,
-	searchTerm,
-	setSearchTerm,
+	aiInputRef,
+	inputValue,
+	setInputValue,
 	handleBackToMenu,
 }: {
-	searchInputRef: React.RefObject<HTMLInputElement | null>;
-	searchTerm: string;
-	setSearchTerm: (term: string) => void;
+	aiInputRef: React.RefObject<HTMLInputElement | null>;
+	inputValue: string;
+	setInputValue: (term: string) => void;
 	handleBackToMenu: () => void;
 }) {
 	return (
 		<Command className="rounded-xl">
 			<div className="relative">
 				<CommandInput
-					ref={searchInputRef}
-					placeholder="Search tasks by title or note..."
-					value={searchTerm}
-					onValueChange={setSearchTerm}
-					className="mr-20"
+					ref={aiInputRef}
+					placeholder="Ask AI anything..."
+					value={inputValue}
+					onValueChange={setInputValue}
+					className="mr-17"
+					icon={<IconRenderer name="Zap" className="shrink-0 opacity-50" />}
 				/>
 
-				<Button
-					variant="ghost"
-					size="sm"
-					className="absolute top-1 right-2 h-7 gap-1 rounded-full font-normal text-xs"
+				<div
+					className="absolute top-2 right-2 flex select-none items-center gap-2"
 					onClick={handleBackToMenu}
 				>
-					<IconRenderer name="X" className="text-primary/60" />
-					Cancel
-				</Button>
+					<span className="text-muted-foreground text-xs">Back</span>
+					<Kbd keys="Tab" />
+				</div>
+			</div>
+
+			<div className="p-4">
+				<h3 className="mb-2 font-medium text-sm">AI Assistant</h3>
+				<p className="mb-4 text-muted-foreground text-xs">
+					Ask anything and get AI-powered assistance. Type your question above
+					and press Enter to submit.
+				</p>
+				<div className="flex flex-col gap-2">
+					<div className="flex items-start gap-2">
+						<div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+							<IconRenderer name="Zap" className="size-3" />
+						</div>
+						<div className="space-y-1 text-xs">
+							<p className="font-medium">Example questions:</p>
+							<ul className="space-y-1 text-muted-foreground">
+								<li>• How do I create a new task?</li>
+								<li>• How do I organize tasks into lists?</li>
+								<li>• What's the best way to prioritize tasks?</li>
+								<li>• Can you explain how tags work in this app?</li>
+								<li>• How can I start a Pomodoro session?</li>
+								<li>• What's the difference between lists and tags?</li>
+								<li>• Suggest a productivity method I can use</li>
+								<li>• Generate a weekly task schedule for me</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div className="mt-4 flex justify-between">
+					<Button variant="secondary" size="xs" className="rounded text-xs">
+						Cancel
+					</Button>
+					<Button size="xs" className="rounded text-xs">
+						Submit
+					</Button>
+				</div>
 			</div>
 		</Command>
 	);

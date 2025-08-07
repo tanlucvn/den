@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import UserButton from "@/components/user-button";
 
 export default function AppHeader() {
 	return (
@@ -33,7 +32,6 @@ export default function AppHeader() {
 
 			<div className="flex items-center gap-2">
 				<ThemeSwitcher />
-				<UserButton />
 				<SettingsModal>
 					<Button variant="outline" size="icon">
 						<IconRenderer name="Settings" />

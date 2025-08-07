@@ -19,10 +19,11 @@ import { useEffect, useState } from "react";
 
 import { IconRenderer } from "@/components/icon-renderer";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import type { TaskWithTags } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
@@ -30,19 +31,19 @@ import { sortTasks } from "@/lib/helpers/sort-tasks";
 import { cn } from "@/lib/utils";
 import DraggableTaskItem from "./draggable-task-item";
 
-type TaskSectionCollapsibleProps = {
+type TaskSectionProps = {
 	icon: React.ReactNode;
 	title: string;
 	tasks: TaskWithTags[];
 	defaultOpen?: boolean;
 };
 
-export default function TaskSectionCollapsible({
+export default function TaskSection({
 	icon,
 	title,
 	tasks,
 	defaultOpen,
-}: TaskSectionCollapsibleProps) {
+}: TaskSectionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
 	const [items, setItems] = useState<TaskWithTags[]>([]);
 	const [activeId, setActiveId] = useState<string | null>(null);
@@ -87,56 +88,68 @@ export default function TaskSectionCollapsible({
 	if (items.length === 0) return null;
 
 	return (
-		<Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-			<CollapsibleTrigger asChild>
+		<Accordion
+			type="single"
+			collapsible
+			value={isOpen ? "section" : ""}
+			onValueChange={(val) => setIsOpen(val === "section")}
+		>
+			<AccordionItem value="section" className="space-y-2">
 				<div
 					className={cn(
-						"flex w-fit cursor-pointer select-none items-center gap-2 text-muted-foreground text-sm",
+						"flex w-full select-none items-center justify-between text-muted-foreground text-sm",
 						isOpen && "font-medium text-primary",
 					)}
 				>
-					{icon}
-					<span className="text-foreground">{title}</span>
-					<NumberFlowBadge value={items.length} />
-					<IconRenderer
-						name={isOpen ? "ChevronDown" : "ChevronRight"}
-						className="!text-primary/60"
-					/>
-				</div>
-			</CollapsibleTrigger>
+					<div className="flex items-center gap-2">
+						{icon}
+						<span className="text-foreground">{title}</span>
+						<NumberFlowBadge value={items.length} />
+					</div>
 
-			<CollapsibleContent>
-				<DndContext
-					sensors={sensors}
-					collisionDetection={closestCenter}
-					onDragStart={(event) => setActiveId(event.active.id as string)}
-					onDragEnd={(event) => {
-						setActiveId(null);
-						handleDragEnd(event);
-					}}
-				>
-					<SortableContext
-						items={items.map((t) => t.id)}
-						strategy={verticalListSortingStrategy}
+					<Button
+						variant="ghost"
+						size="icon"
+						className="rounded-full"
+						onClick={() => setIsOpen((prev) => !prev)}
 					>
-						<div className="space-y-4">
-							{items.map((task) => (
-								<DraggableTaskItem key={task.id} task={task} />
-							))}
-						</div>
-					</SortableContext>
+						<IconRenderer name={isOpen ? "ChevronDown" : "ChevronRight"} />
+					</Button>
+				</div>
 
-					<DragOverlay>
-						{activeId ? (
-							<div className="pointer-events-none">
-								<DraggableTaskItem
-									task={items.find((t) => t.id === activeId)!}
-								/>
+				<AccordionContent className="p-1">
+					<DndContext
+						sensors={sensors}
+						collisionDetection={closestCenter}
+						onDragStart={(event) => setActiveId(event.active.id as string)}
+						onDragEnd={(event) => {
+							setActiveId(null);
+							handleDragEnd(event);
+						}}
+					>
+						<SortableContext
+							items={items.map((t) => t.id)}
+							strategy={verticalListSortingStrategy}
+						>
+							<div className="space-y-4">
+								{items.map((task) => (
+									<DraggableTaskItem key={task.id} task={task} />
+								))}
 							</div>
-						) : null}
-					</DragOverlay>
-				</DndContext>
-			</CollapsibleContent>
-		</Collapsible>
+						</SortableContext>
+
+						<DragOverlay>
+							{activeId ? (
+								<div className="pointer-events-none">
+									<DraggableTaskItem
+										task={items.find((t) => t.id === activeId)!}
+									/>
+								</div>
+							) : null}
+						</DragOverlay>
+					</DndContext>
+				</AccordionContent>
+			</AccordionItem>
+		</Accordion>
 	);
 }

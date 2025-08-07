@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import QuickAddTask from "@/components/features/task/quick-add-task";
-import TaskSectionCollapsible from "@/components/features/task/task-section-collapsible";
+import TaskSection from "@/components/features/task/task-section";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -128,7 +128,7 @@ export default function GroupedTaskSection({
 						<div className="space-y-4">
 							{sections.map(({ title, icon, tasks, defaultOpen }) =>
 								tasks.length > 0 ? (
-									<TaskSectionCollapsible
+									<TaskSection
 										key={title}
 										icon={<IconRenderer name={icon} />}
 										title={title}
@@ -141,7 +141,7 @@ export default function GroupedTaskSection({
 							{filtered.archive.length > 0 && (
 								<div className="flex flex-col gap-4">
 									<Separator />
-									<TaskSectionCollapsible
+									<TaskSection
 										key="archive"
 										icon={<IconRenderer name="Archive" />}
 										title="Archive"

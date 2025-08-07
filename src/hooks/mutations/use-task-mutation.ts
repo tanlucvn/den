@@ -43,8 +43,9 @@ export function useCreateTask() {
 			await queryClient.cancelQueries({ queryKey });
 
 			const previous = queryClient.getQueryData<Task[]>(queryKey);
+			const optimisticId = crypto.randomUUID();
 			const newTask: TaskWithTags = {
-				id: crypto.randomUUID(),
+				id: optimisticId,
 				userId: task.userId,
 				listId: task.listId ?? null,
 				title: task.title,
@@ -67,7 +68,15 @@ export function useCreateTask() {
 				...old,
 			]);
 
-			return { previous, queryKey };
+			return { previous, queryKey, optimisticId };
+		},
+
+		// Merge real task list and replace optimistic one
+		onSuccess: (realTask, _data, context) => {
+			if (!context) return;
+			queryClient.setQueryData<Task[]>(context.queryKey, (old = []) =>
+				old.map((t) => (t.id === context.optimisticId ? realTask : t)),
+			);
 		},
 
 		// Rollback on error
@@ -75,11 +84,6 @@ export function useCreateTask() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Revalidate after mutation
-		onSettled: (_data, _err, task) => {
-			queryClient.invalidateQueries({ queryKey: getTaskQueryKey(task.listId) });
 		},
 	});
 }
@@ -118,12 +122,6 @@ export function useUpdateTaskTags() {
 				queryClient.setQueryData(["task", taskId], context.previous);
 			}
 		},
-
-		// Revalidate tag data
-		onSettled: (_data, _err, { taskId }) => {
-			queryClient.invalidateQueries({ queryKey: ["task", taskId] });
-			queryClient.invalidateQueries({ queryKey: ["tasks"] });
-		},
 	});
 }
 
@@ -153,11 +151,6 @@ export function useUpdateTask() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Invalidate cache after update
-		onSettled: (_data, _err, task) => {
-			queryClient.invalidateQueries({ queryKey: getTaskQueryKey(task.listId) });
 		},
 	});
 }
@@ -190,11 +183,6 @@ export function useDeleteTask() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Invalidate task list after deletion
-		onSettled: (_data, _err, task) => {
-			queryClient.invalidateQueries({ queryKey: getTaskQueryKey(task.listId) });
 		},
 	});
 }
@@ -238,14 +226,6 @@ export function useBatchUpdateTasks() {
 			for (const [keyStr, data] of context.backup.entries()) {
 				const queryKey = keyStr.split(",");
 				queryClient.setQueryData(queryKey, data);
-			}
-		},
-
-		// Invalidate affected task lists
-		onSettled: (_data, _err, tasks) => {
-			const listIds = new Set(tasks.map((t) => t.listId));
-			for (const listId of listIds) {
-				queryClient.invalidateQueries({ queryKey: getTaskQueryKey(listId) });
 			}
 		},
 	});

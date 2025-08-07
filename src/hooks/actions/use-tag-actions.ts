@@ -22,33 +22,27 @@ export const useTagActions = () => {
 	const handleCreate = async (tag: NewTag) => {
 		if (!tag.title.trim()) return;
 
-		const promise = createTag(tag);
-		toast.promise(promise, {
-			loading: "Creating tag...",
-			success: "Tag created!",
-			error: "Failed to create tag.",
-		});
-		await promise;
+		try {
+			await createTag(tag);
+		} catch {
+			toast.error("Failed to create tag.");
+		}
 	};
 
 	const handleUpdate = async (tag: Tag) => {
-		const promise = updateTag(tag);
-		toast.promise(promise, {
-			loading: "Updating tag...",
-			success: "Tag updated!",
-			error: "Failed to update tag.",
-		});
-		await promise;
+		try {
+			await updateTag(tag);
+		} catch {
+			toast.error("Failed to update tag.");
+		}
 	};
 
 	const handleDelete = async (tag: Tag) => {
-		const promise = deleteTag(tag);
-		toast.promise(promise, {
-			loading: "Deleting tag...",
-			success: "Tag deleted!",
-			error: "Failed to delete tag.",
-		});
-		await promise;
+		try {
+			await deleteTag(tag);
+		} catch {
+			toast.error("Failed to delete tag.");
+		}
 	};
 
 	const handleEdit = (tag: Tag) => {

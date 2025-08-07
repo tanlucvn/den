@@ -16,7 +16,6 @@ export const useTaskListActions = () => {
 	const router = useTransitionRouter();
 	const { setEditTaskList } = useAppStore();
 
-	// Task list mutation hooks
 	const { mutateAsync: createTaskList, isPending: isCreating } =
 		useCreateTaskList();
 	const { mutateAsync: updateTaskList, isPending: isUpdating } =
@@ -27,37 +26,31 @@ export const useTaskListActions = () => {
 	const handleCreate = async (list: NewTaskList) => {
 		if (!list.title.trim()) return;
 
-		const promise = createTaskList(list);
-		toast.promise(promise, {
-			loading: "Creating task list...",
-			success: "Task list created!",
-			error: "Failed to create task list.",
-		});
-		await promise;
+		try {
+			await createTaskList(list);
+		} catch {
+			toast.error("Failed to create task list.");
+		}
 	};
 
 	const handleUpdate = async (list: TaskList) => {
-		const promise = updateTaskList(list);
-		toast.promise(promise, {
-			loading: "Updating task list...",
-			success: "Task list updated!",
-			error: "Failed to update task list.",
-		});
-		await promise;
+		try {
+			await updateTaskList(list);
+		} catch {
+			toast.error("Failed to update task list.");
+		}
 	};
 
 	const handleDelete = async (list: TaskList) => {
-		const promise = deleteTaskList(list);
-		toast.promise(promise, {
-			loading: "Deleting task list...",
-			success: "Task list deleted!",
-			error: "Failed to delete task list.",
-		});
-		await promise;
+		try {
+			await deleteTaskList(list);
 
-		// Redirect if user is on the deleted list page
-		if (window.location.pathname.includes(`/task-lists/${list.id}`)) {
-			router.push("/");
+			// Redirect if user is on the deleted list page
+			if (window.location.pathname.includes(`/lists/${list.id}`)) {
+				router.push("/");
+			}
+		} catch {
+			toast.error("Failed to delete task list.");
 		}
 	};
 

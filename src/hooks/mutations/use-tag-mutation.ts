@@ -41,8 +41,9 @@ export function useCreateTag() {
 			await queryClient.cancelQueries({ queryKey });
 
 			const previous = queryClient.getQueryData<Tag[]>(queryKey);
+			const optimisticId = crypto.randomUUID();
 			const newTag: Tag = {
-				id: crypto.randomUUID(),
+				id: optimisticId,
 				title: data.title,
 				userId: data.userId,
 				color: data.color ?? null,
@@ -52,7 +53,15 @@ export function useCreateTag() {
 
 			queryClient.setQueryData<Tag[]>(queryKey, (old = []) => [newTag, ...old]);
 
-			return { previous, queryKey };
+			return { previous, queryKey, optimisticId };
+		},
+
+		// Merge real task list and replace optimistic one
+		onSuccess: (realTag, _data, context) => {
+			if (!context) return;
+			queryClient.setQueryData<Tag[]>(context.queryKey, (old = []) =>
+				old.map((tag) => (tag.id === context.optimisticId ? realTag : tag)),
+			);
 		},
 
 		// Rollback on error
@@ -60,11 +69,6 @@ export function useCreateTag() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Invalidate after success or failure
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: getTagsQueryKey() });
 		},
 	});
 }
@@ -94,14 +98,6 @@ export function useUpdateTag() {
 		onError: (_err, _tag, context) => {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
-			}
-		},
-
-		// Invalidate after mutation
-		onSettled: (_data, _error, tag) => {
-			queryClient.invalidateQueries({ queryKey: getTagsQueryKey() });
-			if (tag?.id) {
-				queryClient.invalidateQueries({ queryKey: [TAGS_KEY, tag.id] });
 			}
 		},
 	});
@@ -134,14 +130,6 @@ export function useDeleteTag() {
 		onError: (_err, _tag, context) => {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
-			}
-		},
-
-		// Invalidate cache after deletion
-		onSettled: (_data, _error, tag) => {
-			queryClient.invalidateQueries({ queryKey: getTagsQueryKey() });
-			if (tag?.id) {
-				queryClient.removeQueries({ queryKey: [TAGS_KEY, tag.id] });
 			}
 		},
 	});

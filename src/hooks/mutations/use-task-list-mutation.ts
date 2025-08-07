@@ -32,8 +32,9 @@ export function useCreateTaskList() {
 			await queryClient.cancelQueries({ queryKey });
 
 			const previous = queryClient.getQueryData<TaskList[]>(queryKey);
+			const optimisticId = crypto.randomUUID();
 			const newList: TaskList = {
-				id: crypto.randomUUID(),
+				id: optimisticId,
 				userId: data.userId,
 				title: data.title,
 				createdAt: new Date(),
@@ -45,7 +46,15 @@ export function useCreateTaskList() {
 				...old,
 			]);
 
-			return { previous, queryKey };
+			return { previous, queryKey, optimisticId };
+		},
+
+		// Merge real task list and replace optimistic one
+		onSuccess: (realList, _data, context) => {
+			if (!context) return;
+			queryClient.setQueryData<TaskList[]>(context.queryKey, (old = []) =>
+				old.map((list) => (list.id === context.optimisticId ? realList : list)),
+			);
 		},
 
 		// Rollback on error
@@ -53,11 +62,6 @@ export function useCreateTaskList() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Revalidate after mutation
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: getTaskListsQueryKey() });
 		},
 	});
 }
@@ -88,11 +92,6 @@ export function useUpdateTaskList() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Invalidate cache after update
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: getTaskListsQueryKey() });
 		},
 	});
 }
@@ -125,11 +124,6 @@ export function useDeleteTaskList() {
 			if (context?.previous) {
 				queryClient.setQueryData(context.queryKey, context.previous);
 			}
-		},
-
-		// Invalidate task lists after deletion
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: getTaskListsQueryKey() });
 		},
 	});
 }

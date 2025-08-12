@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import type { NewTask, Task, TaskWithTags } from "@/db/schema/tasks";
+import { useOptimisticMutation } from "tanstack-query-optimistic-updates";
+import type { NewTask, Task, TaskWithTagsAndList } from "@/db/schema/tasks";
 
 const TASKS_KEY = "tasks";
 
@@ -11,7 +12,7 @@ function getTaskQueryKey(listId?: string | null) {
 
 //* Fetch all tasks (with tags)
 export function useTasks() {
-	return useQuery<TaskWithTags[]>({
+	return useQuery<TaskWithTagsAndList[]>({
 		queryKey: getTaskQueryKey(),
 		queryFn: async () => (await axios.get("/api/tasks")).data,
 		refetchOnWindowFocus: false,
@@ -29,70 +30,48 @@ export function useTasksByListId(listId: string | null) {
 	});
 }
 
-//* Create a new task with optimistic update and rollback
+//* Create a new task with optimistic update
 export function useCreateTask() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
+	return useOptimisticMutation({
 		mutationFn: async (task: NewTask) =>
 			(await axios.post("/api/tasks", task)).data,
-
-		// Optimistically add new task to cache
-		onMutate: async (task) => {
-			const queryKey = getTaskQueryKey(task.listId);
-			await queryClient.cancelQueries({ queryKey });
-
-			const previous = queryClient.getQueryData<Task[]>(queryKey);
-			const optimisticId = crypto.randomUUID();
-			const newTask: TaskWithTags = {
-				id: optimisticId,
-				userId: task.userId,
-				listId: task.listId ?? null,
-				title: task.title,
-				note: task.note ?? null,
-				priority: task.priority ?? "none",
-				location: task.location ?? null,
-				sortIndex: 0,
-				isCompleted: false,
-				isPinned: false,
-				isArchived: false,
-				deletedAt: null,
-				remindAt: task.remindAt ?? null,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				tags: [],
-			};
-
-			queryClient.setQueryData<Task[]>(queryKey, (old = []) => [
-				newTask,
-				...old,
-			]);
-
-			return { previous, queryKey, optimisticId };
-		},
-
-		// Merge real task list and replace optimistic one
-		onSuccess: (realTask, _data, context) => {
-			if (!context) return;
-			queryClient.setQueryData<Task[]>(context.queryKey, (old = []) =>
-				old.map((t) => (t.id === context.optimisticId ? realTask : t)),
-			);
-		},
-
-		// Rollback on error
-		onError: (_err, _task, context) => {
-			if (context?.previous) {
-				queryClient.setQueryData(context.queryKey, context.previous);
-			}
+		optimisticUpdateOptions: {
+			queryKey: [TASKS_KEY],
+			getOptimisticState: ({
+				prevQueryData,
+				variables,
+			}: {
+				prevQueryData: Task[];
+				variables: NewTask;
+			}) => {
+				const optimisticId = crypto.randomUUID();
+				const newTask: Task = {
+					id: optimisticId,
+					userId: variables.userId,
+					listId: variables.listId ?? null,
+					title: variables.title,
+					note: variables.note ?? null,
+					priority: variables.priority ?? "none",
+					location: variables.location ?? null,
+					sortIndex: 0,
+					isCompleted: false,
+					isPinned: false,
+					isArchived: false,
+					deletedAt: null,
+					remindAt: variables.remindAt ?? null,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				};
+				return [newTask, ...(prevQueryData ?? [])];
+			},
+			invalidateQueryOnSuccess: true,
 		},
 	});
 }
 
 //* Update task-tag relationships with optimistic UI
 export function useUpdateTaskTags() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
+	return useOptimisticMutation({
 		mutationFn: async ({
 			taskId,
 			tagIds,
@@ -102,131 +81,101 @@ export function useUpdateTaskTags() {
 		}) => {
 			return (await axios.post("/api/task-tags", { taskId, tagIds })).data;
 		},
-
-		// Optimistically update task tags
-		onMutate: async ({ taskId, tagIds }) => {
-			await queryClient.cancelQueries({ queryKey: ["task", taskId] });
-			const previous = queryClient.getQueryData<TaskWithTags>(["task", taskId]);
-
-			queryClient.setQueryData(["task", taskId], (old: any) => ({
-				...old,
-				tags: tagIds.map((id) => ({ id })),
-			}));
-
-			return { previous };
-		},
-
-		// Rollback on error
-		onError: (_err, { taskId }, context) => {
-			if (context?.previous) {
-				queryClient.setQueryData(["task", taskId], context.previous);
-			}
+		optimisticUpdateOptions: {
+			queryKey: [TASKS_KEY],
+			getOptimisticState: ({
+				prevQueryData,
+				variables,
+			}: {
+				prevQueryData: TaskWithTagsAndList[];
+				variables: { taskId: string; tagIds: string[] };
+			}) => {
+				if (!Array.isArray(prevQueryData)) return prevQueryData ?? [];
+				return prevQueryData.map((task) =>
+					task.id === variables.taskId
+						? {
+								...task,
+								tags: variables.tagIds.map((id) => ({
+									id,
+									userId: task.userId,
+									title: "",
+									color: null,
+									createdAt: new Date(),
+									updatedAt: new Date(),
+								})),
+							}
+						: task,
+				);
+			},
+			invalidateQueryOnSuccess: true,
 		},
 	});
 }
 
-//* Update task with optimistic update and rollback
+//* Update task with optimistic update
 export function useUpdateTask() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
+	return useOptimisticMutation({
 		mutationFn: async (task: Task) =>
 			(await axios.put(`/api/tasks/${task.id}`, task)).data,
-
-		// Optimistically update task in cache
-		onMutate: async (task) => {
-			const queryKey = getTaskQueryKey(task.listId);
-			await queryClient.cancelQueries({ queryKey });
-
-			const previous = queryClient.getQueryData<Task[]>(queryKey);
-			queryClient.setQueryData<Task[]>(queryKey, (old = []) =>
-				old.map((t) => (t.id === task.id ? { ...t, ...task } : t)),
-			);
-
-			return { previous, queryKey };
-		},
-
-		// Rollback on error
-		onError: (_err, _task, context) => {
-			if (context?.previous) {
-				queryClient.setQueryData(context.queryKey, context.previous);
-			}
+		optimisticUpdateOptions: {
+			queryKey: [TASKS_KEY],
+			getOptimisticState: ({
+				prevQueryData,
+				variables,
+			}: {
+				prevQueryData: Task[];
+				variables: Task;
+			}) =>
+				(prevQueryData ?? []).map((t) =>
+					t.id === variables.id ? { ...t, ...variables } : t,
+				),
+			invalidateQueryOnSuccess: true,
 		},
 	});
 }
 
-//* Delete a task with optimistic UI and rollback
+//* Delete a task with optimistic UI
 export function useDeleteTask() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
+	return useOptimisticMutation({
 		mutationFn: async (task: Task) => {
 			await axios.delete(`/api/tasks/${task.id}`);
 			return task;
 		},
-
-		// Optimistically remove task from cache
-		onMutate: async (task) => {
-			const queryKey = getTaskQueryKey(task.listId);
-			await queryClient.cancelQueries({ queryKey });
-
-			const previous = queryClient.getQueryData<Task[]>(queryKey);
-			queryClient.setQueryData<Task[]>(queryKey, (old = []) =>
-				old.filter((t) => t.id !== task.id),
-			);
-
-			return { previous, queryKey };
-		},
-
-		// Rollback on error
-		onError: (_err, _task, context) => {
-			if (context?.previous) {
-				queryClient.setQueryData(context.queryKey, context.previous);
-			}
+		optimisticUpdateOptions: {
+			queryKey: [TASKS_KEY],
+			getOptimisticState: ({
+				prevQueryData,
+				variables,
+			}: {
+				prevQueryData: Task[];
+				variables: Task;
+			}) => (prevQueryData ?? []).filter((t) => t.id !== variables.id),
+			invalidateQueryOnSuccess: true,
 		},
 	});
 }
 
-//* Batch update tasks with optimistic update and rollback
+//* Batch update tasks with optimistic update
 export function useBatchUpdateTasks() {
-	const queryClient = useQueryClient();
-
-	return useMutation({
+	return useOptimisticMutation({
 		mutationFn: async (tasks: Task[]) => {
 			await axios.put("/api/tasks/batch", tasks);
 		},
-
-		// Optimistically update multiple tasks
-		onMutate: async (tasks) => {
-			const backup = new Map();
-			const listMap = new Map();
-
-			for (const task of tasks) {
-				const queryKey = getTaskQueryKey(task.listId);
-				const prev = queryClient.getQueryData<Task[]>(queryKey);
-				backup.set(queryKey.toString(), prev);
-				listMap.set(queryKey.toString(), queryKey);
-
-				queryClient.setQueryData<Task[]>(queryKey, (old = []) =>
-					old.map((t) =>
-						tasks.find((ut) => ut.id === t.id)
-							? { ...t, ...tasks.find((ut) => ut.id === t.id)! }
-							: t,
-					),
-				);
-			}
-
-			return { backup, listMap };
-		},
-
-		// Rollback on error
-		onError: (_err, _tasks, context) => {
-			if (!context?.backup) return;
-
-			for (const [keyStr, data] of context.backup.entries()) {
-				const queryKey = keyStr.split(",");
-				queryClient.setQueryData(queryKey, data);
-			}
+		optimisticUpdateOptions: {
+			queryKey: [TASKS_KEY],
+			getOptimisticState: ({
+				prevQueryData,
+				variables,
+			}: {
+				prevQueryData: Task[];
+				variables: Task[];
+			}) => {
+				return (prevQueryData ?? []).map((t) => {
+					const updated = variables.find((ut) => ut.id === t.id);
+					return updated ? { ...t, ...updated } : t;
+				});
+			},
+			invalidateQueryOnSuccess: true,
 		},
 	});
 }

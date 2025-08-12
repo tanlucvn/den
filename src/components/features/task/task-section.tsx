@@ -25,16 +25,16 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import type { TaskWithTags } from "@/db/schema/tasks";
+import type { TaskWithTagsAndList } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { sortTasks } from "@/lib/helpers/sort-tasks";
 import { cn } from "@/lib/utils";
-import DraggableTaskItem from "./draggable-task-item";
+import TaskItem from "./task-item";
 
 type TaskSectionProps = {
 	icon: React.ReactNode;
 	title: string;
-	tasks: TaskWithTags[];
+	tasks: TaskWithTagsAndList[];
 	defaultOpen?: boolean;
 };
 
@@ -45,7 +45,7 @@ export default function TaskSection({
 	defaultOpen,
 }: TaskSectionProps) {
 	const [isOpen, setIsOpen] = useState(defaultOpen);
-	const [items, setItems] = useState<TaskWithTags[]>([]);
+	const [items, setItems] = useState<TaskWithTagsAndList[]>([]);
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const { debouncedSort } = useTaskActions();
 
@@ -81,7 +81,7 @@ export default function TaskSection({
 			.filter((tasks) => tasks !== null);
 
 		if (updatedTasks.length > 0) {
-			await debouncedSort(updatedTasks as TaskWithTags[]);
+			await debouncedSort(updatedTasks as TaskWithTagsAndList[]);
 		}
 	};
 
@@ -133,7 +133,7 @@ export default function TaskSection({
 						>
 							<div className="space-y-4">
 								{items.map((task) => (
-									<DraggableTaskItem key={task.id} task={task} />
+									<TaskItem key={task.id} task={task} />
 								))}
 							</div>
 						</SortableContext>
@@ -141,9 +141,7 @@ export default function TaskSection({
 						<DragOverlay>
 							{activeId ? (
 								<div className="pointer-events-none">
-									<DraggableTaskItem
-										task={items.find((t) => t.id === activeId)!}
-									/>
+									<TaskItem task={items.find((t) => t.id === activeId)!} />
 								</div>
 							) : null}
 						</DragOverlay>

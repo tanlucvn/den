@@ -27,7 +27,7 @@ export default function TasksPage() {
 				<AppQuickActions />
 			</div>
 
-			<div className="mb-4 flex size-full flex-col gap-2 rounded-2xl border border-dashed p-1 shadow-xs">
+			<div className="mb-4 flex size-full flex-col gap-1 rounded-2xl border border-dashed p-1 shadow-xs">
 				<TaskSummaryCard tasks={allTasks} isLoading={isLoading} />
 
 				<GroupedTaskSection

@@ -176,6 +176,9 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      tanstack-query-optimistic-updates:
+        specifier: ^0.0.2
+        version: 0.0.2(@tanstack/react-query@5.83.0(react@19.1.0))(react@19.1.0)
       use-debounce:
         specifier: ^10.0.5
         version: 10.0.5(react@19.1.0)
@@ -3058,6 +3061,12 @@ packages:
   tailwindcss@4.1.11:
     resolution: {integrity: sha512-2E9TBm6MDD/xKYe+dvJZAmg3yxIEDNRc0jwlNyDg/4Fil2QcSLjFKGVff0lAf1jjeaArlG/M75Ey/EYr/OJtBA==}
 
+  tanstack-query-optimistic-updates@0.0.2:
+    resolution: {integrity: sha512-sBsKoLZYM5zsWVvJXrrDTPQWflWYrkmzB+DT+2zVHqzh6v3uLr6GMpI6INpTa1F8H7j7/tmmo42X4DZri9kb8A==}
+    peerDependencies:
+      '@tanstack/react-query': ^4 || ^5
+      react: ^18 || ^19
+
   tapable@2.2.2:
     resolution: {integrity: sha512-Re10+NauLTMCudc7T5WLFLAwDhQ0JWdrMK+9B2M8zR5hRExKmsRDCBA7/aV/pNJFltmBFO5BAMlQFi/vq3nKOg==}
     engines: {node: '>=6'}
@@ -5860,6 +5869,11 @@ snapshots:
   tailwind-merge@3.3.1: {}
 
   tailwindcss@4.1.11: {}
+
+  tanstack-query-optimistic-updates@0.0.2(@tanstack/react-query@5.83.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      '@tanstack/react-query': 5.83.0(react@19.1.0)
+      react: 19.1.0
 
   tapable@2.2.2: {}
 

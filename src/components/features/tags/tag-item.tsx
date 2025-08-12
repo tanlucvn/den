@@ -1,6 +1,5 @@
 "use client";
 
-import { TagIcon } from "lucide-react";
 import TagControlsDropdown from "@/components/features/tags/tag-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
@@ -19,11 +18,13 @@ export default function TagItem({ tag }: TagItemProps) {
 			)}
 		>
 			<div className="flex items-center gap-2 overflow-hidden">
-				{tag.color ? (
-					<TagIcon className="size-4 shrink-0" style={{ color: tag.color }} />
-				) : (
-					<IconRenderer name="Tag" className="shrink-0 text-primary/60" />
-				)}
+				<IconRenderer
+					name="Tag"
+					className={cn(
+						"shrink-0 text-primary/60",
+						tag.color && `text-${tag.color}-500`,
+					)}
+				/>
 
 				<h3 className="truncate font-medium text-sm">{tag.title}</h3>
 			</div>

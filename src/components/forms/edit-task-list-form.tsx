@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
+import { ColorInput } from "@/components/ui/color-input";
 import {
 	Form,
 	FormControl,
@@ -10,6 +11,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
 import type { TaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
@@ -34,6 +36,8 @@ export default function EditTaskListForm({
 		resolver: zodResolver(editTaskListSchema),
 		defaultValues: {
 			title: initialData.title,
+			icon: initialData.icon ?? null,
+			color: initialData.color ?? null,
 		},
 	});
 
@@ -43,6 +47,8 @@ export default function EditTaskListForm({
 		await handleUpdate({
 			...initialData,
 			...values,
+			icon: values.icon ?? null,
+			color: values.color ?? null,
 		});
 
 		onFinish(() => form.reset());
@@ -73,6 +79,56 @@ export default function EditTaskListForm({
 						</FormItem>
 					)}
 				/>
+
+				<div className="grid grid-cols-2 gap-3">
+					<FormField
+						control={form.control}
+						name="icon"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									<IconRenderer name="Smile" className="text-primary/60" />
+									Icon
+									<span className="font-normal text-muted-foreground text-xs">
+										(optional)
+									</span>
+								</FormLabel>
+								<FormControl>
+									<IconPicker
+										selectedIcon={field.value}
+										onIconSelect={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="color"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									<IconRenderer name="Palette" className="text-primary/60" />
+									Color
+									<span className="font-normal text-muted-foreground text-xs">
+										(optional)
+									</span>
+								</FormLabel>
+
+								<FormControl>
+									<ColorInput
+										value={field.value}
+										onChange={(val) => field.onChange(val)}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
 				<Button
 					type="submit"

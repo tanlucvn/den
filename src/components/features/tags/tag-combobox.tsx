@@ -74,7 +74,7 @@ export default function TagChipCombobox({
 				<Button
 					variant="ghost"
 					size="sm"
-					className="hover:!bg-transparent w-fit cursor-pointer"
+					className="hover:!bg-transparent mx-1 w-fit cursor-pointer p-0"
 				>
 					{tags.length > 0 ? (
 						<>

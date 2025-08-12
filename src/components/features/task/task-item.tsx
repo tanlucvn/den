@@ -9,17 +9,17 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { TaskWithTags } from "@/db/schema/tasks";
+import type { TaskWithTagsAndList } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { cn, formatDate } from "@/lib/utils";
 import TaskControlsContext from "./task-controls-context";
 
-type Props = {
-	task: TaskWithTags;
+interface TaskItemProps {
+	task: TaskWithTagsAndList;
 	noContext?: boolean;
-};
+}
 
-export default function DraggableTaskItem({ task }: Props) {
+export default function TaskItem({ task }: TaskItemProps) {
 	const { handleToggle, handleUpdateTags } = useTaskActions();
 
 	const {
@@ -44,7 +44,8 @@ export default function DraggableTaskItem({ task }: Props) {
 		return d < new Date() && !isToday(d);
 	};
 
-	const hasMetadata = task.remindAt || task.location || task.isPinned;
+	const hasMetadata =
+		task.remindAt || task.location || task.isPinned || task.isArchived;
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes}>
@@ -77,6 +78,18 @@ export default function DraggableTaskItem({ task }: Props) {
 								/>
 							</div>
 
+							{task.list?.icon && (
+								<span
+									className={cn(
+										"flex size-6 items-center justify-center rounded-md bg-secondary text-secondary-foreground",
+										task.list?.color &&
+											`bg-${task.list?.color}-100 text-${task.list?.color}-500`,
+									)}
+								>
+									<IconRenderer name={task.list?.icon} />
+								</span>
+							)}
+
 							<div className="flex flex-col overflow-hidden">
 								<h3 className="truncate font-medium">{task.title}</h3>
 								{task.note && (
@@ -108,6 +121,7 @@ export default function DraggableTaskItem({ task }: Props) {
 							{/* Left-side metadata */}
 							<div className="flex flex-wrap items-center gap-2">
 								{task.isPinned && <IconRenderer name="Pin" />}
+								{task.isArchived && <IconRenderer name="Archive" />}
 
 								{task.location && (
 									<div className="flex min-w-0 max-w-20 items-center gap-0.5">

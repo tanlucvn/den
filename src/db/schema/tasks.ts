@@ -6,7 +6,7 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { taskLists } from "@/db/schema/task-lists";
+import { type TaskList, taskLists } from "@/db/schema/task-lists";
 import type { Tag } from "./tags";
 
 export const tasks = pgTable("tasks", {
@@ -45,4 +45,9 @@ export type NewTask = typeof tasks.$inferInsert;
 
 export type TaskWithTags = Task & {
 	tags?: Tag[];
+};
+
+export type TaskWithTagsAndList = Task & {
+	tags?: Tag[];
+	list?: TaskList;
 };

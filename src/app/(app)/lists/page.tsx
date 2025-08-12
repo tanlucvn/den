@@ -1,7 +1,7 @@
 "use client";
 
 import { AppQuickActions } from "@/components/common/app-quick-actions";
-import { TaskListsSection } from "@/components/features/task-list/task-list-section";
+import { TaskListSection } from "@/components/features/task-list/task-list-section";
 import { TaskListSummaryCard } from "@/components/features/task-list/task-list-summary-card";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -29,16 +29,17 @@ export default function ListsPage() {
 				<AppQuickActions />
 			</div>
 
-			<div className="mb-4 flex size-full flex-col gap-2 rounded-2xl border border-dashed p-1 shadow-xs">
+			<div className="mb-4 flex size-full flex-col gap-1 rounded-2xl border border-dashed p-1 shadow-xs">
 				<TaskListSummaryCard
 					taskLists={allTaskLists}
 					tasks={allTasks}
 					isLoading={isLoading}
 				/>
 
-				<TaskListsSection
+				<TaskListSection
 					iconName="Folders"
 					title="All Lists"
+					description="Organize and track your tasks across multiple lists."
 					taskLists={allTaskLists}
 					tasks={allTasks}
 					isLoading={isLoading}

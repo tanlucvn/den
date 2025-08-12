@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
+import { ColorInput } from "@/components/ui/color-input";
 import {
 	Form,
 	FormControl,
@@ -10,6 +11,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
 import type { NewTaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
@@ -33,6 +35,8 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 		resolver: zodResolver(newTaskListSchema),
 		defaultValues: {
 			title: "",
+			icon: null,
+			color: null,
 		},
 	});
 
@@ -42,6 +46,8 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 		const newList: NewTaskList = {
 			...values,
 			userId: session.user.id,
+			icon: values.icon,
+			color: values.color,
 		};
 
 		await handleCreate(newList);
@@ -75,6 +81,56 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 						</FormItem>
 					)}
 				/>
+
+				<div className="grid grid-cols-2 gap-3">
+					<FormField
+						control={form.control}
+						name="icon"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									<IconRenderer name="Smile" className="text-primary/60" />
+									Icon
+									<span className="font-normal text-muted-foreground text-xs">
+										(optional)
+									</span>
+								</FormLabel>
+								<FormControl>
+									<IconPicker
+										selectedIcon={field.value}
+										onIconSelect={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="color"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									<IconRenderer name="Palette" className="text-primary/60" />
+									Color
+									<span className="font-normal text-muted-foreground text-xs">
+										(optional)
+									</span>
+								</FormLabel>
+
+								<FormControl>
+									<ColorInput
+										value={field.value}
+										onChange={(val) => field.onChange(val)}
+									/>
+								</FormControl>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
 				<Button type="submit" className="w-full" disabled={loading}>
 					{loading && <IconRenderer name="Loader2" className="animate-spin" />}

@@ -1,159 +1,147 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import {
+	Modal,
+	ModalContent,
+	ModalDescription,
+	ModalFooter,
+	ModalHeader,
+	ModalTitle,
+	ModalTrigger,
+} from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
 
 interface ColorInputProps {
-	onChange?: (color: string) => void;
-	defaultValue?: string;
-	showOpacity?: boolean;
+	value?: string | null;
+	onChange?: (color: string | null) => void;
 }
 
-const namedColors: { name: string; hex: string }[] = [
-	{ name: "Slate", hex: "#64748b" },
-	{ name: "Gray", hex: "#6b7280" },
-	{ name: "Zinc", hex: "#71717a" },
-	{ name: "Neutral", hex: "#737373" },
-	{ name: "Stone", hex: "#78716c" },
-	{ name: "Red", hex: "#ef4444" },
-	{ name: "Orange", hex: "#f97316" },
-	{ name: "Amber", hex: "#f59e0b" },
-	{ name: "Yellow", hex: "#eab308" },
-	{ name: "Lime", hex: "#84cc16" },
-	{ name: "Green", hex: "#22c55e" },
-	{ name: "Emerald", hex: "#10b981" },
-	{ name: "Teal", hex: "#14b8a6" },
-	{ name: "Cyan", hex: "#06b6d4" },
-	{ name: "Sky", hex: "#0ea5e9" },
-	{ name: "Blue", hex: "#3b82f6" },
-	{ name: "Indigo", hex: "#6366f1" },
-	{ name: "Violet", hex: "#8b5cf6" },
-	{ name: "Purple", hex: "#a855f7" },
-	{ name: "Fuchsia", hex: "#d946ef" },
-	{ name: "Pink", hex: "#ec4899" },
-	{ name: "Rose", hex: "#f43f5e" },
-];
+const colorFamilies = [
+	"slate",
+	"gray",
+	"zinc",
+	"neutral",
+	"stone",
+	"red",
+	"orange",
+	"amber",
+	"yellow",
+	"lime",
+	"green",
+	"emerald",
+	"teal",
+	"cyan",
+	"sky",
+	"blue",
+	"indigo",
+	"violet",
+	"purple",
+	"fuchsia",
+	"pink",
+	"rose",
+] as const;
 
-// Generate hex with alpha
-const withAlpha = (hex: string, opacity: number): string => {
-	if (opacity === 100) return hex;
-	const alpha = Math.round(opacity * 2.55)
-		.toString(16)
-		.padStart(2, "0");
-	return `${hex}${alpha}`;
-};
+export function ColorInput({ value = null, onChange }: ColorInputProps) {
+	const [open, setOpen] = useState(false);
+	const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
 
-export function ColorInput({
-	onChange,
-	defaultValue = "#ef4444",
-	showOpacity = true,
-}: ColorInputProps) {
-	const [baseColor, setBaseColor] = useState(defaultValue);
-	const [opacity, setOpacity] = useState(100);
+	useEffect(() => {
+		if (open) {
+			if (value) {
+				const match = value.match(/^bg-([a-z]+)-\d{2,3}$/);
+				if (match) {
+					setSelectedFamily(match[1]);
+				} else {
+					setSelectedFamily(null);
+				}
+			} else {
+				setSelectedFamily(null);
+			}
+		}
+	}, [open, value]);
 
-	const finalColor = withAlpha(baseColor, opacity);
-
-	const handleChange = (newColor: string) => {
-		setBaseColor(newColor);
-		onChange?.(withAlpha(newColor, opacity));
-	};
-
-	const handleOpacityChange = (newOpacity: number) => {
-		setOpacity(newOpacity);
-		onChange?.(withAlpha(baseColor, newOpacity));
+	const handleSave = () => {
+		onChange?.(selectedFamily);
+		setOpen(false);
 	};
 
 	return (
-		<div className="space-y-4">
-			{/* Grid of color buttons */}
-			<div className="grid max-h-40 grid-cols-3 gap-2 overflow-y-auto">
-				<button
+		<Modal open={open} onOpenChange={setOpen}>
+			<ModalTrigger asChild>
+				<Button
 					type="button"
-					onClick={() => handleChange("")}
+					variant="outline"
 					className={cn(
-						"flex items-center justify-between rounded-md border px-3 py-1.5 text-sm transition-colors",
-						!baseColor
-							? "border-ring bg-accent text-accent-foreground"
-							: "hover:bg-muted",
+						"flex w-full items-center justify-between gap-2 truncate font-normal",
+						!value && "text-muted-foreground",
 					)}
 				>
-					<div className="flex items-center gap-2">
-						<IconRenderer name="Ban" />
-						<span>None</span>
-					</div>
-					{!baseColor && (
-						<IconRenderer
-							name="Check"
-							className="size-4 text-muted-foreground"
-						/>
-					)}
-				</button>
-
-				{namedColors.map(({ name, hex }) => (
-					<button
-						type="button"
-						key={name}
-						onClick={() => handleChange(hex)}
-						className={cn(
-							"flex items-center justify-between gap-1 rounded-md border px-3 py-1.5 text-sm transition-colors",
-							baseColor === hex
-								? "border-ring bg-accent text-accent-foreground"
-								: "hover:bg-muted",
-						)}
-					>
-						<div className="flex items-center gap-2">
+					{value ? (
+						<div className="flex items-center gap-2 truncate">
 							<div
-								className="aspect-square size-4 rounded-[3px] border"
-								style={{ backgroundColor: hex }}
+								className={cn(
+									"size-4 shrink-0 rounded-full",
+									`bg-${value}-500`,
+								)}
 							/>
-							<span>{name}</span>
+							<span className="truncate capitalize">{value}</span>
 						</div>
-						{baseColor === hex && (
-							<IconRenderer
-								name="Check"
-								className="size-4 shrink-0 text-muted-foreground"
-							/>
-						)}
-					</button>
-				))}
-			</div>
+					) : (
+						<span>Select a color</span>
+					)}
+					<IconRenderer name="Maximize2" className="opacity-50" />
+				</Button>
+			</ModalTrigger>
 
-			{/* Color preview & code */}
-			<div className="flex items-center gap-2">
+			<ModalContent className="sm:max-w-[400px]">
+				<ModalHeader>
+					<ModalTitle>Select a color</ModalTitle>
+					<ModalDescription>Choose your favorite color</ModalDescription>
+				</ModalHeader>
+
+				{/* Color family picker */}
 				<div
-					className="aspect-square size-8 rounded border"
-					style={{ backgroundColor: finalColor }}
-				/>
-				<Input
-					value={finalColor.toUpperCase()}
-					onChange={(e) => {
-						const val = e.target.value.slice(0, 7);
-						if (/^#[0-9A-F]{6}$/i.test(val)) {
-							handleChange(val);
-						}
+					className="grid max-h-80 gap-2 overflow-y-auto"
+					style={{
+						gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
 					}}
-				/>
-			</div>
-
-			{/* Opacity */}
-			{showOpacity && (
-				<div className="select-none space-y-2">
-					<div className="flex justify-between text-muted-foreground text-xs">
-						<span>Opacity</span>
-						<span>{opacity}%</span>
-					</div>
-					<Slider
-						value={[opacity]}
-						onValueChange={(val) => handleOpacityChange(val[0])}
-						min={0}
-						max={100}
-						step={1}
-					/>
+				>
+					{colorFamilies.map((family) => {
+						const isSelected = family === selectedFamily;
+						const bgClass = `bg-${family}-500`;
+						return (
+							<Button
+								key={family}
+								variant={isSelected ? "default" : "outline"}
+								size="sm"
+								onClick={() => setSelectedFamily(family)}
+								className="justify-start font-normal"
+							>
+								<div className={cn("size-4 shrink-0 rounded-full", bgClass)} />
+								<span className="capitalize">{family}</span>
+							</Button>
+						);
+					})}
 				</div>
-			)}
-		</div>
+
+				<ModalFooter className="grid grid-cols-2 gap-2 p-0">
+					<Button
+						variant="outline"
+						onClick={() => {
+							setSelectedFamily(null);
+							setOpen(false);
+						}}
+					>
+						Cancel
+					</Button>
+					<Button onClick={handleSave} disabled={!selectedFamily}>
+						Save
+					</Button>
+				</ModalFooter>
+			</ModalContent>
+		</Modal>
 	);
 }

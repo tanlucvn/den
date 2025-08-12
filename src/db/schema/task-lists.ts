@@ -5,6 +5,9 @@ export const taskLists = pgTable("task_lists", {
 	title: text("name").notNull(),
 	userId: text("userId").notNull(),
 
+	icon: text(),
+	color: text(),
+
 	createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
 });

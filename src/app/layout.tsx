@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "@/styles/globals.css";
 import "@/styles/themes.css";
+import { ColorPreload } from "@/components/layouts/color-preload";
 import { Providers } from "@/components/providers";
 
 const geist = Geist({
@@ -31,6 +32,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${geist.variable} ${geistMono.variable} antialiased`}>
 				<Providers>{children}</Providers>
+				<ColorPreload />
 			</body>
 		</html>
 	);

@@ -2,14 +2,14 @@ import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { type Tag, tags, taskTags } from "@/db/schema/tags";
-import { type Task, type TaskWithTags, tasks } from "@/db/schema/tasks";
+import { tags, taskTags } from "@/db/schema/tags";
+import { taskLists } from "@/db/schema/task-lists";
+import { type TaskWithTagsAndList, tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
 	try {
 		const session = await auth.api.getSession({ headers: await headers() });
-
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
@@ -21,36 +21,31 @@ export async function GET(req: NextRequest) {
 			? and(eq(tasks.userId, session.user.id), eq(tasks.listId, listId))
 			: eq(tasks.userId, session.user.id);
 
-		const rawData = await db
+		// Query task with list & tags
+		const rows = await db
 			.select({
 				task: tasks,
+				list: taskLists,
 				tag: tags,
 			})
 			.from(tasks)
+			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
 			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
 			.leftJoin(tags, eq(taskTags.tagId, tags.id))
 			.where(where);
 
-		const grouped: Record<string, { task: Task; tags: Tag[] }> = {};
+		const map = new Map<string, TaskWithTagsAndList>();
 
-		for (const row of rawData) {
-			const taskId = row.task.id;
-			if (!grouped[taskId]) {
-				grouped[taskId] = {
-					task: row.task,
-					tags: [],
-				};
+		for (const { task, list, tag } of rows) {
+			if (!map.has(task.id)) {
+				map.set(task.id, { ...task, list: list ?? undefined, tags: [] });
 			}
-			if (row.tag?.id) {
-				grouped[taskId].tags.push(row.tag);
+			if (tag?.id) {
+				map.get(task.id)!.tags!.push(tag);
 			}
 		}
 
-		const result: TaskWithTags[] = Object.values(grouped).map((item) => ({
-			...item.task,
-			tags: item.tags,
-		}));
-		return NextResponse.json(result);
+		return NextResponse.json(Array.from(map.values()));
 	} catch (error) {
 		console.error("GET /api/tasks error:", error);
 		return NextResponse.json(
@@ -63,18 +58,45 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
 	try {
 		const session = await auth.api.getSession({ headers: await headers() });
-
-		if (!session)
+		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		}
 
 		const body = await req.json();
 
-		const result = await db
+		// Insert task
+		const inserted = await db
 			.insert(tasks)
 			.values({ ...body, userId: session.user.id })
 			.returning();
 
-		return NextResponse.json(result[0]);
+		const taskId = inserted[0].id;
+
+		// Query task with list & tags
+		const rows = await db
+			.select({
+				task: tasks,
+				list: taskLists,
+				tag: tags,
+			})
+			.from(tasks)
+			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
+			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
+			.leftJoin(tags, eq(taskTags.tagId, tags.id))
+			.where(eq(tasks.id, taskId));
+
+		const map = new Map<string, TaskWithTagsAndList>();
+
+		for (const { task, list, tag } of rows) {
+			if (!map.has(task.id)) {
+				map.set(task.id, { ...task, list: list ?? undefined, tags: [] });
+			}
+			if (tag?.id) {
+				map.get(task.id)!.tags!.push(tag);
+			}
+		}
+
+		return NextResponse.json(Array.from(map.values())[0]);
 	} catch (error) {
 		console.error("POST /api/tasks error:", error);
 		return NextResponse.json(

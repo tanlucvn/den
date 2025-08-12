@@ -157,7 +157,10 @@ export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
 										(optional)
 									</span>
 								</FormLabel>
-								<Select onValueChange={field.onChange} value={field.value}>
+								<Select
+									value={field.value === "none" ? "" : field.value}
+									onValueChange={(val) => field.onChange(val || "none")}
+								>
 									<FormControl>
 										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Set priority" />

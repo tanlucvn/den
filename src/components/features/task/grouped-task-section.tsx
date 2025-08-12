@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { TaskWithTags } from "@/db/schema/tasks";
+import type { TaskWithTagsAndList } from "@/db/schema/tasks";
 import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
 import { useSections } from "@/hooks/use-sections";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ interface GroupedTaskSectionProps {
 	iconName?: string;
 	title: string;
 	description?: string[];
-	tasks: TaskWithTags[];
+	tasks: TaskWithTagsAndList[];
 	isLoading: boolean;
 	isFetched: boolean;
 	listId?: string;
@@ -144,7 +144,7 @@ export default function GroupedTaskSection({
 									<TaskSection
 										key="archive"
 										icon={<IconRenderer name="Archive" />}
-										title="Archive"
+										title="Archived"
 										tasks={filtered.archive}
 										defaultOpen
 									/>

@@ -1,9 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { ColorInput } from "@/components/ui/color-input";
 import {
 	Form,
@@ -26,7 +24,6 @@ interface NewTagFormProps {
 
 export default function NewTagForm({ onFinish }: NewTagFormProps) {
 	const { data: session } = useSession();
-	const [isCollapsed, setIsCollapsed] = useState(false);
 
 	const { loading, handleCreate } = useTagActions();
 
@@ -34,7 +31,7 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 		resolver: zodResolver(newTagSchema),
 		defaultValues: {
 			title: "",
-			color: "", // Default color
+			color: null,
 		},
 	});
 
@@ -44,7 +41,7 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 		const newTag: NewTag = {
 			...values,
 			userId: session.user.id,
-			color: values.color?.trim() || undefined,
+			color: values.color,
 		};
 
 		await handleCreate(newTag);
@@ -84,43 +81,20 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 					name="color"
 					render={({ field }) => (
 						<FormItem>
-							<div className="flex items-center justify-between">
-								<FormLabel>
-									<IconRenderer name="Palette" className="text-primary/60" />
-									Color
-								</FormLabel>
+							<FormLabel>
+								<IconRenderer name="Palette" className="text-primary/60" />
+								Color
+								<span className="font-normal text-muted-foreground text-xs">
+									(optional)
+								</span>
+							</FormLabel>
 
-								<Button
-									variant="outline"
-									size="icon"
-									type="button"
-									onClick={() => setIsCollapsed(!isCollapsed)}
-								>
-									<IconRenderer
-										name={isCollapsed ? "ChevronsDownUp" : "ChevronsUpDown"}
-									/>
-								</Button>
-							</div>
-
-							<Collapsible
-								open={isCollapsed}
-								onOpenChange={(open) => {
-									setIsCollapsed(open);
-
-									if (!open) {
-										field.onChange("");
-									}
-								}}
-							>
-								<CollapsibleContent>
-									<FormControl>
-										<ColorInput
-											defaultValue={field.value || "#ef4444"}
-											onChange={(val) => field.onChange(val)}
-										/>
-									</FormControl>
-								</CollapsibleContent>
-							</Collapsible>
+							<FormControl>
+								<ColorInput
+									value={field.value}
+									onChange={(val) => field.onChange(val)}
+								/>
+							</FormControl>
 
 							<FormMessage />
 						</FormItem>

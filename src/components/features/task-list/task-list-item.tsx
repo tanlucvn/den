@@ -1,15 +1,7 @@
 import { Link } from "next-view-transitions";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Card } from "@/components/ui/card";
 import type { TaskList } from "@/db/schema/task-lists";
 import { cn } from "@/lib/utils";
 import TaskListControlsDropdown from "./task-list-controls-dropdown";
@@ -30,45 +22,61 @@ export function TaskListItem({
 	const progress =
 		totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+	const progressColor =
+		progress < 50
+			? "text-rose-300"
+			: progress < 80
+				? "text-amber-300"
+				: "text-emerald-300";
+
+	const renderProgress = () => {
+		if (totalCount <= 0) return "No tasks";
+		return (
+			<>
+				{completedCount}/{totalCount} completed
+				<span className={cn("ml-auto", progressColor)}>({progress}%)</span>
+			</>
+		);
+	};
+
 	return (
 		<Card
 			className={cn(
-				"relative size-full h-24 gap-2 rounded-md p-4 shadow-none",
+				"relative size-full h-28 gap-2 rounded-xl p-4 shadow-none",
 				"hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 				className,
 			)}
 		>
-			<CardHeader className="p-0">
-				<Link
-					href={`/lists/${taskList.id}`}
-					className="group no-underline hover:no-underline"
+			<div className="flex items-center justify-between">
+				<Button
+					variant="outline"
+					size="icon"
+					className={cn(
+						"size-9 rounded-lg",
+						taskList.color && `text-${taskList.color}-500`,
+					)}
 				>
-					<CardTitle className="text-sm underline-offset-2 group-hover:underline">
-						{taskList.title}
-					</CardTitle>
-					<CardDescription className="text-xs">
-						{totalCount} {totalCount === 1 ? "task" : "tasks"}
-					</CardDescription>
-				</Link>
+					<IconRenderer name={taskList.icon ?? "List"} />
+				</Button>
 
-				<CardAction>
-					<TaskListControlsDropdown taskList={taskList}>
-						<Button variant="ghost" size="icon" className="size-6">
-							<IconRenderer name="EllipsisVertical" />
-						</Button>
-					</TaskListControlsDropdown>
-				</CardAction>
-			</CardHeader>
-			<CardFooter className="p-0">
-				{totalCount > 0 && (
-					<div className="flex w-full items-center gap-2">
-						<Progress value={progress} className="h-1 flex-1" />
-						<span className="w-[32px] text-right text-muted-foreground text-xs tabular-nums">
-							{progress}%
-						</span>
-					</div>
-				)}
-			</CardFooter>
+				<TaskListControlsDropdown taskList={taskList}>
+					<Button variant="ghost" size="icon" className="ml-auto size-6">
+						<IconRenderer name="EllipsisVertical" />
+					</Button>
+				</TaskListControlsDropdown>
+			</div>
+
+			<Link
+				href={`/lists/${taskList.id}`}
+				className="group space-y-1 no-underline hover:no-underline"
+			>
+				<p className="font-medium text-sm underline-offset-2 group-hover:underline">
+					{taskList.title}
+				</p>
+				<div className="flex items-center gap-1 text-muted-foreground text-xs">
+					{renderProgress()}
+				</div>
+			</Link>
 		</Card>
 	);
 }

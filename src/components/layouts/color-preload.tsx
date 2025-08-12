@@ -1,0 +1,269 @@
+export function ColorPreload() {
+	return (
+		<div className="hidden">
+			<div className="bg-slate-50 text-slate-50" />
+			<div className="bg-slate-100 text-slate-100" />
+			<div className="bg-slate-200 text-slate-200" />
+			<div className="bg-slate-300 text-slate-300" />
+			<div className="bg-slate-400 text-slate-400" />
+			<div className="bg-slate-500 text-slate-500" />
+			<div className="bg-slate-600 text-slate-600" />
+			<div className="bg-slate-700 text-slate-700" />
+			<div className="bg-slate-800 text-slate-800" />
+			<div className="bg-slate-900 text-slate-900" />
+			<div className="bg-slate-950 text-slate-950" />
+
+			<div className="bg-gray-50 text-gray-50" />
+			<div className="bg-gray-100 text-gray-100" />
+			<div className="bg-gray-200 text-gray-200" />
+			<div className="bg-gray-300 text-gray-300" />
+			<div className="bg-gray-400 text-gray-400" />
+			<div className="bg-gray-500 text-gray-500" />
+			<div className="bg-gray-600 text-gray-600" />
+			<div className="bg-gray-700 text-gray-700" />
+			<div className="bg-gray-800 text-gray-800" />
+			<div className="bg-gray-900 text-gray-900" />
+			<div className="bg-gray-950 text-gray-950" />
+
+			<div className="bg-zinc-50 text-zinc-50" />
+			<div className="bg-zinc-100 text-zinc-100" />
+			<div className="bg-zinc-200 text-zinc-200" />
+			<div className="bg-zinc-300 text-zinc-300" />
+			<div className="bg-zinc-400 text-zinc-400" />
+			<div className="bg-zinc-500 text-zinc-500" />
+			<div className="bg-zinc-600 text-zinc-600" />
+			<div className="bg-zinc-700 text-zinc-700" />
+			<div className="bg-zinc-800 text-zinc-800" />
+			<div className="bg-zinc-900 text-zinc-900" />
+			<div className="bg-zinc-950 text-zinc-950" />
+
+			<div className="bg-neutral-50 text-neutral-50" />
+			<div className="bg-neutral-100 text-neutral-100" />
+			<div className="bg-neutral-200 text-neutral-200" />
+			<div className="bg-neutral-300 text-neutral-300" />
+			<div className="bg-neutral-400 text-neutral-400" />
+			<div className="bg-neutral-500 text-neutral-500" />
+			<div className="bg-neutral-600 text-neutral-600" />
+			<div className="bg-neutral-700 text-neutral-700" />
+			<div className="bg-neutral-800 text-neutral-800" />
+			<div className="bg-neutral-900 text-neutral-900" />
+			<div className="bg-neutral-950 text-neutral-950" />
+
+			<div className="bg-stone-50 text-stone-50" />
+			<div className="bg-stone-100 text-stone-100" />
+			<div className="bg-stone-200 text-stone-200" />
+			<div className="bg-stone-300 text-stone-300" />
+			<div className="bg-stone-400 text-stone-400" />
+			<div className="bg-stone-500 text-stone-500" />
+			<div className="bg-stone-600 text-stone-600" />
+			<div className="bg-stone-700 text-stone-700" />
+			<div className="bg-stone-800 text-stone-800" />
+			<div className="bg-stone-900 text-stone-900" />
+			<div className="bg-stone-950 text-stone-950" />
+
+			<div className="bg-red-50 text-red-50" />
+			<div className="bg-red-100 text-red-100" />
+			<div className="bg-red-200 text-red-200" />
+			<div className="bg-red-300 text-red-300" />
+			<div className="bg-red-400 text-red-400" />
+			<div className="bg-red-500 text-red-500" />
+			<div className="bg-red-600 text-red-600" />
+			<div className="bg-red-700 text-red-700" />
+			<div className="bg-red-800 text-red-800" />
+			<div className="bg-red-900 text-red-900" />
+			<div className="bg-red-950 text-red-950" />
+
+			<div className="bg-orange-50 text-orange-50" />
+			<div className="bg-orange-100 text-orange-100" />
+			<div className="bg-orange-200 text-orange-200" />
+			<div className="bg-orange-300 text-orange-300" />
+			<div className="bg-orange-400 text-orange-400" />
+			<div className="bg-orange-500 text-orange-500" />
+			<div className="bg-orange-600 text-orange-600" />
+			<div className="bg-orange-700 text-orange-700" />
+			<div className="bg-orange-800 text-orange-800" />
+			<div className="bg-orange-900 text-orange-900" />
+			<div className="bg-orange-950 text-orange-950" />
+
+			<div className="bg-amber-50 text-amber-50" />
+			<div className="bg-amber-100 text-amber-100" />
+			<div className="bg-amber-200 text-amber-200" />
+			<div className="bg-amber-300 text-amber-300" />
+			<div className="bg-amber-400 text-amber-400" />
+			<div className="bg-amber-500 text-amber-500" />
+			<div className="bg-amber-600 text-amber-600" />
+			<div className="bg-amber-700 text-amber-700" />
+			<div className="bg-amber-800 text-amber-800" />
+			<div className="bg-amber-900 text-amber-900" />
+			<div className="bg-amber-950 text-amber-950" />
+
+			<div className="bg-yellow-50 text-yellow-50" />
+			<div className="bg-yellow-100 text-yellow-100" />
+			<div className="bg-yellow-200 text-yellow-200" />
+			<div className="bg-yellow-300 text-yellow-300" />
+			<div className="bg-yellow-400 text-yellow-400" />
+			<div className="bg-yellow-500 text-yellow-500" />
+			<div className="bg-yellow-600 text-yellow-600" />
+			<div className="bg-yellow-700 text-yellow-700" />
+			<div className="bg-yellow-800 text-yellow-800" />
+			<div className="bg-yellow-900 text-yellow-900" />
+			<div className="bg-yellow-950 text-yellow-950" />
+
+			<div className="bg-lime-50 text-lime-50" />
+			<div className="bg-lime-100 text-lime-100" />
+			<div className="bg-lime-200 text-lime-200" />
+			<div className="bg-lime-300 text-lime-300" />
+			<div className="bg-lime-400 text-lime-400" />
+			<div className="bg-lime-500 text-lime-500" />
+			<div className="bg-lime-600 text-lime-600" />
+			<div className="bg-lime-700 text-lime-700" />
+			<div className="bg-lime-800 text-lime-800" />
+			<div className="bg-lime-900 text-lime-900" />
+			<div className="bg-lime-950 text-lime-950" />
+
+			<div className="bg-green-50 text-green-50" />
+			<div className="bg-green-100 text-green-100" />
+			<div className="bg-green-200 text-green-200" />
+			<div className="bg-green-300 text-green-300" />
+			<div className="bg-green-400 text-green-400" />
+			<div className="bg-green-500 text-green-500" />
+			<div className="bg-green-600 text-green-600" />
+			<div className="bg-green-700 text-green-700" />
+			<div className="bg-green-800 text-green-800" />
+			<div className="bg-green-900 text-green-900" />
+			<div className="bg-green-950 text-green-950" />
+
+			<div className="bg-emerald-50 text-emerald-50" />
+			<div className="bg-emerald-100 text-emerald-100" />
+			<div className="bg-emerald-200 text-emerald-200" />
+			<div className="bg-emerald-300 text-emerald-300" />
+			<div className="bg-emerald-400 text-emerald-400" />
+			<div className="bg-emerald-500 text-emerald-500" />
+			<div className="bg-emerald-600 text-emerald-600" />
+			<div className="bg-emerald-700 text-emerald-700" />
+			<div className="bg-emerald-800 text-emerald-800" />
+			<div className="bg-emerald-900 text-emerald-900" />
+			<div className="bg-emerald-950 text-emerald-950" />
+
+			<div className="bg-teal-50 text-teal-50" />
+			<div className="bg-teal-100 text-teal-100" />
+			<div className="bg-teal-200 text-teal-200" />
+			<div className="bg-teal-300 text-teal-300" />
+			<div className="bg-teal-400 text-teal-400" />
+			<div className="bg-teal-500 text-teal-500" />
+			<div className="bg-teal-600 text-teal-600" />
+			<div className="bg-teal-700 text-teal-700" />
+			<div className="bg-teal-800 text-teal-800" />
+			<div className="bg-teal-900 text-teal-900" />
+			<div className="bg-teal-950 text-teal-950" />
+
+			<div className="bg-cyan-50 text-cyan-50" />
+			<div className="bg-cyan-100 text-cyan-100" />
+			<div className="bg-cyan-200 text-cyan-200" />
+			<div className="bg-cyan-300 text-cyan-300" />
+			<div className="bg-cyan-400 text-cyan-400" />
+			<div className="bg-cyan-500 text-cyan-500" />
+			<div className="bg-cyan-600 text-cyan-600" />
+			<div className="bg-cyan-700 text-cyan-700" />
+			<div className="bg-cyan-800 text-cyan-800" />
+			<div className="bg-cyan-900 text-cyan-900" />
+			<div className="bg-cyan-950 text-cyan-950" />
+
+			<div className="bg-sky-50 text-sky-50" />
+			<div className="bg-sky-100 text-sky-100" />
+			<div className="bg-sky-200 text-sky-200" />
+			<div className="bg-sky-300 text-sky-300" />
+			<div className="bg-sky-400 text-sky-400" />
+			<div className="bg-sky-500 text-sky-500" />
+			<div className="bg-sky-600 text-sky-600" />
+			<div className="bg-sky-700 text-sky-700" />
+			<div className="bg-sky-800 text-sky-800" />
+			<div className="bg-sky-900 text-sky-900" />
+			<div className="bg-sky-950 text-sky-950" />
+
+			<div className="bg-blue-50 text-blue-50" />
+			<div className="bg-blue-100 text-blue-100" />
+			<div className="bg-blue-200 text-blue-200" />
+			<div className="bg-blue-300 text-blue-300" />
+			<div className="bg-blue-400 text-blue-400" />
+			<div className="bg-blue-500 text-blue-500" />
+			<div className="bg-blue-600 text-blue-600" />
+			<div className="bg-blue-700 text-blue-700" />
+			<div className="bg-blue-800 text-blue-800" />
+			<div className="bg-blue-900 text-blue-900" />
+			<div className="bg-blue-950 text-blue-950" />
+
+			<div className="bg-indigo-50 text-indigo-50" />
+			<div className="bg-indigo-100 text-indigo-100" />
+			<div className="bg-indigo-200 text-indigo-200" />
+			<div className="bg-indigo-300 text-indigo-300" />
+			<div className="bg-indigo-400 text-indigo-400" />
+			<div className="bg-indigo-500 text-indigo-500" />
+			<div className="bg-indigo-600 text-indigo-600" />
+			<div className="bg-indigo-700 text-indigo-700" />
+			<div className="bg-indigo-800 text-indigo-800" />
+			<div className="bg-indigo-900 text-indigo-900" />
+			<div className="bg-indigo-950 text-indigo-950" />
+
+			<div className="bg-violet-50 text-violet-50" />
+			<div className="bg-violet-100 text-violet-100" />
+			<div className="bg-violet-200 text-violet-200" />
+			<div className="bg-violet-300 text-violet-300" />
+			<div className="bg-violet-400 text-violet-400" />
+			<div className="bg-violet-500 text-violet-500" />
+			<div className="bg-violet-600 text-violet-600" />
+			<div className="bg-violet-700 text-violet-700" />
+			<div className="bg-violet-800 text-violet-800" />
+			<div className="bg-violet-900 text-violet-900" />
+			<div className="bg-violet-950 text-violet-950" />
+
+			<div className="bg-purple-50 text-purple-50" />
+			<div className="bg-purple-100 text-purple-100" />
+			<div className="bg-purple-200 text-purple-200" />
+			<div className="bg-purple-300 text-purple-300" />
+			<div className="bg-purple-400 text-purple-400" />
+			<div className="bg-purple-500 text-purple-500" />
+			<div className="bg-purple-600 text-purple-600" />
+			<div className="bg-purple-700 text-purple-700" />
+			<div className="bg-purple-800 text-purple-800" />
+			<div className="bg-purple-900 text-purple-900" />
+			<div className="bg-purple-950 text-purple-950" />
+
+			<div className="bg-fuchsia-50 text-fuchsia-50" />
+			<div className="bg-fuchsia-100 text-fuchsia-100" />
+			<div className="bg-fuchsia-200 text-fuchsia-200" />
+			<div className="bg-fuchsia-300 text-fuchsia-300" />
+			<div className="bg-fuchsia-400 text-fuchsia-400" />
+			<div className="bg-fuchsia-500 text-fuchsia-500" />
+			<div className="bg-fuchsia-600 text-fuchsia-600" />
+			<div className="bg-fuchsia-700 text-fuchsia-700" />
+			<div className="bg-fuchsia-800 text-fuchsia-800" />
+			<div className="bg-fuchsia-900 text-fuchsia-900" />
+			<div className="bg-fuchsia-950 text-fuchsia-950" />
+
+			<div className="bg-pink-50 text-pink-50" />
+			<div className="bg-pink-100 text-pink-100" />
+			<div className="bg-pink-200 text-pink-200" />
+			<div className="bg-pink-300 text-pink-300" />
+			<div className="bg-pink-400 text-pink-400" />
+			<div className="bg-pink-500 text-pink-500" />
+			<div className="bg-pink-600 text-pink-600" />
+			<div className="bg-pink-700 text-pink-700" />
+			<div className="bg-pink-800 text-pink-800" />
+			<div className="bg-pink-900 text-pink-900" />
+			<div className="bg-pink-950 text-pink-950" />
+
+			<div className="bg-rose-50 text-rose-50" />
+			<div className="bg-rose-100 text-rose-100" />
+			<div className="bg-rose-200 text-rose-200" />
+			<div className="bg-rose-300 text-rose-300" />
+			<div className="bg-rose-400 text-rose-400" />
+			<div className="bg-rose-500 text-rose-500" />
+			<div className="bg-rose-600 text-rose-600" />
+			<div className="bg-rose-700 text-rose-700" />
+			<div className="bg-rose-800 text-rose-800" />
+			<div className="bg-rose-900 text-rose-900" />
+			<div className="bg-rose-950 text-rose-950" />
+		</div>
+	);
+}

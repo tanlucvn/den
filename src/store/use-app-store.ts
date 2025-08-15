@@ -12,9 +12,6 @@ type AppStore = {
 
 	editTag: Tag | null;
 	setEditTag: (tag: Tag | null) => void;
-
-	searchTerm: string;
-	setSearchTerm: (term: string) => void;
 };
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -26,7 +23,4 @@ export const useAppStore = create<AppStore>((set) => ({
 
 	editTag: null,
 	setEditTag: (tag) => set({ editTag: tag }),
-
-	searchTerm: "",
-	setSearchTerm: (term) => set({ searchTerm: term }),
 }));

@@ -3,9 +3,10 @@ import { filterTasks } from "@/lib/utils";
 import { useGroupedTasks } from "./use-grouped-tasks";
 
 export function useSections(tasks: Task[], searchTerm: string) {
-	const { pinned, active, completed, archive } = useGroupedTasks(tasks);
+	const { all, pinned, active, completed, archive } = useGroupedTasks(tasks);
 	return {
 		filtered: {
+			all: filterTasks(all, searchTerm),
 			pinned: filterTasks(pinned, searchTerm),
 			active: filterTasks(active, searchTerm),
 			completed: filterTasks(completed, searchTerm),

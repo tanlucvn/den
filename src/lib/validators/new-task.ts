@@ -5,6 +5,7 @@ export const newTaskSchema = z.object({
 	note: z.string().optional(),
 	location: z.string().optional(),
 	priority: z.enum(["none", "low", "medium", "high"]),
+	status: z.enum(["todo", "in_progress", "paused", "completed"]),
 	remindAt: z.date().nullable().optional(),
 });
 

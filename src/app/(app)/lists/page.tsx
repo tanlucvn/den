@@ -1,10 +1,9 @@
 "use client";
 
-import { AppQuickActions } from "@/components/common/app-quick-actions";
 import { TaskListSection } from "@/components/features/task-list/task-list-section";
 import { TaskListSummaryCard } from "@/components/features/task-list/task-list-summary-card";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import AppLayout from "@/components/layouts/app-layout";
+import HeaderNav from "@/components/layouts/headers/task-lists/header-nav";
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
 import { useTasks } from "@/hooks/mutations/use-task-mutation";
 
@@ -13,29 +12,8 @@ export default function ListsPage() {
 	const { data: allTasks = [] } = useTasks();
 
 	return (
-		<div className="flex flex-col px-4">
-			<div className="flex h-16 items-center gap-2">
-				<SidebarTrigger className="-ml-1" />
-
-				<Separator
-					orientation="vertical"
-					className="mr-2 data-[orientation=vertical]:h-4"
-				/>
-
-				<span className="text-sm">Lists</span>
-			</div>
-
-			<div className="sticky top-2 z-10 mb-6 w-full rounded-full bg-background">
-				<AppQuickActions />
-			</div>
-
-			<div className="mb-4 flex size-full flex-col gap-1 rounded-2xl border border-dashed p-1 shadow-xs">
-				<TaskListSummaryCard
-					taskLists={allTaskLists}
-					tasks={allTasks}
-					isLoading={isLoading}
-				/>
-
+		<AppLayout header={<HeaderNav />}>
+			<div className="space-y-1 rounded-2xl border border-dashed p-1 shadow-xs">
 				<TaskListSection
 					iconName="Folders"
 					title="All Lists"
@@ -45,7 +23,13 @@ export default function ListsPage() {
 					isLoading={isLoading}
 					isFetched={isFetched}
 				/>
+
+				<TaskListSummaryCard
+					taskLists={allTaskLists}
+					tasks={allTasks}
+					isLoading={isLoading}
+				/>
 			</div>
-		</div>
+		</AppLayout>
 	);
 }

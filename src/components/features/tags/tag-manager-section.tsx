@@ -18,6 +18,8 @@ import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Tag } from "@/db/schema/tags";
 import { cn } from "@/lib/utils";
+import { useSearchStore } from "@/store/use-search-store";
+import { SearchTagsView } from "./search-tags";
 
 interface TagManagerSectionProps {
 	iconName?: string;
@@ -37,9 +39,17 @@ export default function TagManagerSection({
 	isLoading,
 	className,
 }: TagManagerSectionProps) {
+	const { isSearchOpen, searchQuery } = useSearchStore();
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	const hasTags = tags.length > 0;
+	const isSearching = isSearchOpen && searchQuery.trim() !== "";
+	const filteredTags = isSearching
+		? tags.filter((tag) =>
+				tag.title.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+			)
+		: tags;
+
+	const hasTags = filteredTags.length > 0;
 
 	if (isLoading) return <TagManagerSectionSkeleton className={className} />;
 
@@ -75,16 +85,19 @@ export default function TagManagerSection({
 					<QuickAddTag />
 
 					{/* Tag list */}
-					{hasTags && (
-						<ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-							{tags.map((tag) => (
-								<TagItem key={tag.id} tag={tag} />
-							))}
-						</ul>
+					{isSearching ? (
+						<SearchTagsView />
+					) : (
+						hasTags && (
+							<div className="grid auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+								{tags.map((tag) => (
+									<TagItem key={tag.id} tag={tag} />
+								))}
+							</div>
+						)
 					)}
-
 					{/* Empty state */}
-					{!hasTags && (
+					{!isSearching && !hasTags && (
 						<EmptyState
 							icon="Tag"
 							title="No tags created yet"

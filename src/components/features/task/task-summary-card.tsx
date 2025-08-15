@@ -152,6 +152,8 @@ export function TaskSummaryCard({
 											outerRadius={80}
 											startAngle={90}
 											endAngle={450}
+											paddingAngle={4}
+											cornerRadius={20}
 										/>
 									</PieChart>
 								</ChartContainer>

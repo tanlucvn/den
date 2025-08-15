@@ -1,11 +1,4 @@
-import {
-	boolean,
-	integer,
-	pgTable,
-	text,
-	timestamp,
-	uuid,
-} from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { type TaskList, taskLists } from "@/db/schema/task-lists";
 import type { Tag } from "./tags";
 
@@ -26,8 +19,13 @@ export const tasks = pgTable("tasks", {
 		.notNull()
 		.default("none"),
 
+	status: text("status", {
+		enum: ["todo", "in_progress", "paused", "completed"],
+	})
+		.notNull()
+		.default("todo"),
+
 	location: text(),
-	sortIndex: integer().notNull().default(0),
 
 	isCompleted: boolean().notNull().default(false),
 	isPinned: boolean().notNull().default(false),

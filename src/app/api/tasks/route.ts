@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
@@ -32,7 +32,19 @@ export async function GET(req: NextRequest) {
 			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
 			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
 			.leftJoin(tags, eq(taskTags.tagId, tags.id))
-			.where(where);
+			.where(where)
+			.orderBy(
+				sql`
+					CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
+					CASE ${tasks.priority}
+						WHEN 'high' THEN 3
+						WHEN 'medium' THEN 2
+						WHEN 'low' THEN 1
+						WHEN 'none' THEN 0
+						ELSE 0
+					END DESC
+				`,
+			);
 
 		const map = new Map<string, TaskWithTagsAndList>();
 
@@ -83,7 +95,19 @@ export async function POST(req: NextRequest) {
 			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
 			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
 			.leftJoin(tags, eq(taskTags.tagId, tags.id))
-			.where(eq(tasks.id, taskId));
+			.where(eq(tasks.id, taskId))
+			.orderBy(
+				sql`
+					CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
+					CASE ${tasks.priority}
+						WHEN 'high' THEN 3
+						WHEN 'medium' THEN 2
+						WHEN 'low' THEN 1
+						WHEN 'none' THEN 0
+						ELSE 0
+					END DESC
+				`,
+			);
 
 		const map = new Map<string, TaskWithTagsAndList>();
 

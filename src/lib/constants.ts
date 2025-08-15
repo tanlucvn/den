@@ -1,28 +1,4 @@
 import type { AppColor } from "@/store/use-app-settings-store";
-import type { TaskSortOption } from "./helpers/sort-tasks";
-
-export const TASK_SORT_OPTIONS: { label: string; value: TaskSortOption }[] = [
-	{ label: "Created ↓", value: "created-desc" },
-	{ label: "Created ↑", value: "created-asc" },
-	{ label: "Updated ↓", value: "updated-desc" },
-	{ label: "Updated ↑", value: "updated-asc" },
-	{ label: "Reminder ↑", value: "remind-asc" },
-	{ label: "Reminder ↓", value: "remind-desc" },
-	{ label: "Priority ↑", value: "priority-asc" },
-	{ label: "Priority ↓", value: "priority-desc" },
-	{ label: "Title A-Z", value: "title-asc" },
-	{ label: "Title Z-A", value: "title-desc" },
-	{ label: "Custom Sort ↑", value: "sortIndex-asc" },
-	{ label: "Custom Sort ↓", value: "sortIndex-desc" },
-];
-
-export const TASK_FILTER_OPTIONS = [
-	{ label: "All", value: "all" },
-	{ label: "Active", value: "active" },
-	{ label: "Completed", value: "completed" },
-	{ label: "Pinned", value: "pinned" },
-	{ label: "Unpinned", value: "unpinned" },
-];
 
 export const COLOR_OPTIONS: { label: string; value: AppColor; desc: string }[] =
 	[
@@ -54,3 +30,41 @@ export const FILTER_LABELS: Record<string, string> = {
 	week: "This Week",
 	month: "This Month",
 };
+
+export const ALL_STATUS = [
+	{ id: "todo", name: "Todo", icon: "Circle" },
+	{
+		id: "in_progress",
+		name: "In Progress",
+		icon: "CircleDot",
+	},
+	{ id: "paused", name: "Paused", icon: "CircleSlash" },
+	{
+		id: "completed",
+		name: "Completed",
+		icon: "CircleCheck",
+	},
+] as const;
+export const STATUS_COLORS: Record<StatusId, string> = {
+	todo: "text-primary/60",
+	in_progress: "text-amber-500",
+	paused: "text-sky-500",
+	completed: "text-emerald-500",
+};
+export type StatusId = (typeof ALL_STATUS)[number]["id"];
+export type Status = (typeof ALL_STATUS)[number];
+
+export const ALL_PRIORITY = [
+	{ id: "none", name: "None", icon: "Flag" },
+	{ id: "low", name: "Low", icon: "Flag" },
+	{ id: "medium", name: "Medium", icon: "Flag" },
+	{ id: "high", name: "High", icon: "Flag" },
+] as const;
+export const PRIORITY_COLORS: Record<PriorityId, string> = {
+	none: "text-muted-foreground",
+	low: "text-green-500",
+	medium: "text-amber-500",
+	high: "text-red-500",
+};
+export type PriorityId = (typeof ALL_PRIORITY)[number]["id"];
+export type Priority = (typeof ALL_PRIORITY)[number];

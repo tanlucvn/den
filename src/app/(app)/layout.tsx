@@ -1,9 +1,9 @@
-import AppLayout from "@/components/layouts/app-layout";
+import ClientProviders from "@/components/layouts/client-providers";
 
 interface LayoutProps {
 	children: React.ReactNode;
 }
 
 export default async function Layout({ children }: LayoutProps) {
-	return <AppLayout>{children}</AppLayout>;
+	return <ClientProviders>{children}</ClientProviders>;
 }

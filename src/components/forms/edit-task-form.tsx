@@ -30,6 +30,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
+import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
 	type EditTaskFormValues,
@@ -54,6 +55,7 @@ export default function EditTaskForm({
 			note: initialData.note ?? "",
 			location: initialData.location ?? "",
 			priority: initialData.priority,
+			status: initialData.status,
 			remindAt: initialData.remindAt,
 		},
 	});
@@ -162,22 +164,30 @@ export default function EditTaskForm({
 									<SelectContent>
 										<SelectGroup>
 											<SelectItem value="high">
-												<IconRenderer name="Flag" className="text-rose-500" />
+												<IconRenderer
+													name="Flag"
+													className={PRIORITY_COLORS.high}
+												/>
 												High
 											</SelectItem>
 											<SelectItem value="medium">
-												<IconRenderer name="Flag" className="text-amber-500" />
+												<IconRenderer
+													name="Flag"
+													className={PRIORITY_COLORS.medium}
+												/>
 												Medium
 											</SelectItem>
 											<SelectItem value="low">
 												<IconRenderer
 													name="Flag"
-													className="text-emerald-500"
+													className={PRIORITY_COLORS.low}
 												/>
 												Low
 											</SelectItem>
 											<SelectSeparator />
-											<SelectItem value="none">None</SelectItem>
+											<SelectItem value="none" className={PRIORITY_COLORS.none}>
+												None
+											</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>
@@ -186,49 +196,103 @@ export default function EditTaskForm({
 						)}
 					/>
 
-					{/* Date Picker */}
+					{/* Status Select */}
 					<FormField
 						control={form.control}
-						name="remindAt"
+						name="status"
 						render={({ field }) => (
-							<FormItem className="flex flex-col">
+							<FormItem>
 								<FormLabel>
-									Remind me on
+									Status
 									<span className="font-normal text-muted-foreground text-xs">
 										(optional)
 									</span>
 								</FormLabel>
-								<Popover>
-									<PopoverTrigger asChild>
-										<FormControl>
-											<Button
-												variant="outline"
-												className={cn(
-													"w-full justify-start text-left font-normal",
-													!field.value && "text-muted-foreground",
-												)}
-											>
-												<IconRenderer name="Calendar" />
-												{field.value
-													? format(field.value, "PPP")
-													: "Pick a date"}
-											</Button>
-										</FormControl>
-									</PopoverTrigger>
-									<PopoverContent className="w-auto p-0">
-										<Calendar
-											mode="single"
-											selected={field.value ?? new Date()}
-											fromDate={new Date()}
-											onSelect={(date) => field.onChange(date ?? null)}
-										/>
-									</PopoverContent>
-								</Popover>
+								<Select onValueChange={field.onChange} value={field.value}>
+									<FormControl>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="Set status" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent>
+										<SelectGroup>
+											<SelectItem value="todo">
+												<IconRenderer
+													name="Circle"
+													className={STATUS_COLORS.todo}
+												/>
+												Todo
+											</SelectItem>
+											<SelectItem value="in_progress">
+												<IconRenderer
+													name="CircleDot"
+													className={STATUS_COLORS.in_progress}
+												/>
+												In Progress
+											</SelectItem>
+											<SelectItem value="paused">
+												<IconRenderer
+													name="CircleSlash"
+													className={STATUS_COLORS.paused}
+												/>
+												Paused
+											</SelectItem>
+											<SelectItem value="completed">
+												<IconRenderer
+													name="CircleCheck"
+													className={STATUS_COLORS.completed}
+												/>
+												Completed
+											</SelectItem>
+										</SelectGroup>
+									</SelectContent>
+								</Select>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
 				</div>
+
+				{/* Date Picker */}
+				<FormField
+					control={form.control}
+					name="remindAt"
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<FormLabel>
+								Remind me on
+								<span className="font-normal text-muted-foreground text-xs">
+									(optional)
+								</span>
+							</FormLabel>
+							<Popover>
+								<PopoverTrigger asChild>
+									<FormControl>
+										<Button
+											variant="outline"
+											className={cn(
+												"w-full justify-start text-left font-normal",
+												!field.value && "text-muted-foreground",
+											)}
+										>
+											<IconRenderer name="Calendar" />
+											{field.value ? format(field.value, "PPP") : "Pick a date"}
+										</Button>
+									</FormControl>
+								</PopoverTrigger>
+								<PopoverContent className="w-auto p-0">
+									<Calendar
+										mode="single"
+										selected={field.value ?? new Date()}
+										fromDate={new Date()}
+										onSelect={(date) => field.onChange(date ?? null)}
+									/>
+								</PopoverContent>
+							</Popover>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 
 				<Button
 					type="submit"

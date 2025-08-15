@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import NewTaskListModal from "@/components/modals/new-task-list-modal";
@@ -10,11 +12,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TaskList } from "@/db/schema/task-lists";
 import type { Task } from "@/db/schema/tasks";
 import { cn } from "@/lib/utils";
+import { useSearchStore } from "@/store/use-search-store";
+import { SearchTaskListView } from "./search-lists";
 import { TaskListItem } from "./task-list-item";
 
 interface TaskListSectionProps {
@@ -38,6 +43,10 @@ export function TaskListSection({
 	className,
 }: TaskListSectionProps) {
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const { isSearchOpen, searchQuery } = useSearchStore();
+
+	const isSearching = isSearchOpen && searchQuery.trim() !== "";
+	const hasLists = taskLists.length > 0;
 
 	if (isLoading) return <TaskListSectionSkeleton />;
 
@@ -67,16 +76,13 @@ export function TaskListSection({
 			</CardHeader>
 
 			{!isCollapsed && (
-				<>
-					{/* Task List Items */}
-					<CardContent
-						className="grid gap-2 p-0"
-						style={{
-							gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-						}}
-					>
-						{taskLists.length > 0 &&
-							taskLists.map((list) => {
+				<CardContent className="space-y-4 p-0">
+					{/* Search view */}
+					{isSearching ? (
+						<SearchTaskListView taskLists={taskLists} tasks={tasks} />
+					) : hasLists ? (
+						<div className="grid auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+							{taskLists.map((list) => {
 								const listTasks = tasks.filter((t) => t.listId === list.id);
 								const totalCount = listTasks.length;
 								const completedCount = listTasks.filter(
@@ -92,22 +98,28 @@ export function TaskListSection({
 									/>
 								);
 							})}
-
-						{/* Create Task List Button */}
-						<NewTaskListModal>
-							<div
-								className={cn(
-									"flex cursor-pointer flex-col items-center justify-center rounded-xl border",
-									"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
-									"h-28 text-muted-foreground text-xs transition hover:bg-muted hover:text-foreground",
-								)}
-							>
-								<IconRenderer name="Plus" className="mb-1" />
-								New list
-							</div>
-						</NewTaskListModal>
-					</CardContent>
-				</>
+							{/* Create button */}
+							<NewTaskListModal>
+								<div
+									className={cn(
+										"flex cursor-pointer flex-col items-center justify-center rounded-xl border",
+										"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
+										"h-28 text-muted-foreground text-xs transition hover:bg-muted hover:text-foreground",
+									)}
+								>
+									<IconRenderer name="Plus" className="mb-1" />
+									New list
+								</div>
+							</NewTaskListModal>
+						</div>
+					) : (
+						<EmptyState
+							icon="List"
+							title="No lists created yet"
+							description="Use the button above to create a new list."
+						/>
+					)}
+				</CardContent>
 			)}
 		</Card>
 	);

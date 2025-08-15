@@ -1,6 +1,6 @@
 "use client";
 
-import { TagIcon, XIcon } from "lucide-react";
+import { IconRenderer } from "@/components/icon-renderer";
 import type { Tag } from "@/db/schema/tags";
 import { cn } from "@/lib/utils";
 
@@ -27,18 +27,21 @@ export default function TagChip({
 				className,
 			)}
 		>
-			<TagIcon
-				className={cn("size-3 fill-transparent text-primary/60", iconClassName)}
-				style={{ color: tag.color ?? undefined }}
+			<IconRenderer
+				name="Tag"
+				className={cn(
+					"size-3 fill-transparent text-primary/60",
+					`text-${tag.color}-500`,
+					iconClassName,
+				)}
 			/>
 
 			{tag.title}
 
 			{deletable && (
-				<XIcon
-					className="size-3 text-destructive"
-					onClick={() => onClick?.()}
-				/>
+				<span onClick={() => onClick?.()}>
+					<IconRenderer name="X" className="size-3 text-destructive" />
+				</span>
 			)}
 		</div>
 	);

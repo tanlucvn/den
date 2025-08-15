@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import QuickAddTask from "@/components/features/task/quick-add-task";
 import TaskSection from "@/components/features/task/task-section";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -13,18 +13,19 @@ import {
 } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TaskWithTagsAndList } from "@/db/schema/tasks";
-import { useGroupedTasks } from "@/hooks/use-grouped-tasks";
-import { useSections } from "@/hooks/use-sections";
+import { ALL_STATUS, STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/store/use-app-store";
+import { useFilterStore } from "@/store/use-filter-store";
+import { useSearchStore } from "@/store/use-search-store";
+import { FilteredTasksView } from "./filter-tasks-view";
+import { SearchTasksView } from "./search-tasks-view";
 
 interface GroupedTaskSectionProps {
 	iconName?: string;
 	title: string;
-	description?: string[];
+	description?: string;
 	tasks: TaskWithTagsAndList[];
 	isLoading: boolean;
 	isFetched: boolean;
@@ -35,61 +36,27 @@ interface GroupedTaskSectionProps {
 export default function GroupedTaskSection({
 	iconName = "",
 	title = "",
-	description = [],
+	description,
 	tasks,
 	isLoading,
 	isFetched,
 	listId,
 	className,
 }: GroupedTaskSectionProps) {
-	const { searchTerm } = useAppStore();
+	const { isSearchOpen, searchQuery } = useSearchStore();
+	const { hasActiveFilters } = useFilterStore();
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
-	const { filtered } = useSections(tasks, searchTerm);
-	const { pinned, active, completed, archive } = useGroupedTasks(tasks);
+	const isSearching = isSearchOpen && searchQuery.trim() !== "";
+	const isFiltering = hasActiveFilters();
 
-	const totalOriginalTasks =
-		pinned.length + active.length + completed.length + archive.length;
-
-	const totalFilteredTasks =
-		filtered.pinned.length +
-		filtered.active.length +
-		filtered.completed.length +
-		filtered.archive.length;
-
-	const showNoResults =
-		isFetched &&
-		!isLoading &&
-		totalOriginalTasks > 0 &&
-		totalFilteredTasks === 0;
+	const tasksByStatus = ALL_STATUS.map((status) => ({
+		...status,
+		tasks: tasks.filter((task) => task.status === status.id),
+	}));
 
 	const showNoTasks =
-		isFetched &&
-		!isLoading &&
-		totalOriginalTasks === 0 &&
-		searchTerm.trim() === "";
-
-	const sections = [
-		{ title: "Pinned", icon: "Pin", tasks: filtered.pinned },
-		{
-			title: "Active",
-			icon: "Flame",
-			tasks: filtered.active,
-			defaultOpen: true,
-		},
-		{
-			title: "Completed",
-			icon: "CircleCheck",
-			tasks: filtered.completed,
-			defaultOpen: true,
-		},
-	];
-
-	const randomDescription = useMemo(() => {
-		if (!description || description.length === 0) return "";
-		const index = Math.floor(Math.random() * description.length);
-		return description[index];
-	}, [description]);
+		isFetched && !isLoading && tasks.length === 0 && !searchQuery.trim();
 
 	if (isLoading) return <GroupedTaskSectionSkeleton className={className} />;
 
@@ -99,11 +66,9 @@ export default function GroupedTaskSection({
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
 					<IconRenderer name={iconName} className="text-primary/60" />
 					<span>{title}</span>
-					<NumberFlowBadge value={totalOriginalTasks} />
+					<NumberFlowBadge value={tasks.length} />
 				</CardTitle>
-				<CardDescription className="text-sm">
-					{randomDescription}
-				</CardDescription>
+				<CardDescription className="text-sm">{description}</CardDescription>
 				<CardAction>
 					<Button
 						variant="ghost"
@@ -124,42 +89,30 @@ export default function GroupedTaskSection({
 					<QuickAddTask listId={listId} />
 
 					{/* Task sections */}
-					{totalFilteredTasks > 0 && (
-						<div className="space-y-4">
-							{sections.map(({ title, icon, tasks, defaultOpen }) =>
-								tasks.length > 0 ? (
+					{isSearching ? (
+						<SearchTasksView />
+					) : isFiltering ? (
+						<FilteredTasksView />
+					) : (
+						tasksByStatus.map(
+							(status) =>
+								tasks.length > 0 && (
 									<TaskSection
-										key={title}
-										icon={<IconRenderer name={icon} />}
-										title={title}
-										tasks={tasks}
-										defaultOpen={defaultOpen}
+										key={status.id}
+										icon={
+											<IconRenderer
+												name={status.icon}
+												className={STATUS_COLORS[status.id]}
+											/>
+										}
+										title={status.name}
+										tasks={status.tasks}
+										defaultOpen={
+											status.id === "todo" || status.id === "in_progress"
+										}
 									/>
-								) : null,
-							)}
-
-							{filtered.archive.length > 0 && (
-								<div className="flex flex-col gap-4">
-									<Separator />
-									<TaskSection
-										key="archive"
-										icon={<IconRenderer name="Archive" />}
-										title="Archived"
-										tasks={filtered.archive}
-										defaultOpen
-									/>
-								</div>
-							)}
-						</div>
-					)}
-
-					{/* No results */}
-					{showNoResults && (
-						<EmptyState
-							icon="SearchX"
-							title="No matching tasks"
-							description="Try a different keyword."
-						/>
+								),
+						)
 					)}
 
 					{/* No tasks */}

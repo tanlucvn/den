@@ -22,7 +22,7 @@ export function EmptyState({
 		>
 			<div
 				className={cn(
-					"h-28 rounded-md border text-center text-muted-foreground text-sm",
+					"h-28 rounded-md text-center text-muted-foreground text-sm",
 					"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
 					contentClassName,
 				)}

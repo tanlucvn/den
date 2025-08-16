@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
-import { ColorInput } from "@/components/ui/color-input";
+import { ColorPicker } from "@/components/ui/color-input";
 import {
 	Form,
 	FormControl,
@@ -15,6 +15,7 @@ import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
 import type { TaskList } from "@/db/schema/task-lists";
 import { useTaskListActions } from "@/hooks/actions/use-task-list-actions";
+import type { ColorId } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
 	type EditTaskListValues,
@@ -118,8 +119,8 @@ export default function EditTaskListForm({
 								</FormLabel>
 
 								<FormControl>
-									<ColorInput
-										value={field.value}
+									<ColorPicker
+										value={field.value as ColorId}
 										onChange={(val) => field.onChange(val)}
 									/>
 								</FormControl>

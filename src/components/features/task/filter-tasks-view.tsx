@@ -11,23 +11,23 @@ export function FilteredTasksView() {
 	const { data: tasks = [] } = useTasks();
 	const { filters, hasActiveFilters } = useFilterStore();
 
-	// Nếu không có filter nào thì không render
+	// Return null if no filter is active
 	if (!hasActiveFilters()) return null;
 
-	// Lọc tasks theo filter đang chọn
+	// Filter tasks based on the selected filters
 	const filteredTasks = tasks.filter((task) => {
-		// Lọc theo status
+		// Filter by status
 		const matchStatus =
 			filters.status.length === 0 || filters.status.includes(task.status);
 
-		// Lọc theo priority
+		// Filter by priority
 		const matchPriority =
 			filters.priority.length === 0 || filters.priority.includes(task.priority);
 
-		// Lọc theo labels (nếu có tags)
+		// Filter by tags (if tags exist)
 		const matchLabels =
-			filters.labels.length === 0 ||
-			task.tags?.some((tag) => filters.labels.includes(tag.id));
+			filters.tags.length === 0 ||
+			task.tags?.some((tag) => filters.tags.includes(tag.id));
 
 		return matchStatus && matchPriority && matchLabels;
 	});

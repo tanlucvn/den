@@ -1,6 +1,5 @@
 "use client";
 
-import { BarChart3, CheckIcon, ChevronRight, CircleCheck } from "lucide-react";
 import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
@@ -13,26 +12,32 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/components/ui/command";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTags } from "@/hooks/mutations/use-tag-mutation";
 import { useTasks } from "@/hooks/mutations/use-task-mutation";
 import {
 	ALL_PRIORITY,
 	ALL_STATUS,
+	type ColorId,
 	PRIORITY_COLORS,
 	STATUS_COLORS,
+	TEXT_COLOR_CLASSES,
 } from "@/lib/constants";
-import { filterByPriority, filterByStatus } from "@/lib/helpers/filter-by";
-import { useFilterStore } from "@/store/use-filter-store";
-
-// Define filter types
-type FilterType = "status" | "priority";
+import {
+	filterByPriority,
+	filterByStatus,
+	filterByTags,
+} from "@/lib/helpers/filter-by";
+import { type FilterType, useFilterStore } from "@/store/use-filter-store";
 
 export function FilterPopover() {
 	const { data: tasks = [] } = useTasks();
+	const { data: tags = [] } = useTags();
 	const [open, setOpen] = useState<boolean>(false);
 	const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
 
@@ -66,7 +71,10 @@ export function FilterPopover() {
 									className="flex cursor-pointer items-center justify-between"
 								>
 									<span className="flex items-center gap-2">
-										<CircleCheck className="size-4 text-muted-foreground" />
+										<IconRenderer
+											name="CircleCheck"
+											className="text-primary/60"
+										/>
 										Status
 									</span>
 									<div className="flex items-center">
@@ -75,7 +83,7 @@ export function FilterPopover() {
 												{filters.status.length}
 											</span>
 										)}
-										<ChevronRight className="size-4" />
+										<IconRenderer name="ChevronRight" />
 									</div>
 								</CommandItem>
 								<CommandItem
@@ -83,7 +91,7 @@ export function FilterPopover() {
 									className="flex cursor-pointer items-center justify-between"
 								>
 									<span className="flex items-center gap-2">
-										<BarChart3 className="size-4 text-muted-foreground" />
+										<IconRenderer name="Flag" className="text-primary/60" />
 										Priority
 									</span>
 									<div className="flex items-center">
@@ -92,7 +100,27 @@ export function FilterPopover() {
 												{filters.priority.length}
 											</span>
 										)}
-										<ChevronRight className="size-4" />
+										<IconRenderer name="ChevronRight" />
+									</div>
+								</CommandItem>
+								<CommandItem
+									onSelect={() => setActiveFilter("tags")}
+									className="flex cursor-pointer items-center justify-between"
+								>
+									<span className="flex items-center gap-2">
+										<IconRenderer
+											name="Tags"
+											className="size-4 text-muted-foreground"
+										/>
+										Tags
+									</span>
+									<div className="flex items-center">
+										{filters.tags.length > 0 && (
+											<span className="mr-1 text-muted-foreground text-xs">
+												{filters.tags.length}
+											</span>
+										)}
+										<IconRenderer name="ChevronRight" />
 									</div>
 								</CommandItem>
 							</CommandGroup>
@@ -120,13 +148,20 @@ export function FilterPopover() {
 								className="size-6"
 								onClick={() => setActiveFilter(null)}
 							>
-								<ChevronRight className="size-4 rotate-180" />
+								<IconRenderer name="ChevronRight" className="rotate-180" />
 							</Button>
 							<span className="ml-2 font-medium text-sm">Status</span>
 						</div>
 						<CommandInput placeholder="Search status..." />
 						<CommandList>
-							<CommandEmpty>No status found.</CommandEmpty>
+							<CommandEmpty className="p-0">
+								<EmptyState
+									icon="SearchX"
+									title="No status found"
+									description="Try another keyword."
+									contentClassName="rounded-none border-none px-2"
+								/>
+							</CommandEmpty>
 							<CommandGroup>
 								{ALL_STATUS.map((item) => (
 									<CommandItem
@@ -143,7 +178,7 @@ export function FilterPopover() {
 											{item.name}
 										</div>
 										{filters.status.includes(item.id) && (
-											<CheckIcon size={16} className="ml-auto" />
+											<IconRenderer name="CheckIcon" className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
 											{filterByStatus(tasks, item.id).length}
@@ -162,13 +197,20 @@ export function FilterPopover() {
 								className="size-6"
 								onClick={() => setActiveFilter(null)}
 							>
-								<ChevronRight className="size-4 rotate-180" />
+								<IconRenderer name="ChevronRight" className="rotate-180" />
 							</Button>
 							<span className="ml-2 font-medium text-sm">Priority</span>
 						</div>
 						<CommandInput placeholder="Search priority..." />
 						<CommandList>
-							<CommandEmpty>No priorities found.</CommandEmpty>
+							<CommandEmpty className="p-0">
+								<EmptyState
+									icon="SearchX"
+									title="No priorities found"
+									description="Try another keyword."
+									contentClassName="rounded-none border-none px-2"
+								/>
+							</CommandEmpty>
 							<CommandGroup>
 								{ALL_PRIORITY.map((item) => (
 									<CommandItem
@@ -185,10 +227,62 @@ export function FilterPopover() {
 											{item.name}
 										</div>
 										{filters.priority.includes(item.id) && (
-											<CheckIcon size={16} className="ml-auto" />
+											<IconRenderer name="CheckIcon" className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
 											{filterByPriority(tasks, item.id).length}
+										</span>
+									</CommandItem>
+								))}
+							</CommandGroup>
+						</CommandList>
+					</Command>
+				) : activeFilter === "tags" ? (
+					<Command>
+						<div className="flex items-center border-b p-2">
+							<Button
+								variant="ghost"
+								size="icon"
+								className="size-6"
+								onClick={() => setActiveFilter(null)}
+							>
+								<IconRenderer name="ChevronRight" className="rotate-180" />
+							</Button>
+							<span className="ml-2 font-medium text-sm">Tags</span>
+						</div>
+						<CommandInput placeholder="Search tags..." />
+						<CommandList>
+							<CommandEmpty className="p-0">
+								<EmptyState
+									icon="SearchX"
+									title="No tags found"
+									description="Try another keyword or create a new tag."
+									contentClassName="rounded-none border-none px-2"
+								/>
+							</CommandEmpty>
+							<CommandGroup>
+								{tags.map((item) => (
+									<CommandItem
+										key={item.id}
+										value={item.title}
+										onSelect={() => toggleFilter("tags", item.id)}
+										className="flex items-center justify-between"
+									>
+										<div className="flex items-center gap-2">
+											<IconRenderer
+												name="Tag"
+												className={
+													TEXT_COLOR_CLASSES[item?.color as ColorId] ??
+													"text-primary/60"
+												}
+											/>
+											{item.title}
+										</div>
+										{filters.tags.includes(item.id) && (
+											<IconRenderer name="CheckIcon" className="ml-auto" />
+										)}
+										<span className="text-muted-foreground text-xs">
+											{filterByTags(tasks, item.id).length}
 										</span>
 									</CommandItem>
 								))}

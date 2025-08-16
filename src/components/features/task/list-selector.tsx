@@ -5,10 +5,12 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
+	CommandEmpty,
 	CommandGroup,
 	CommandInput,
 	CommandItem,
 	CommandList,
+	CommandSeparator,
 } from "@/components/ui/command";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
@@ -17,20 +19,21 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
-import { cn } from "@/lib/utils";
+import { useTasks } from "@/hooks/mutations/use-task-mutation";
+import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
+import { filterByLists } from "@/lib/helpers/filter-by";
 
 interface TaskListComboboxProps {
 	value?: string;
-	onValueChange?: (id: string) => void;
-	showTrigger?: boolean;
+	onValueChange?: (id: string | null) => void;
 }
 
 export default function TaskListCombobox({
 	value,
 	onValueChange,
-	showTrigger = true,
 }: TaskListComboboxProps) {
-	const { data: allLists, isPending, isFetched } = useTaskLists();
+	const { data: tasks = [] } = useTasks();
+	const { data: allLists, isPending } = useTaskLists();
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
 
@@ -42,22 +45,18 @@ export default function TaskListCombobox({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			{showTrigger && (
-				<PopoverTrigger asChild>
-					<Button
-						variant="outline"
-						size="icon"
-						className={cn(
-							"size-7",
-							selectedList?.color &&
-								`text-${selectedList?.color}-500 hover:text-${selectedList?.color}-500`,
-						)}
-					>
-						<IconRenderer name={selectedList?.icon ?? "List"} />
-					</Button>
-				</PopoverTrigger>
-			)}
-			<PopoverContent className="w-56 p-0">
+			<PopoverTrigger asChild>
+				<Button variant="outline" size="icon" className="size-7">
+					<IconRenderer
+						name={selectedList?.icon ?? "ListPlus"}
+						className={
+							TEXT_COLOR_CLASSES[selectedList?.color as ColorId] ??
+							"text-primary/60"
+						}
+					/>
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent className="w-60 p-0">
 				<Command>
 					<CommandInput
 						value={search}
@@ -65,52 +64,92 @@ export default function TaskListCombobox({
 						placeholder="Search lists..."
 						className="text-sm"
 					/>
-					<CommandList className="max-h-[150px] overflow-y-auto">
-						{isPending ? (
-							<CommandGroup>
-								{[...Array(5)].map((_, i) => (
-									<div key={i} className="flex items-center gap-2 px-2 py-1.5">
-										<div className="h-4 w-4 animate-pulse rounded bg-muted-foreground/20" />
-										<div className="h-4 flex-1 animate-pulse rounded bg-muted-foreground/20" />
-									</div>
-								))}
-							</CommandGroup>
-						) : isFetched && filteredLists?.length === 0 ? (
+					<CommandList>
+						<CommandEmpty className="p-0">
 							<EmptyState
 								icon="SearchX"
 								title="No lists found"
 								description="Try another keyword."
 								contentClassName="rounded-none border-none px-2"
 							/>
+						</CommandEmpty>
+
+						{isPending ? (
+							<ListSelectorSkeleton />
 						) : (
-							<CommandGroup>
-								{filteredLists?.map((list) => (
-									<CommandItem
-										key={list.id}
-										value={list.id}
-										onSelect={() => {
-											onValueChange?.(list.id);
-											setOpen(false);
-										}}
-										className="flex items-center gap-2"
-									>
-										{list.icon && (
-											<IconRenderer
-												name={list.icon}
-												className={`text-${list.color}-500`}
-											/>
-										)}
-										{list.title}
-										{value === list.id && (
-											<IconRenderer name="Check" className="ml-auto" />
-										)}
-									</CommandItem>
-								))}
-							</CommandGroup>
+							<>
+								{/* Scrollable lists */}
+								<CommandGroup className="max-h-[150px] overflow-y-auto">
+									{filteredLists?.map((list) => (
+										<CommandItem
+											key={list.id}
+											value={list.id}
+											onSelect={() => {
+												onValueChange?.(list.id);
+												setOpen(false);
+											}}
+											className="flex items-center justify-between"
+										>
+											<div className="flex items-center gap-2">
+												<IconRenderer
+													name={list.icon ?? "List"}
+													className={
+														TEXT_COLOR_CLASSES[list?.color as ColorId] ??
+														"text-primary/60"
+													}
+												/>
+												{list.title}
+											</div>
+											{value === list.id && (
+												<IconRenderer name="CheckIcon" className="ml-auto" />
+											)}
+											<span className="text-muted-foreground text-xs">
+												{filterByLists(tasks, list.id).length}
+											</span>
+										</CommandItem>
+									))}
+								</CommandGroup>
+
+								{value && (
+									<>
+										<CommandSeparator />
+										<CommandGroup>
+											<CommandItem
+												key="no-list"
+												value="no-list"
+												onSelect={() => {
+													onValueChange?.(null);
+													setOpen(false);
+												}}
+												className="!text-destructive flex items-center justify-between"
+											>
+												Remove from list
+												<IconRenderer
+													name="Trash"
+													className="!text-destructive ml-auto"
+												/>
+											</CommandItem>
+										</CommandGroup>
+									</>
+								)}
+							</>
 						)}
 					</CommandList>
 				</Command>
 			</PopoverContent>
 		</Popover>
+	);
+}
+
+function ListSelectorSkeleton() {
+	return (
+		<CommandGroup>
+			{[...Array(5)].map((_, i) => (
+				<div key={i} className="flex items-center gap-2 px-2 py-1.5">
+					<div className="h-4 w-4 animate-pulse rounded bg-muted-foreground/20" />
+					<div className="h-4 flex-1 animate-pulse rounded bg-muted-foreground/20" />
+				</div>
+			))}
+		</CommandGroup>
 	);
 }

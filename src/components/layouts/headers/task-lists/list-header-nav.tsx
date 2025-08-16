@@ -25,12 +25,16 @@ import { Kbd } from "@/components/ui/kbd";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
+import { useTasks } from "@/hooks/mutations/use-task-mutation";
+import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
+import { filterByLists } from "@/lib/helpers/filter-by";
 import { cn } from "@/lib/utils";
 import { useSearchStore } from "@/store/use-search-store";
 
 export default function HeaderNav() {
 	const { id } = useParams() as { id: string };
 
+	const { data: tasks = [] } = useTasks();
 	const { data: taskLists = [] } = useTaskLists();
 	const currentList = taskLists.find((list) => list.id === id);
 
@@ -113,10 +117,11 @@ export default function HeaderNav() {
 											name={currentList?.icon ?? "List"}
 											className={cn(
 												"size-4",
-												currentList?.color && `text-${currentList?.color}-500`,
+												TEXT_COLOR_CLASSES[currentList?.color as ColorId] ??
+													"text-primary/60",
 											)}
 										/>
-										{currentList?.title ?? "Untitled List"}
+										{currentList?.title}
 									</Button>
 								</DropdownMenuTrigger>
 
@@ -128,24 +133,26 @@ export default function HeaderNav() {
 										<DropdownMenuItem
 											key={list.id}
 											asChild
-											className={cn(
-												"w-full",
-												list.id === id && "bg-accent text-foreground",
-											)}
+											className={cn("w-full", list.id === id && "bg-accent")}
 										>
 											<Link
 												href={`/lists/${list.id}`}
-												className="flex w-full items-center gap-2"
+												className="flex items-center justify-between"
 											>
-												<IconRenderer
-													name={list?.icon ?? "List"}
-													className={cn(
-														"size-4",
-														list?.color && `text-${list?.color}-500`,
-													)}
-												/>
-												<span className="truncate">
-													{list.title || "Untitled"}
+												<div className="flex items-center gap-2">
+													<IconRenderer
+														name={list?.icon ?? "List"}
+														className={cn(
+															"size-4",
+															TEXT_COLOR_CLASSES[list?.color as ColorId] ??
+																"text-primary/60",
+														)}
+													/>
+													{list.title}
+												</div>
+
+												<span className="text-muted-foreground text-xs">
+													{filterByLists(tasks, list.id).length}
 												</span>
 											</Link>
 										</DropdownMenuItem>

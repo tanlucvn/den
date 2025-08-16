@@ -4,6 +4,7 @@ import TagControlsDropdown from "@/components/features/tags/tag-controls-dropdow
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import type { Tag } from "@/db/schema/tags";
+import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface TagItemProps {
@@ -21,8 +22,8 @@ export default function TagItem({ tag }: TagItemProps) {
 				<IconRenderer
 					name="Tag"
 					className={cn(
-						"shrink-0 text-primary/60",
-						tag.color && `text-${tag.color}-500`,
+						"shrink-0",
+						TEXT_COLOR_CLASSES[tag.color as ColorId] ?? "text-primary/60",
 					)}
 				/>
 

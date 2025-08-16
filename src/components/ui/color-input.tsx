@@ -12,59 +12,27 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
+import { ALL_COLORS, BG_COLOR_CLASSES, type ColorId } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-interface ColorInputProps {
-	value?: string | null;
-	onChange?: (color: string | null) => void;
+interface ColorPickerProps {
+	value?: ColorId | null;
+	onChange?: (color: ColorId | null) => void;
 }
 
-const colorFamilies = [
-	"slate",
-	"gray",
-	"zinc",
-	"neutral",
-	"stone",
-	"red",
-	"orange",
-	"amber",
-	"yellow",
-	"lime",
-	"green",
-	"emerald",
-	"teal",
-	"cyan",
-	"sky",
-	"blue",
-	"indigo",
-	"violet",
-	"purple",
-	"fuchsia",
-	"pink",
-	"rose",
-] as const;
-
-export function ColorInput({ value = null, onChange }: ColorInputProps) {
+export function ColorPicker({ value = null, onChange }: ColorPickerProps) {
 	const [open, setOpen] = useState(false);
-	const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
+	const [selectedColor, setSelectedColor] = useState<ColorId | null>(null);
 
+	// Set init state when opening modal
 	useEffect(() => {
 		if (open) {
-			if (value) {
-				const match = value.match(/^bg-([a-z]+)-\d{2,3}$/);
-				if (match) {
-					setSelectedFamily(match[1]);
-				} else {
-					setSelectedFamily(null);
-				}
-			} else {
-				setSelectedFamily(null);
-			}
+			setSelectedColor(value ?? null);
 		}
 	}, [open, value]);
 
 	const handleSave = () => {
-		onChange?.(selectedFamily);
+		onChange?.(selectedColor);
 		setOpen(false);
 	};
 
@@ -84,7 +52,7 @@ export function ColorInput({ value = null, onChange }: ColorInputProps) {
 							<div
 								className={cn(
 									"size-4 shrink-0 rounded-full",
-									`bg-${value}-500`,
+									BG_COLOR_CLASSES[value],
 								)}
 							/>
 							<span className="truncate capitalize">{value}</span>
@@ -102,26 +70,30 @@ export function ColorInput({ value = null, onChange }: ColorInputProps) {
 					<ModalDescription>Choose your favorite color</ModalDescription>
 				</ModalHeader>
 
-				{/* Color family picker */}
+				{/* Color picker */}
 				<div
 					className="grid max-h-80 gap-2 overflow-y-auto"
 					style={{
 						gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
 					}}
 				>
-					{colorFamilies.map((family) => {
-						const isSelected = family === selectedFamily;
-						const bgClass = `bg-${family}-500`;
+					{ALL_COLORS.map((color) => {
+						const isSelected = color.id === selectedColor;
 						return (
 							<Button
-								key={family}
+								key={color.id}
 								variant={isSelected ? "default" : "outline"}
 								size="sm"
-								onClick={() => setSelectedFamily(family)}
+								onClick={() => setSelectedColor(color.id)}
 								className="justify-start font-normal"
 							>
-								<div className={cn("size-4 shrink-0 rounded-full", bgClass)} />
-								<span className="capitalize">{family}</span>
+								<div
+									className={cn(
+										"size-4 shrink-0 rounded-full",
+										color.background,
+									)}
+								/>
+								<span className="capitalize">{color.name}</span>
 							</Button>
 						);
 					})}
@@ -131,13 +103,13 @@ export function ColorInput({ value = null, onChange }: ColorInputProps) {
 					<Button
 						variant="outline"
 						onClick={() => {
-							setSelectedFamily(null);
+							setSelectedColor(null);
 							setOpen(false);
 						}}
 					>
 						Cancel
 					</Button>
-					<Button onClick={handleSave} disabled={!selectedFamily}>
+					<Button onClick={handleSave} disabled={!selectedColor}>
 						Save
 					</Button>
 				</ModalFooter>

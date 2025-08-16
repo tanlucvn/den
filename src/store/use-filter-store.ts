@@ -1,18 +1,20 @@
 import { create } from "zustand";
 
+export type FilterType = "status" | "priority" | "tags";
+
 export interface FilterState {
 	// Filter options
 	filters: {
 		status: string[];
 		priority: string[];
-		labels: string[];
+		tags: string[];
 	};
 
 	// Actions
-	setFilter: (type: "status" | "priority" | "labels", ids: string[]) => void;
-	toggleFilter: (type: "status" | "priority" | "labels", id: string) => void;
+	setFilter: (type: FilterType, ids: string[]) => void;
+	toggleFilter: (type: FilterType, id: string) => void;
 	clearFilters: () => void;
-	clearFilterType: (type: "status" | "priority" | "labels") => void;
+	clearFilterType: (type: FilterType) => void;
 
 	// Utility
 	hasActiveFilters: () => boolean;
@@ -24,7 +26,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
 	filters: {
 		status: [],
 		priority: [],
-		labels: [],
+		tags: [],
 	},
 
 	// Actions
@@ -58,7 +60,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
 			filters: {
 				status: [],
 				priority: [],
-				labels: [],
+				tags: [],
 			},
 		});
 	},

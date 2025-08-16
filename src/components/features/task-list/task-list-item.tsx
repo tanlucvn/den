@@ -3,6 +3,7 @@ import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { TaskList } from "@/db/schema/task-lists";
+import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import TaskListControlsDropdown from "./task-list-controls-dropdown";
 
@@ -48,15 +49,14 @@ export function TaskListItem({
 			)}
 		>
 			<div className="flex items-center justify-between">
-				<Button
-					variant="outline"
-					size="icon"
-					className={cn(
-						"size-9 rounded-lg",
-						taskList.color && `text-${taskList.color}-500`,
-					)}
-				>
-					<IconRenderer name={taskList.icon ?? "List"} />
+				<Button variant="outline" size="icon" className="size-9 rounded-lg">
+					<IconRenderer
+						name={taskList.icon ?? "List"}
+						className={
+							TEXT_COLOR_CLASSES[taskList?.color as ColorId] ??
+							"text-primary/60"
+						}
+					/>
 				</Button>
 
 				<TaskListControlsDropdown taskList={taskList}>

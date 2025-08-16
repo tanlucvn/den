@@ -52,7 +52,6 @@ export default function TaskItem({ task }: TaskItemProps) {
 								onValueChange={(newListId) =>
 									handleUpdate({ ...task, listId: newListId })
 								}
-								showTrigger={!!task.listId}
 							/>
 						</div>
 

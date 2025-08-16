@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
-import { ColorInput } from "@/components/ui/color-input";
+import { ColorPicker } from "@/components/ui/color-input";
 import {
 	Form,
 	FormControl,
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import type { NewTag } from "@/db/schema/tags";
 import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
+import type { ColorId } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { type NewTagValues, newTagSchema } from "@/lib/validators/new-tag";
 
@@ -90,8 +91,8 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 							</FormLabel>
 
 							<FormControl>
-								<ColorInput
-									value={field.value}
+								<ColorPicker
+									value={field.value as ColorId}
 									onChange={(val) => field.onChange(val)}
 								/>
 							</FormControl>

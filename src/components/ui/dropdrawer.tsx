@@ -456,11 +456,11 @@ function DropDrawerItem({
 				data-inset={inset}
 				data-disabled={disabled}
 				className={cn(
-					"flex cursor-pointer items-center justify-between px-4 py-4",
+					"flex cursor-pointer items-center justify-between px-4 py-3",
 					// Only apply margin, background and rounded corners if not in a group
 					!isInsideGroup && "mx-2 my-1.5 rounded-md bg-accent dark:bg-accent",
 					// For items in a group, don't add background but add more padding
-					isInsideGroup && "bg-transparent py-4",
+					isInsideGroup && "bg-transparent py-3",
 					inset && "pl-8",
 					variant === "destructive" && "text-destructive dark:text-destructive",
 					disabled && "pointer-events-none opacity-50",
@@ -898,7 +898,7 @@ function DropDrawerSubTrigger({
 				data-slot="drop-drawer-sub-trigger"
 				data-inset={inset}
 				className={cn(
-					"flex cursor-pointer items-center justify-between px-4 py-4",
+					"flex cursor-pointer items-center justify-between px-4 py-2",
 					// Only apply margin, background and rounded corners if not in a group
 					!isInsideGroup && "mx-2 my-1.5 rounded-md bg-accent dark:bg-accent",
 					// For items in a group, don't add background but add more padding

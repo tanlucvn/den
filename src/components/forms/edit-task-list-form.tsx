@@ -37,6 +37,7 @@ export default function EditTaskListForm({
 		resolver: zodResolver(editTaskListSchema),
 		defaultValues: {
 			title: initialData.title,
+			description: initialData.description ?? "",
 			icon: initialData.icon ?? null,
 			color: initialData.color ?? null,
 		},
@@ -48,6 +49,7 @@ export default function EditTaskListForm({
 		await handleUpdate({
 			...initialData,
 			...values,
+			description: values.description ?? "",
 			icon: values.icon ?? null,
 			color: values.color ?? null,
 		});
@@ -75,6 +77,26 @@ export default function EditTaskListForm({
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="New task list title.." {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>
+								<IconRenderer name="PenLine" className="text-primary/60" />
+								Description
+								<span className="font-normal text-muted-foreground text-xs">
+									(optional)
+								</span>
+							</FormLabel>
+							<FormControl>
+								<Input placeholder="List description..." {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

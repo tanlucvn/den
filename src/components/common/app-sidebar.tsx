@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { AppLogo } from "@/components/app-logo";
 import { IconRenderer } from "@/components/icon-renderer";
-import SettingsModal from "@/components/modals/settings";
+import SettingsModal from "@/components/modals/settings/settings-modal";
 import {
 	Sidebar,
 	SidebarContent,

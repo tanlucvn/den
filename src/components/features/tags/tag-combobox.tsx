@@ -108,7 +108,7 @@ export default function TagChipCombobox({
 					)}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-60 p-0">
+			<PopoverContent className="w-54 p-0">
 				<Command>
 					<CommandInput
 						value={search}
@@ -122,7 +122,6 @@ export default function TagChipCombobox({
 								icon="SearchX"
 								title="No tags found"
 								description="Try another keyword or create a new tag."
-								contentClassName="rounded-none border-none px-2"
 							/>
 						</CommandEmpty>
 
@@ -137,7 +136,7 @@ export default function TagChipCombobox({
 										onSelect={() => toggleTag(tag.id)}
 										className="flex items-center justify-between"
 									>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2 overflow-hidden">
 											<IconRenderer
 												name="Tag"
 												className={
@@ -145,7 +144,7 @@ export default function TagChipCombobox({
 													"text-primary/60"
 												}
 											/>
-											{tag.title}
+											<span className="truncate">{tag.title}</span>
 										</div>
 										{localSelected.has(tag.id) && (
 											<IconRenderer name="CheckIcon" className="ml-auto" />

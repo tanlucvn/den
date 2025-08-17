@@ -121,6 +121,24 @@
 	}
 }
 
+.tiptap {
+	h1 {
+		@apply scroll-m-20 text-[19px] font-bold tracking-tight;
+	}
+
+	h2 {
+		@apply scroll-m-20 text-[18px] font-semibold tracking-tight;
+	}
+
+	h3 {
+		@apply scroll-m-20 text-[17px] font-medium tracking-tight;
+	}
+
+	p {
+		@apply leading-7 text-base;
+	}
+}
+
 ::-webkit-scrollbar {
 	width: 0;
 	height: 0;

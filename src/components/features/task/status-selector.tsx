@@ -45,7 +45,7 @@ export function TaskStatusSelector({ task }: TaskStatusSelectorProps) {
 					)}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-50 p-0">
+			<PopoverContent className="w-54 p-0">
 				<Command>
 					<CommandInput placeholder="Set status..." />
 					<CommandList>

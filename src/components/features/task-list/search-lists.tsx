@@ -54,7 +54,7 @@ export function SearchTaskListView({
 				<span className="font-medium italic">{searchQuery}</span>"
 			</div>
 
-			<div className="grid auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<div className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2">
 				{results.map((list) => {
 					const listTasks = tasks.filter((t) => t.listId === list.id);
 					const totalCount = listTasks.length;

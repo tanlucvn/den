@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import NewTaskListModal from "@/components/modals/new-task-list-modal";
+import NewTaskListModal from "@/components/modals/task-lists/new-task-list-modal";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -81,12 +81,12 @@ export function TaskListSection({
 					{isSearching ? (
 						<SearchTaskListView taskLists={taskLists} tasks={tasks} />
 					) : hasLists ? (
-						<div className="grid auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+						<div className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2">
 							{taskLists.map((list) => {
 								const listTasks = tasks.filter((t) => t.listId === list.id);
 								const totalCount = listTasks.length;
 								const completedCount = listTasks.filter(
-									(t) => t.isCompleted,
+									(t) => t.status === "completed",
 								).length;
 
 								return (
@@ -104,7 +104,7 @@ export function TaskListSection({
 									className={cn(
 										"flex cursor-pointer flex-col items-center justify-center rounded-xl border",
 										"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
-										"h-28 text-muted-foreground text-xs transition hover:bg-muted hover:text-foreground",
+										"h-28 min-w-[200px] text-muted-foreground text-sm transition hover:bg-muted hover:text-foreground",
 									)}
 								>
 									<IconRenderer name="Plus" className="mb-1" />
@@ -142,16 +142,11 @@ export function TaskListSectionSkeleton({ className }: { className?: string }) {
 				</CardAction>
 			</CardHeader>
 
-			<CardContent
-				className="grid gap-2 p-0"
-				style={{
-					gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-				}}
-			>
-				<Skeleton className="h-28 w-full rounded-xl" />
-				<Skeleton className="h-28 w-full rounded-xl" />
-				<Skeleton className="h-28 w-full rounded-xl" />
-				<Skeleton className="h-28 w-full rounded-xl" />
+			<CardContent className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2 p-0">
+				<Skeleton className="h-28 w-full min-w-[200px] rounded-xl" />
+				<Skeleton className="h-28 w-full min-w-[200px] rounded-xl" />
+				<Skeleton className="h-28 w-full min-w-[200px] rounded-xl" />
+				<Skeleton className="h-28 w-full min-w-[200px] rounded-xl" />
 			</CardContent>
 		</Card>
 	);

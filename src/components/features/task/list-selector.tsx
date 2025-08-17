@@ -56,7 +56,7 @@ export default function TaskListCombobox({
 					/>
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-60 p-0">
+			<PopoverContent className="w-54 p-0">
 				<Command>
 					<CommandInput
 						value={search}
@@ -70,7 +70,6 @@ export default function TaskListCombobox({
 								icon="SearchX"
 								title="No lists found"
 								description="Try another keyword."
-								contentClassName="rounded-none border-none px-2"
 							/>
 						</CommandEmpty>
 
@@ -90,7 +89,7 @@ export default function TaskListCombobox({
 											}}
 											className="flex items-center justify-between"
 										>
-											<div className="flex items-center gap-2">
+											<div className="flex items-center gap-2 overflow-hidden">
 												<IconRenderer
 													name={list.icon ?? "List"}
 													className={
@@ -98,7 +97,7 @@ export default function TaskListCombobox({
 														"text-primary/60"
 													}
 												/>
-												{list.title}
+												<span className="truncate">{list.title}</span>
 											</div>
 											{value === list.id && (
 												<IconRenderer name="CheckIcon" className="ml-auto" />

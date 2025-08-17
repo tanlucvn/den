@@ -1,7 +1,7 @@
 import { type ReactNode, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import EditTaskModal from "@/components/modals/edit-task-modal";
-import { PomodoroTimerDialog } from "@/components/modals/pomodoro-timer-modal";
+import EditTaskModal from "@/components/modals/tasks/edit-task-modal";
+import PomodoroTimerModal from "@/components/modals/tasks/pomodoro-timer-modal";
 import {
 	DropDrawer,
 	DropDrawerContent,
@@ -33,16 +33,11 @@ export default function TaskControlsDropdown({
 		handleDelete,
 		handleDuplicate,
 		handleCopyToClipboard,
-		handleToggle,
+		handleUpdate,
 	} = useTaskActions();
 
 	return (
-		<div
-			/* Ignore task item context menu here */
-			onContextMenu={(e) => {
-				e.preventDefault();
-			}}
-		>
+		<>
 			<DropDrawer>
 				<DropDrawerTrigger asChild>{children}</DropDrawerTrigger>
 				<DropDrawerContent className="min-w-44" side="bottom" forceMount>
@@ -61,6 +56,10 @@ export default function TaskControlsDropdown({
 					</DropDrawerItem>
 
 					<DropDrawerSeparator />
+
+					<p className="select-none px-2 py-1 text-muted-foreground text-xs">
+						Actions
+					</p>
 
 					<DropDrawerGroup>
 						<DropDrawerItem
@@ -144,12 +143,12 @@ export default function TaskControlsDropdown({
 			</DropDrawer>
 
 			<EditTaskModal open={openEditModal} onOpenChange={setOpenEditModal} />
-			<PomodoroTimerDialog
+			<PomodoroTimerModal
 				title={task.title}
-				onFinish={() => handleToggle({ ...task, isCompleted: true })}
+				onFinish={() => handleUpdate({ ...task, status: "completed" })}
 				open={openFocusModal}
 				onOpenChange={setOpenFocusModal}
 			/>
-		</div>
+		</>
 	);
 }

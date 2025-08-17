@@ -38,6 +38,9 @@
 			},
 			"style": {
 				"noNonNullAssertion": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "off"
 			}
 		}
 	},

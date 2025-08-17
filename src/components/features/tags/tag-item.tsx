@@ -15,7 +15,7 @@ export default function TagItem({ tag }: TagItemProps) {
 	return (
 		<div
 			className={cn(
-				"relative flex select-none items-center justify-between rounded-lg border bg-card px-3 py-1.5 shadow-xs transition hover:border-ring hover:ring-[3px] hover:ring-ring/20",
+				"relative flex min-w-[160px] select-none items-center justify-between rounded-lg border bg-card px-3 py-1.5 shadow-xs transition hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 			)}
 		>
 			<div className="flex items-center gap-2 overflow-hidden">

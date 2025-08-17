@@ -36,6 +36,7 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 		resolver: zodResolver(newTaskListSchema),
 		defaultValues: {
 			title: "",
+			description: "",
 			icon: null,
 			color: null,
 		},
@@ -77,6 +78,26 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 							</FormLabel>
 							<FormControl>
 								<Input placeholder="New list title" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>
+								<IconRenderer name="PenLine" className="text-primary/60" />
+								Description
+								<span className="font-normal text-muted-foreground text-xs">
+									(optional)
+								</span>
+							</FormLabel>
+							<FormControl>
+								<Input placeholder="List description..." {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

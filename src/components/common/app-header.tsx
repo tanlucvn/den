@@ -1,7 +1,7 @@
 "use client";
 
 import { IconRenderer } from "@/components/icon-renderer";
-import SettingsModal from "@/components/modals/settings";
+import SettingsModal from "@/components/modals/settings/settings-modal";
 import { ThemeSwitcher } from "@/components/theme";
 import {
 	Breadcrumb,

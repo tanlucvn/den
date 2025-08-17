@@ -159,7 +159,6 @@ export function FilterPopover() {
 									icon="SearchX"
 									title="No status found"
 									description="Try another keyword."
-									contentClassName="rounded-none border-none px-2"
 								/>
 							</CommandEmpty>
 							<CommandGroup>
@@ -208,7 +207,6 @@ export function FilterPopover() {
 									icon="SearchX"
 									title="No priorities found"
 									description="Try another keyword."
-									contentClassName="rounded-none border-none px-2"
 								/>
 							</CommandEmpty>
 							<CommandGroup>
@@ -257,7 +255,6 @@ export function FilterPopover() {
 									icon="SearchX"
 									title="No tags found"
 									description="Try another keyword or create a new tag."
-									contentClassName="rounded-none border-none px-2"
 								/>
 							</CommandEmpty>
 							<CommandGroup>

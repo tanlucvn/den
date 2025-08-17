@@ -1,6 +1,6 @@
 import { type ReactNode, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import EditTagModal from "@/components/modals/edit-tag-modal";
+import EditTagModal from "@/components/modals/tags/edit-tag-modal";
 import {
 	DropDrawer,
 	DropDrawerContent,

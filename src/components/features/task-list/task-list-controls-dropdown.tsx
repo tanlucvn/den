@@ -2,10 +2,12 @@
 
 import { type ReactNode, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import EditTaskListModal from "@/components/modals/edit-task-list-modal";
+import EditTaskListModal from "@/components/modals/task-lists/edit-task-list-modal";
+import TaskListNoteModal from "@/components/modals/task-lists/task-list-note-modal";
 import {
 	DropDrawer,
 	DropDrawerContent,
+	DropDrawerGroup,
 	DropDrawerItem,
 	DropDrawerSeparator,
 	DropDrawerTrigger,
@@ -23,6 +25,7 @@ export default function TaskListControlsDropdown({
 	taskList,
 	children,
 }: TaskListControlsDropdownProps) {
+	const [openNoteModal, setOpenNoteModal] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 
 	const { handleEdit, handleDelete } = useTaskListActions();
@@ -36,16 +39,30 @@ export default function TaskListControlsDropdown({
 						Created at {formatDate(taskList.createdAt)}.
 					</p>
 
-					<DropDrawerItem
-						className="gap-2"
-						icon={<IconRenderer name="Pen" className="!text-primary/60" />}
-						onClick={() => {
-							handleEdit(taskList);
-							setOpenModal(true);
-						}}
-					>
-						<span>Edit</span>
-					</DropDrawerItem>
+					<DropDrawerGroup>
+						<DropDrawerItem
+							className="gap-2"
+							icon={
+								<IconRenderer name="Captions" className="!text-primary/60" />
+							}
+							onClick={() => {
+								setOpenNoteModal(true);
+							}}
+						>
+							<span>View Note</span>
+						</DropDrawerItem>
+
+						<DropDrawerItem
+							className="gap-2"
+							icon={<IconRenderer name="Pen" className="!text-primary/60" />}
+							onClick={() => {
+								handleEdit(taskList);
+								setOpenModal(true);
+							}}
+						>
+							<span>Edit</span>
+						</DropDrawerItem>
+					</DropDrawerGroup>
 
 					<DropDrawerSeparator />
 
@@ -59,6 +76,11 @@ export default function TaskListControlsDropdown({
 				</DropDrawerContent>
 			</DropDrawer>
 
+			<TaskListNoteModal
+				taskList={taskList}
+				open={openNoteModal}
+				onOpenChange={setOpenNoteModal}
+			/>
 			<EditTaskListModal open={openModal} onOpenChange={setOpenModal} />
 		</>
 	);

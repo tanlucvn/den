@@ -1,6 +1,7 @@
 import { type ReactNode, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
-import EditTaskModal from "@/components/modals/edit-task-modal";
+import EditTaskModal from "@/components/modals/tasks/edit-task-modal";
+import PomodoroTimerModal from "@/components/modals/tasks/pomodoro-timer-modal";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -22,8 +23,10 @@ export default function TaskControlsContext({
 	children,
 }: TaskControlsContextProps) {
 	const [openModal, setOpenModal] = useState(false);
+	const [openFocusModal, setOpenFocusModal] = useState(false);
 
 	const {
+		handleUpdate,
 		handleEdit,
 		handlePinToggle,
 		handleArchive,
@@ -39,6 +42,23 @@ export default function TaskControlsContext({
 				<ContextMenuContent className="min-w-44" forceMount>
 					<p className="select-none p-2 text-muted-foreground text-xs">
 						Created at {formatDate(task.updatedAt)}.
+					</p>
+
+					<ContextMenuItem
+						className="justify-between gap-2"
+						onClick={() => {
+							handleEdit(task);
+							setOpenFocusModal(true);
+						}}
+					>
+						<span>Focus</span>
+						<IconRenderer name="Timer" className="!text-primary/60" />
+					</ContextMenuItem>
+
+					<ContextMenuSeparator />
+
+					<p className="select-none px-2 py-1 text-muted-foreground text-xs">
+						Actions
 					</p>
 
 					<ContextMenuItem
@@ -121,6 +141,12 @@ export default function TaskControlsContext({
 			</ContextMenu>
 
 			<EditTaskModal open={openModal} onOpenChange={setOpenModal} />
+			<PomodoroTimerModal
+				title={task.title}
+				onFinish={() => handleUpdate({ ...task, status: "completed" })}
+				open={openFocusModal}
+				onOpenChange={setOpenFocusModal}
+			/>
 		</>
 	);
 }

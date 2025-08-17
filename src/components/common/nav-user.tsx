@@ -5,7 +5,7 @@ import { useTransitionRouter } from "next-view-transitions";
 import { useState } from "react";
 import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
-import EditProfileModal from "@/components/modals/accounts";
+import EditProfileModal from "@/components/modals/auth/edit-profile-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropDrawer,

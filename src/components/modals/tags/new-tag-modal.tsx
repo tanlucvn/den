@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import NewTagForm from "@/components/forms/new-tag-form";
+import NewTagForm from "@/components/forms/tags/new-tag-form";
 import {
 	Modal,
 	ModalContent,

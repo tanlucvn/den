@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import NewTaskListForm from "@/components/forms/new-task-list-form";
+import NewTaskListForm from "@/components/forms/task-lists/new-task-list-form";
 import {
 	Modal,
 	ModalContent,

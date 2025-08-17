@@ -1,6 +1,6 @@
 "use client";
 
-import QuickAddTaskForm from "@/components/forms/quick-add-task-form";
+import QuickAddTaskForm from "@/components/forms/tasks/quick-add-task-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import NewTaskModal from "@/components/modals/tasks/new-task-modal";
 import { Button } from "@/components/ui/button";

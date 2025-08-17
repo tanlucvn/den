@@ -33,6 +33,8 @@ export function useCreateTaskList() {
 					id: optimisticId,
 					userId: variables.userId,
 					title: variables.title,
+					description: variables.description ?? null,
+					note: variables.note ?? null,
 					icon: variables.icon ?? null,
 					color: variables.color ?? null,
 					createdAt: new Date(),

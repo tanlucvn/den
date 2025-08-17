@@ -1,6 +1,6 @@
 "use client";
 
-import EditTaskForm from "@/components/forms/edit-task-form";
+import EditTaskForm from "@/components/forms/tasks/edit-task-form";
 import {
 	Modal,
 	ModalContent,

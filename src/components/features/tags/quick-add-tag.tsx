@@ -1,6 +1,6 @@
 "use client";
 
-import QuickAddTagForm from "@/components/forms/quick-add-tag-form";
+import QuickAddTagForm from "@/components/forms/tags/quick-add-tag-form";
 import { IconRenderer } from "@/components/icon-renderer";
 import NewTagModal from "@/components/modals/tags/new-tag-modal";
 import { Button } from "@/components/ui/button";

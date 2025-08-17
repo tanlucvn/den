@@ -1,6 +1,6 @@
 "use client";
 
-import EditTagForm from "@/components/forms/edit-tag-form";
+import EditTagForm from "@/components/forms/tags/edit-tag-form";
 import {
 	Modal,
 	ModalContent,

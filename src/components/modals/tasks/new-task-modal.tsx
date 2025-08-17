@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import NewTaskForm from "@/components/forms/new-task-form";
+import NewTaskForm from "@/components/forms/tasks/new-task-form";
 import {
 	Modal,
 	ModalContent,

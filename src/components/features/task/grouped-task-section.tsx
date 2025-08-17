@@ -63,12 +63,14 @@ export default function GroupedTaskSection({
 	return (
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="p-0">
-				<CardTitle className="flex items-center gap-2 font-normal text-sm">
+				<CardTitle className="flex items-center gap-2 overflow-hidden font-normal text-sm">
 					<IconRenderer name={iconName} className="text-primary/60" />
-					<span>{title}</span>
+					<span className="truncate">{title}</span>
 					<NumberFlowBadge value={tasks.length} />
 				</CardTitle>
-				<CardDescription className="text-sm">{description}</CardDescription>
+				{description && (
+					<CardDescription className="truncate">{description}</CardDescription>
+				)}
 				<CardAction>
 					<Button
 						variant="ghost"
@@ -90,9 +92,9 @@ export default function GroupedTaskSection({
 
 					{/* Task sections */}
 					{isSearching ? (
-						<SearchTasksView />
+						<SearchTasksView tasks={tasks} />
 					) : isFiltering ? (
-						<FilteredTasksView />
+						<FilteredTasksView tasks={tasks} />
 					) : (
 						tasksByStatus.map(
 							(status) =>

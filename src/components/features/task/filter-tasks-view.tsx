@@ -2,13 +2,16 @@
 
 import { IconRenderer } from "@/components/icon-renderer";
 import { EmptyState } from "@/components/ui/empty-state";
-import { useTasks } from "@/hooks/mutations/use-task-mutation";
+import type { TaskWithTagsAndList } from "@/db/schema/tasks";
 import { ALL_STATUS, STATUS_COLORS } from "@/lib/constants";
 import { useFilterStore } from "@/store/use-filter-store";
 import TaskSection from "./task-section";
 
-export function FilteredTasksView() {
-	const { data: tasks = [] } = useTasks();
+interface FilteredTasksViewProps {
+	tasks: TaskWithTagsAndList[];
+}
+
+export function FilteredTasksView({ tasks }: FilteredTasksViewProps) {
 	const { filters, hasActiveFilters } = useFilterStore();
 
 	// Return null if no filter is active

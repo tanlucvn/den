@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 import { IconRenderer } from "@/components/icon-renderer";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { TaskWithTagsAndList } from "@/db/schema/tasks";
-import { useTasks } from "@/hooks/mutations/use-task-mutation";
 import { ALL_STATUS, STATUS_COLORS } from "@/lib/constants";
 import { useSearchStore } from "@/store/use-search-store";
 import TaskSection from "./task-section";
 
-export function SearchTasksView() {
-	const { data: tasks = [] } = useTasks();
+interface SearchTasksViewProps {
+	tasks: TaskWithTagsAndList[];
+}
+
+export function SearchTasksView({ tasks }: SearchTasksViewProps) {
 	const { searchQuery, isSearchOpen } = useSearchStore();
 	const [results, setResults] = useState<TaskWithTagsAndList[]>([]);
 

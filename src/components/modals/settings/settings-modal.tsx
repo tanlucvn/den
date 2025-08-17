@@ -39,8 +39,8 @@ const SettingsModal = ({ children }: SettingsModalProps) => {
 	return (
 		<Modal>
 			<ModalTrigger asChild>{children}</ModalTrigger>
-			<ModalContent className="sm:h-[600px]">
-				<ModalHeader>
+			<ModalContent className="rounded-2xl ring-4 ring-accent sm:h-[600px] sm:max-w-[500px]">
+				<ModalHeader className="p-0">
 					<ModalTitle>Settings</ModalTitle>
 					<ModalDescription>Customize your app experience.</ModalDescription>
 				</ModalHeader>

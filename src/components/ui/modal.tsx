@@ -301,7 +301,7 @@ const ModalHeader = ({
 	return (
 		<div
 			className={cn(
-				"flex flex-col gap-1.5 p-4 text-center sm:p-0 sm:text-left",
+				"flex flex-col gap-1 p-4 text-center sm:p-0 sm:text-left",
 				className,
 			)}
 			{...props}
@@ -341,7 +341,7 @@ const ModalTitle = React.forwardRef<
 		<ModalTitle
 			ref={ref}
 			className={cn(
-				"font-semibold text-lg leading-none tracking-tight",
+				"font-semibold text-base leading-none tracking-tight",
 				className,
 			)}
 			{...props}

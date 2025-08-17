@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import NewTagForm from "@/components/forms/new-tag-form";
-import { IconRenderer } from "@/components/icon-renderer";
 import {
 	Modal,
 	ModalContent,
@@ -22,22 +21,13 @@ export default function NewTagModal({ children }: NewTagModalProps) {
 	return (
 		<Modal open={isOpen} onOpenChange={setIsOpen}>
 			<ModalTrigger asChild>{children}</ModalTrigger>
-			<ModalContent className="sm:max-w-[400px]">
-				<div className="flex flex-col items-center justify-center gap-2">
-					<div
-						className="flex size-11 shrink-0 items-center justify-center rounded-full border"
-						aria-hidden="true"
-					>
-						<IconRenderer name="Tags" className="size-5 opacity-80" />
-					</div>
-
-					<ModalHeader className="items-center justify-center p-0">
-						<ModalTitle>New Tag</ModalTitle>
-						<ModalDescription>
-							Create a new tag to organize your tasks.
-						</ModalDescription>
-					</ModalHeader>
-				</div>
+			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[400px]">
+				<ModalHeader className="p-0">
+					<ModalTitle>New Tag</ModalTitle>
+					<ModalDescription>
+						Create a tag to organize your tasks.
+					</ModalDescription>
+				</ModalHeader>
 
 				<NewTagForm
 					onFinish={() => {

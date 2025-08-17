@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import NewTaskListForm from "@/components/forms/new-task-list-form";
-import { IconRenderer } from "@/components/icon-renderer";
 import {
 	Modal,
 	ModalContent,
@@ -22,22 +21,13 @@ export default function NewTaskListModal({ children }: NewTaskListModalProps) {
 	return (
 		<Modal open={isOpen} onOpenChange={setIsOpen}>
 			<ModalTrigger asChild>{children}</ModalTrigger>
-			<ModalContent className="sm:max-w-[400px]">
-				<div className="flex flex-col items-center justify-center gap-2">
-					<div
-						className="flex size-11 shrink-0 items-center justify-center rounded-full border"
-						aria-hidden="true"
-					>
-						<IconRenderer name="FolderPlus" className="size-5 opacity-80" />
-					</div>
-
-					<ModalHeader className="items-center justify-center p-0">
-						<ModalTitle>New List</ModalTitle>
-						<ModalDescription>
-							Organize your tasks by creating a new list.
-						</ModalDescription>
-					</ModalHeader>
-				</div>
+			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[400px]">
+				<ModalHeader className="p-0">
+					<ModalTitle>New List</ModalTitle>
+					<ModalDescription>
+						Create a list to group related tasks.
+					</ModalDescription>
+				</ModalHeader>
 
 				<NewTaskListForm
 					onFinish={() => {

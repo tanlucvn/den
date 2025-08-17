@@ -1,7 +1,6 @@
 "use client";
 
 import ProfileForm from "@/components/forms/auth/profile-form";
-import { IconRenderer } from "@/components/icon-renderer";
 import {
 	Modal,
 	ModalContent,
@@ -24,22 +23,11 @@ export default function EditProfileModal({
 }: EditProfileModalProps) {
 	return (
 		<Modal open={open} onOpenChange={onOpenChange}>
-			<ModalContent className="sm:max-w-lg">
-				<div className="flex flex-col items-center justify-center gap-2">
-					<div
-						className="flex size-11 shrink-0 items-center justify-center rounded-full border"
-						aria-hidden="true"
-					>
-						<IconRenderer name="User" className="size-5 opacity-80" />
-					</div>
-
-					<ModalHeader className="items-center justify-center p-0">
-						<ModalTitle>Edit Profile</ModalTitle>
-						<ModalDescription>
-							Change your profile details and preferences.
-						</ModalDescription>
-					</ModalHeader>
-				</div>
+			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[400px]">
+				<ModalHeader className="p-0">
+					<ModalTitle>Edit Profile</ModalTitle>
+					<ModalDescription>Change your profile details.</ModalDescription>
+				</ModalHeader>
 
 				<ProfileForm session={session} onFinish={() => onOpenChange?.(false)} />
 			</ModalContent>

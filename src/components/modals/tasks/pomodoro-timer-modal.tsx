@@ -38,19 +38,19 @@ const QUOTES = [
 	},
 ];
 
-interface PomodoroTimerDialogProps {
+interface PomodoroTimerModalProps {
 	onFinish: () => void;
 	title: string;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
-export function PomodoroTimerDialog({
+export default function PomodoroTimerModal({
 	onFinish,
 	title,
 	open,
 	onOpenChange,
-}: PomodoroTimerDialogProps) {
+}: PomodoroTimerModalProps) {
 	const [duration, setDuration] = useState(25);
 	const [timeLeft, setTimeLeft] = useState(1500);
 	const [isRunning, setIsRunning] = useState(false);
@@ -126,108 +126,97 @@ export function PomodoroTimerDialog({
 	};
 
 	return (
-		<div
-			/* Ignore task item context menu here */
-			onContextMenu={(e) => {
-				e.preventDefault();
-			}}
-		>
-			<Modal open={open} onOpenChange={onOpenChange}>
-				<ModalContent className="sm:max-w-xl">
-					<ModalHeader>
-						<ModalTitle>{title}</ModalTitle>
-						<ModalDescription>
-							Focus for
-							<span className="ml-1 font-semibold text-primary">
-								{formatTime(duration * 60)}
-							</span>
-						</ModalDescription>
-					</ModalHeader>
+		<Modal open={open} onOpenChange={onOpenChange}>
+			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[500px]">
+				<ModalHeader className="p-0">
+					<ModalTitle>{title}</ModalTitle>
+					<ModalDescription>
+						Focus for
+						<span className="ml-1 font-semibold text-primary">
+							{formatTime(duration * 60)}
+						</span>
+					</ModalDescription>
+				</ModalHeader>
 
-					<div className="flex flex-col items-center gap-4 py-2">
-						<AnimatedCircularProgressBar
-							value={timeLeft}
-							max={duration * 60}
-							min={0}
-							className="size-40"
-							reverse
-							gaugePrimaryColor="var(--primary)"
-							gaugeSecondaryColor="var(--muted)"
+				<div className="flex flex-col items-center gap-4 py-2">
+					<AnimatedCircularProgressBar
+						value={timeLeft}
+						max={duration * 60}
+						min={0}
+						className="size-40"
+						reverse
+						gaugePrimaryColor="var(--primary)"
+						gaugeSecondaryColor="var(--muted)"
+					>
+						<motion.span
+							animate={{ scale: isRunning ? [1, 1.05, 1] : 1 }}
+							transition={{ duration: 1, repeat: isRunning ? Infinity : 0 }}
+							className="text-2xl"
 						>
-							<motion.span
-								animate={{ scale: isRunning ? [1, 1.05, 1] : 1 }}
-								transition={{ duration: 1, repeat: isRunning ? Infinity : 0 }}
-								className="text-2xl"
-							>
-								{formatTime(timeLeft)}
-							</motion.span>
-						</AnimatedCircularProgressBar>
+							{formatTime(timeLeft)}
+						</motion.span>
+					</AnimatedCircularProgressBar>
 
-						<AnimatePresence mode="wait">
-							<motion.div
-								key={quoteIndex}
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -10 }}
-								transition={{ duration: 0.5 }}
-								className="h-12 space-y-0.5 text-center"
-							>
-								<p className="text-muted-foreground text-sm italic">
-									"{QUOTES[quoteIndex].text}"
-								</p>
-								<p className="text-muted-foreground/60 text-xs">
-									– {QUOTES[quoteIndex].author}
-								</p>
-							</motion.div>
-						</AnimatePresence>
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={quoteIndex}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -10 }}
+							transition={{ duration: 0.5 }}
+							className="h-12 space-y-0.5 text-center"
+						>
+							<p className="text-muted-foreground text-sm italic">
+								"{QUOTES[quoteIndex].text}"
+							</p>
+							<p className="text-muted-foreground/60 text-xs">
+								– {QUOTES[quoteIndex].author}
+							</p>
+						</motion.div>
+					</AnimatePresence>
 
-						<div className="grid w-full grid-cols-3 items-end gap-2">
-							<div className="space-y-2">
-								<Label htmlFor="duration" className="flex items-center text-sm">
-									<IconRenderer name="Timer" className="text-primary/60" />
-									Duration
-									<span className="font-normal text-muted-foreground text-xs">
-										(minutes)
-									</span>
-								</Label>
-								<Input
-									id="duration"
-									type="number"
-									value={duration}
-									onChange={(e) => handleDurationChange(e.target.value)}
-									min={1}
-									max={60}
-									disabled={isRunning}
-								/>
-							</div>
-
-							<Button
-								variant="outline"
-								className="w-full"
-								onClick={() => setIsRunning((r) => !r)}
-							>
-								{isRunning ? (
-									<IconRenderer name="Pause" />
-								) : (
-									<IconRenderer name="Play" />
-								)}
-							</Button>
-
-							<Button
-								variant="outline"
-								className="w-full"
-								onClick={() => setMuted((m) => !m)}
-							>
-								{muted ? (
-									<IconRenderer name="VolumeX" />
-								) : (
-									<IconRenderer name="Volume2" />
-								)}
-							</Button>
+					<div className="grid w-full grid-cols-3 items-end gap-2">
+						<div className="space-y-2">
+							<Label htmlFor="duration" className="flex items-center text-sm">
+								<IconRenderer name="Timer" className="text-primary/60" />
+								Duration
+								<span className="font-normal text-muted-foreground text-xs">
+									(minutes)
+								</span>
+							</Label>
+							<Input
+								id="duration"
+								type="number"
+								value={duration}
+								onChange={(e) => handleDurationChange(e.target.value)}
+								min={1}
+								max={60}
+								disabled={isRunning}
+							/>
 						</div>
+
+						<Button className="w-full" onClick={() => setIsRunning((r) => !r)}>
+							{isRunning ? (
+								<IconRenderer name="Pause" />
+							) : (
+								<IconRenderer name="Play" />
+							)}
+						</Button>
+
+						<Button
+							variant="outline"
+							className="w-full"
+							onClick={() => setMuted((m) => !m)}
+						>
+							{muted ? (
+								<IconRenderer name="VolumeX" />
+							) : (
+								<IconRenderer name="Volume2" />
+							)}
+						</Button>
 					</div>
-				</ModalContent>
-			</Modal>
-		</div>
+				</div>
+			</ModalContent>
+		</Modal>
 	);
 }

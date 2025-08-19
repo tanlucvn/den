@@ -32,10 +32,10 @@ import {
 	filterByPriority,
 	filterByStatus,
 	filterByTags,
-} from "@/lib/helpers/filter-by";
+} from "@/lib/helpers/tasks-filter-by";
 import { type FilterType, useFilterStore } from "@/store/use-filter-store";
 
-export function FilterPopover() {
+export function HeaderFilter() {
 	const { data: tasks = [] } = useTasks();
 	const { data: tags = [] } = useTags();
 	const [open, setOpen] = useState<boolean>(false);

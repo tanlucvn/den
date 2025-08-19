@@ -1,18 +1,21 @@
 "use client";
 
-import { IconRenderer } from "@/components/icon-renderer";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { TaskWithTagsAndList } from "@/db/schema/tasks";
-import { ALL_STATUS, STATUS_COLORS } from "@/lib/constants";
 import { useFilterStore } from "@/store/use-filter-store";
-import TaskSection from "./task-section";
+import { useViewStore } from "@/store/use-view-store";
+import { TasksByStatusGrid } from "./tasks-by-status-grid";
+import { TasksByStatusList } from "./tasks-by-status-list";
 
 interface FilteredTasksViewProps {
 	tasks: TaskWithTagsAndList[];
 }
 
 export function FilteredTasksView({ tasks }: FilteredTasksViewProps) {
+	const { viewType } = useViewStore();
 	const { filters, hasActiveFilters } = useFilterStore();
+
+	const isViewTypeGrid = viewType === "grid";
 
 	// Return null if no filter is active
 	if (!hasActiveFilters()) return null;
@@ -51,22 +54,12 @@ export function FilteredTasksView({ tasks }: FilteredTasksViewProps) {
 				Found <span className="font-medium">{filteredTasks.length}</span> task
 				{filteredTasks.length !== 1 && "s"} matching filters
 			</div>
-			<div className="space-y-4">
-				{ALL_STATUS.map(({ id, name, icon }) => {
-					const tasksByStatus = filteredTasks.filter((t) => t.status === id);
-					if (!tasksByStatus.length) return null;
 
-					return (
-						<TaskSection
-							key={id}
-							icon={<IconRenderer name={icon} className={STATUS_COLORS[id]} />}
-							title={name}
-							tasks={tasksByStatus}
-							defaultOpen
-						/>
-					);
-				})}
-			</div>
+			{isViewTypeGrid ? (
+				<TasksByStatusGrid tasks={filteredTasks} />
+			) : (
+				<TasksByStatusList tasks={filteredTasks} />
+			)}
 		</div>
 	);
 }

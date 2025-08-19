@@ -21,7 +21,7 @@ import {
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
 import { useTasks } from "@/hooks/mutations/use-task-mutation";
 import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
-import { filterByLists } from "@/lib/helpers/filter-by";
+import { filterByLists } from "@/lib/helpers/tasks-filter-by";
 
 interface TaskListComboboxProps {
 	value?: string;
@@ -46,7 +46,7 @@ export default function TaskListCombobox({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button variant="outline" size="icon" className="size-7">
+				<Button variant="outline" size="icon">
 					<IconRenderer
 						name={selectedList?.icon ?? "ListPlus"}
 						className={

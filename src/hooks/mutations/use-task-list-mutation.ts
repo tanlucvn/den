@@ -11,6 +11,7 @@ export function useTaskLists() {
 		queryKey: [TASK_LISTS_KEY],
 		queryFn: async () => (await axios.get("/api/task-lists")).data,
 		refetchOnWindowFocus: false,
+		refetchOnMount: false,
 	});
 }
 

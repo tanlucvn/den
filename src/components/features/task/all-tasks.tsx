@@ -1,6 +1,5 @@
 import { useState } from "react";
 import QuickAddTask from "@/components/features/task/quick-add-task";
-import TaskSection from "@/components/features/task/task-section";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,14 +14,16 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { NumberFlowBadge } from "@/components/ui/number-flow-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { TaskWithTagsAndList } from "@/db/schema/tasks";
-import { ALL_STATUS, STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useFilterStore } from "@/store/use-filter-store";
 import { useSearchStore } from "@/store/use-search-store";
+import { useViewStore } from "@/store/use-view-store";
 import { FilteredTasksView } from "./filter-tasks-view";
 import { SearchTasksView } from "./search-tasks-view";
+import { TasksByStatusGrid } from "./tasks-by-status-grid";
+import { TasksByStatusList } from "./tasks-by-status-list";
 
-interface GroupedTaskSectionProps {
+interface AllTasksProps {
 	iconName?: string;
 	title: string;
 	description?: string;
@@ -33,7 +34,7 @@ interface GroupedTaskSectionProps {
 	className?: string;
 }
 
-export default function GroupedTaskSection({
+export default function AllTasks({
 	iconName = "",
 	title = "",
 	description,
@@ -42,23 +43,20 @@ export default function GroupedTaskSection({
 	isFetched,
 	listId,
 	className,
-}: GroupedTaskSectionProps) {
+}: AllTasksProps) {
+	const { viewType } = useViewStore();
 	const { isSearchOpen, searchQuery } = useSearchStore();
 	const { hasActiveFilters } = useFilterStore();
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
+	const isViewTypeGrid = viewType === "grid";
 	const isSearching = isSearchOpen && searchQuery.trim() !== "";
 	const isFiltering = hasActiveFilters();
-
-	const tasksByStatus = ALL_STATUS.map((status) => ({
-		...status,
-		tasks: tasks.filter((task) => task.status === status.id),
-	}));
 
 	const showNoTasks =
 		isFetched && !isLoading && tasks.length === 0 && !searchQuery.trim();
 
-	if (isLoading) return <GroupedTaskSectionSkeleton className={className} />;
+	if (isLoading) return <AllTasksSkeleton className={className} />;
 
 	return (
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
@@ -95,26 +93,10 @@ export default function GroupedTaskSection({
 						<SearchTasksView tasks={tasks} />
 					) : isFiltering ? (
 						<FilteredTasksView tasks={tasks} />
+					) : isViewTypeGrid ? (
+						<TasksByStatusGrid tasks={tasks} />
 					) : (
-						tasksByStatus.map(
-							(status) =>
-								tasks.length > 0 && (
-									<TaskSection
-										key={status.id}
-										icon={
-											<IconRenderer
-												name={status.icon}
-												className={STATUS_COLORS[status.id]}
-											/>
-										}
-										title={status.name}
-										tasks={status.tasks}
-										defaultOpen={
-											status.id === "todo" || status.id === "in_progress"
-										}
-									/>
-								),
-						)
+						<TasksByStatusList tasks={tasks} />
 					)}
 
 					{/* No tasks */}
@@ -130,11 +112,7 @@ export default function GroupedTaskSection({
 	);
 }
 
-export function GroupedTaskSectionSkeleton({
-	className,
-}: {
-	className?: string;
-}) {
+export function AllTasksSkeleton({ className }: { className?: string }) {
 	return (
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="space-y-1 p-0">

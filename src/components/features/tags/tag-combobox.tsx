@@ -25,7 +25,7 @@ import {
 	type ColorId,
 	TEXT_COLOR_CLASSES,
 } from "@/lib/constants";
-import { filterByTags } from "@/lib/helpers/filter-by";
+import { filterByTags } from "@/lib/helpers/tasks-filter-by";
 import { cn } from "@/lib/utils";
 
 interface Props {

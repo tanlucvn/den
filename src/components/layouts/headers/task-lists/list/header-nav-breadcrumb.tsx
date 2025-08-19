@@ -28,7 +28,7 @@ import {
 import type { TaskList } from "@/db/schema/task-lists";
 import type { Task } from "@/db/schema/tasks";
 import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
-import { filterByLists } from "@/lib/helpers/filter-by";
+import { filterByLists } from "@/lib/helpers/tasks-filter-by";
 import { cn } from "@/lib/utils";
 
 interface HeaderNavBreadcrumbProps {

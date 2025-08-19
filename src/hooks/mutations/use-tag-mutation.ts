@@ -11,6 +11,7 @@ export function useTags() {
 		queryKey: [TAGS_KEY],
 		queryFn: async () => (await axios.get("/api/tags")).data,
 		refetchOnWindowFocus: false,
+		refetchOnMount: false,
 	});
 }
 

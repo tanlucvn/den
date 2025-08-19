@@ -16,9 +16,15 @@ import TaskControlsContext from "./task-controls-context";
 
 interface TaskItemProps {
 	task: TaskWithTagsAndList;
+	showStatusSelector?: boolean;
+	className?: string;
 }
 
-export default function TaskItem({ task }: TaskItemProps) {
+export default function TaskItem({
+	task,
+	showStatusSelector = true,
+	className,
+}: TaskItemProps) {
 	const { handleUpdateTags, handleUpdate } = useTaskActions();
 
 	const isRemindPast = (date: string | Date) => {
@@ -37,15 +43,15 @@ export default function TaskItem({ task }: TaskItemProps) {
 		<TaskControlsContext task={task}>
 			<div
 				className={cn(
-					"group relative flex w-full select-none flex-col gap-2 rounded-xl border bg-card px-2 py-1 shadow-xs hover:border-ring hover:ring-[3px] hover:ring-ring/20",
-					hasMetadata && "pb-2",
+					"group relative flex w-full select-none flex-col gap-2 rounded-lg border bg-card p-2 shadow-xs hover:border-ring hover:ring-[3px] hover:ring-ring/20",
+					className,
 				)}
 			>
 				{/* Main row */}
 				<div className="flex items-center justify-between">
 					<div className="flex w-full items-center gap-2 overflow-hidden">
 						<div className="flex items-center gap-1">
-							<TaskStatusSelector task={task} />
+							{showStatusSelector && <TaskStatusSelector task={task} />}
 
 							<TaskListCombobox
 								value={task.listId ?? undefined}

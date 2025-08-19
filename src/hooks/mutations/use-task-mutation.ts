@@ -16,6 +16,7 @@ export function useTasks() {
 		queryKey: getTaskQueryKey(),
 		queryFn: async () => (await axios.get("/api/tasks")).data,
 		refetchOnWindowFocus: false,
+		refetchOnMount: false,
 	});
 }
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { FilterPopover } from "@/components/features/task/filter-popover";
-import GroupedTaskSection from "@/components/features/task/grouped-task-section";
+import AllTasks from "@/components/features/task/all-tasks";
 import { TaskSummaryCard } from "@/components/features/task/task-summary-card";
 import AppLayout from "@/components/layouts/app-layout";
 import HeaderNav from "@/components/layouts/headers/task-lists/list/header-nav";
+import HeaderOptions from "@/components/layouts/headers/tasks/header-options";
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
 import { useTasksByListId } from "@/hooks/mutations/use-task-mutation";
 
@@ -22,8 +22,8 @@ export default function TaskListPage() {
 	return (
 		<AppLayout header={<HeaderNav taskList={currentList} />}>
 			<div className="space-y-1 rounded-2xl border border-dashed p-1 shadow-xs">
-				<FilterPopover />
-				<GroupedTaskSection
+				<HeaderOptions />
+				<AllTasks
 					iconName={currentList.icon ?? "List"}
 					title={currentList.title}
 					description={currentList.description ?? undefined}

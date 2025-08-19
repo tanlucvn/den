@@ -65,7 +65,7 @@ export function TaskListItem({
 				<p className="truncate font-medium text-sm">{taskList.title}</p>
 				<div className="flex items-center gap-1 text-muted-foreground text-xs">
 					<span className="truncate">
-						{taskList.description ?? "No description"}
+						{taskList.description || "No description"}
 					</span>
 					<span className={cn("ml-auto pl-4", progressColor)}>
 						({progress}%)

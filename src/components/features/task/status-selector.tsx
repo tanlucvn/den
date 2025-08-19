@@ -36,7 +36,7 @@ export function TaskStatusSelector({ task }: TaskStatusSelectorProps) {
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button variant="ghost" size="icon" className="size-7">
+				<Button variant="ghost" size="icon">
 					{currentStatus && (
 						<IconRenderer
 							name={currentStatus.icon}

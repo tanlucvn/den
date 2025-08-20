@@ -49,7 +49,10 @@ export function TaskSummaryCard({
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="p-0">
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
-					<IconRenderer name="ChartNoAxesGantt" className="text-primary/60" />
+					<IconRenderer
+						name="ChartNoAxesGantt"
+						className="text-muted-foreground"
+					/>
 					<span>Task Summary</span>
 				</CardTitle>
 

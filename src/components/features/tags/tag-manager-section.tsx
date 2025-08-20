@@ -58,7 +58,7 @@ export default function TagManagerSection({
 			{/* Header */}
 			<CardHeader className="p-0">
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
-					<IconRenderer name={iconName} className="text-primary/60" />
+					<IconRenderer name={iconName} className="text-muted-foreground" />
 					<span>{title}</span>
 					<NumberFlowBadge value={tags.length} />
 				</CardTitle>

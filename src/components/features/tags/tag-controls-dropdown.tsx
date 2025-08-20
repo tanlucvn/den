@@ -35,7 +35,7 @@ export default function TagControlsDropdown({
 					</p>
 					<DropDrawerItem
 						className="gap-2"
-						icon={<IconRenderer name="Pen" className="!text-primary/60" />}
+						icon={<IconRenderer name="Pen" className="text-muted-foreground" />}
 						onClick={() => {
 							handleEdit(tag);
 							setOpenModal(true);

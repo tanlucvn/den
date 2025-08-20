@@ -7,6 +7,7 @@ interface EmptyStateProps {
 	description?: string;
 	className?: string;
 	contentClassName?: string;
+	children?: React.ReactNode;
 }
 
 export function EmptyState({
@@ -15,6 +16,7 @@ export function EmptyState({
 	description = "Start by adding a new item.",
 	className,
 	contentClassName,
+	children,
 }: EmptyStateProps) {
 	return (
 		<div
@@ -22,21 +24,28 @@ export function EmptyState({
 		>
 			<div
 				className={cn(
-					"h-28 rounded-md text-center text-muted-foreground text-sm",
+					"relative z-10 h-34 rounded-md text-center text-muted-foreground text-sm",
 					"bg-[repeating-linear-gradient(45deg,_theme(colors.border)_0_1px,_transparent_1px_10px)]",
 					contentClassName,
 				)}
 			>
-				<div className="relative z-10 flex h-full flex-col items-center justify-center gap-1">
-					{icon && (
-						<IconRenderer name={icon} className="size-4 text-primary/60" />
-					)}
-					<p className="text-foreground">{title}</p>
-					<p className="text-xs">{description}</p>
-				</div>
-			</div>
+				<div className="relative z-10 flex h-full flex-col items-center justify-center gap-4">
+					<div className="flex flex-col items-center justify-center gap-1">
+						{icon && (
+							<IconRenderer
+								name={icon}
+								className="size-5 text-muted-foreground"
+							/>
+						)}
+						<p className="text-foreground">{title}</p>
+						<p className="px-4 text-xs">{description}</p>
+					</div>
 
-			<div className="pointer-events-none absolute right-0 bottom-0 left-0 h-12 rounded-b-md bg-gradient-to-t from-background/70 to-transparent" />
+					{children}
+				</div>
+
+				<div className="absolute inset-x-0 bottom-0 z-0 h-12 rounded-b-md bg-gradient-to-t from-background/70 to-transparent" />
+			</div>
 		</div>
 	);
 }

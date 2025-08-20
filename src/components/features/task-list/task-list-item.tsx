@@ -47,7 +47,7 @@ export function TaskListItem({
 						name={taskList.icon ?? "List"}
 						className={
 							TEXT_COLOR_CLASSES[taskList?.color as ColorId] ??
-							"text-primary/60"
+							"text-muted-foreground"
 						}
 					/>
 				</Button>

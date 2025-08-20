@@ -46,7 +46,7 @@ export function TagSummaryCard({
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="p-0">
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
-					<IconRenderer name="Tag" className="text-primary/60" />
+					<IconRenderer name="Tag" className="text-muted-foreground" />
 					<span>Tag Summary</span>
 				</CardTitle>
 				<CardDescription className="text-sm">

@@ -65,7 +65,7 @@ export default function EditTagForm({
 								<IconRenderer
 									name="Pencil"
 									className={cn(
-										"text-primary/60",
+										"text-muted-foreground",
 										form.formState.errors.title && "text-destructive",
 									)}
 								/>
@@ -85,7 +85,10 @@ export default function EditTagForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="Palette" className="text-primary/60" />
+								<IconRenderer
+									name="Palette"
+									className="text-muted-foreground"
+								/>
 								Color
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)

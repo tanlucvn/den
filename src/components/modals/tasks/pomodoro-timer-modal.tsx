@@ -178,7 +178,7 @@ export default function PomodoroTimerModal({
 					<div className="grid w-full grid-cols-3 items-end gap-2">
 						<div className="space-y-2">
 							<Label htmlFor="duration" className="flex items-center text-sm">
-								<IconRenderer name="Timer" className="text-primary/60" />
+								<IconRenderer name="Timer" className="text-muted-foreground" />
 								Duration
 								<span className="font-normal text-muted-foreground text-xs">
 									(minutes)

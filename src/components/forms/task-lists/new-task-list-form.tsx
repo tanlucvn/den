@@ -70,7 +70,7 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 								<IconRenderer
 									name="Pencil"
 									className={cn(
-										"text-primary/60",
+										"text-muted-foreground",
 										form.formState.errors.title && "text-destructive",
 									)}
 								/>
@@ -90,7 +90,10 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="PenLine" className="text-primary/60" />
+								<IconRenderer
+									name="PenLine"
+									className="text-muted-foreground"
+								/>
 								Description
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
@@ -111,7 +114,10 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									<IconRenderer name="Smile" className="text-primary/60" />
+									<IconRenderer
+										name="Smile"
+										className="text-muted-foreground"
+									/>
 									Icon
 									<span className="font-normal text-muted-foreground text-xs">
 										(optional)
@@ -134,7 +140,10 @@ export default function NewTaskListForm({ onFinish }: NewTaskListFormProps) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>
-									<IconRenderer name="Palette" className="text-primary/60" />
+									<IconRenderer
+										name="Palette"
+										className="text-muted-foreground"
+									/>
 									Color
 									<span className="font-normal text-muted-foreground text-xs">
 										(optional)

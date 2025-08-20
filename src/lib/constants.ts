@@ -46,7 +46,7 @@ export const ALL_STATUS = [
 	},
 ] as const;
 export const STATUS_COLORS: Record<StatusId, string> = {
-	todo: "text-primary/60",
+	todo: "text-muted-foreground",
 	in_progress: "text-amber-500",
 	paused: "text-sky-500",
 	completed: "text-emerald-500",

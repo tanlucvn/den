@@ -41,7 +41,7 @@ export function StatItem({
 					>
 						<IconRenderer
 							name={icon}
-							className={cn("text-primary/60", iconClassName)}
+							className={cn("text-muted-foreground", iconClassName)}
 						/>
 					</span>
 				</PopoverTrigger>

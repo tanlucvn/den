@@ -47,7 +47,9 @@ export default function TaskControlsDropdown({
 
 					<DropDrawerItem
 						className="gap-2"
-						icon={<IconRenderer name="Timer" className="!text-primary/60" />}
+						icon={
+							<IconRenderer name="Timer" className="text-muted-foreground" />
+						}
 						onClick={() => {
 							setOpenFocusModal(true);
 						}}
@@ -64,7 +66,9 @@ export default function TaskControlsDropdown({
 					<DropDrawerGroup>
 						<DropDrawerItem
 							className="gap-2"
-							icon={<IconRenderer name="Pen" className="!text-primary/60" />}
+							icon={
+								<IconRenderer name="Pen" className="text-muted-foreground" />
+							}
 							onClick={() => {
 								handleEdit(task);
 								setOpenEditModal(true);
@@ -76,7 +80,10 @@ export default function TaskControlsDropdown({
 						<DropDrawerItem
 							className="gap-2"
 							icon={
-								<IconRenderer name="CopyPlus" className="!text-primary/60" />
+								<IconRenderer
+									name="CopyPlus"
+									className="text-muted-foreground"
+								/>
 							}
 							onClick={() => handleDuplicate(task)}
 						>
@@ -86,7 +93,10 @@ export default function TaskControlsDropdown({
 						<DropDrawerItem
 							className="gap-2"
 							icon={
-								<IconRenderer name="Clipboard" className="!text-primary/60" />
+								<IconRenderer
+									name="Clipboard"
+									className="text-muted-foreground"
+								/>
 							}
 							onClick={() => handleCopyToClipboard(task)}
 						>
@@ -105,9 +115,12 @@ export default function TaskControlsDropdown({
 							className="gap-2"
 							icon={
 								task.isPinned ? (
-									<IconRenderer name="PinOff" className="!text-primary/60" />
+									<IconRenderer
+										name="PinOff"
+										className="text-muted-foreground"
+									/>
 								) : (
-									<IconRenderer name="Pin" className="!text-primary/60" />
+									<IconRenderer name="Pin" className="text-muted-foreground" />
 								)
 							}
 							onClick={() => handlePinToggle(task)}
@@ -119,9 +132,15 @@ export default function TaskControlsDropdown({
 							className="gap-2"
 							icon={
 								task.isArchived ? (
-									<IconRenderer name="ArchiveX" className="!text-primary/60" />
+									<IconRenderer
+										name="ArchiveX"
+										className="text-muted-foreground"
+									/>
 								) : (
-									<IconRenderer name="Archive" className="!text-primary/60" />
+									<IconRenderer
+										name="Archive"
+										className="text-muted-foreground"
+									/>
 								)
 							}
 							onClick={() => handleArchive(task)}

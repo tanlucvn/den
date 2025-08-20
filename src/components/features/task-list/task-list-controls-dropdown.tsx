@@ -43,7 +43,10 @@ export default function TaskListControlsDropdown({
 						<DropDrawerItem
 							className="gap-2"
 							icon={
-								<IconRenderer name="Captions" className="!text-primary/60" />
+								<IconRenderer
+									name="Captions"
+									className="text-muted-foreground"
+								/>
 							}
 							onClick={() => {
 								setOpenNoteModal(true);
@@ -54,7 +57,9 @@ export default function TaskListControlsDropdown({
 
 						<DropDrawerItem
 							className="gap-2"
-							icon={<IconRenderer name="Pen" className="!text-primary/60" />}
+							icon={
+								<IconRenderer name="Pen" className="text-muted-foreground" />
+							}
 							onClick={() => {
 								handleEdit(taskList);
 								setOpenModal(true);

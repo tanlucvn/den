@@ -9,6 +9,7 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
 	Popover,
 	PopoverContent,
@@ -49,7 +50,13 @@ export function TaskStatusSelector({ task }: TaskStatusSelectorProps) {
 				<Command>
 					<CommandInput placeholder="Set status..." />
 					<CommandList>
-						<CommandEmpty>No status found.</CommandEmpty>
+						<CommandEmpty className="p-0">
+							<EmptyState
+								icon="SearchX"
+								title="No status found"
+								description="Try another keyword."
+							/>
+						</CommandEmpty>
 						<CommandGroup>
 							{ALL_STATUS.map((item) => (
 								<CommandItem

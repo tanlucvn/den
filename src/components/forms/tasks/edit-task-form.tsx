@@ -84,7 +84,7 @@ export default function EditTaskForm({
 								<IconRenderer
 									name="Pen"
 									className={cn(
-										"text-primary/60",
+										"text-muted-foreground",
 										form.formState.errors.title && "text-destructive",
 									)}
 								/>
@@ -104,7 +104,10 @@ export default function EditTaskForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="Captions" className="text-primary/60" />
+								<IconRenderer
+									name="Captions"
+									className="text-muted-foreground"
+								/>
 								Note
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
@@ -128,7 +131,7 @@ export default function EditTaskForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
-								<IconRenderer name="MapPin" className="text-primary/60" />
+								<IconRenderer name="MapPin" className="text-muted-foreground" />
 								Location
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)

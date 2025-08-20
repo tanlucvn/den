@@ -52,7 +52,7 @@ export function HeaderFilter() {
 					variant="ghost"
 					className="relative w-fit font-normal"
 				>
-					<IconRenderer name="ListFilter" className="text-primary/60" />
+					<IconRenderer name="ListFilter" className="text-muted-foreground" />
 					Filter
 					{getActiveFiltersCount() > 0 && (
 						<span className="-top-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
@@ -73,7 +73,7 @@ export function HeaderFilter() {
 									<span className="flex items-center gap-2">
 										<IconRenderer
 											name="CircleCheck"
-											className="text-primary/60"
+											className="text-muted-foreground"
 										/>
 										Status
 									</span>
@@ -83,7 +83,10 @@ export function HeaderFilter() {
 												{filters.status.length}
 											</span>
 										)}
-										<IconRenderer name="ChevronRight" />
+										<IconRenderer
+											name="ChevronRight"
+											className="text-muted-foreground"
+										/>
 									</div>
 								</CommandItem>
 								<CommandItem
@@ -91,7 +94,10 @@ export function HeaderFilter() {
 									className="flex cursor-pointer items-center justify-between"
 								>
 									<span className="flex items-center gap-2">
-										<IconRenderer name="Flag" className="text-primary/60" />
+										<IconRenderer
+											name="Flag"
+											className="text-muted-foreground"
+										/>
 										Priority
 									</span>
 									<div className="flex items-center">
@@ -100,7 +106,10 @@ export function HeaderFilter() {
 												{filters.priority.length}
 											</span>
 										)}
-										<IconRenderer name="ChevronRight" />
+										<IconRenderer
+											name="ChevronRight"
+											className="text-muted-foreground"
+										/>
 									</div>
 								</CommandItem>
 								<CommandItem
@@ -120,7 +129,10 @@ export function HeaderFilter() {
 												{filters.tags.length}
 											</span>
 										)}
-										<IconRenderer name="ChevronRight" />
+										<IconRenderer
+											name="ChevronRight"
+											className="text-muted-foreground"
+										/>
 									</div>
 								</CommandItem>
 							</CommandGroup>
@@ -148,7 +160,10 @@ export function HeaderFilter() {
 								className="size-6"
 								onClick={() => setActiveFilter(null)}
 							>
-								<IconRenderer name="ChevronRight" className="rotate-180" />
+								<IconRenderer
+									name="ChevronRight"
+									className="rotate-180 text-muted-foreground"
+								/>
 							</Button>
 							<span className="ml-2 font-medium text-sm">Status</span>
 						</div>
@@ -196,7 +211,10 @@ export function HeaderFilter() {
 								className="size-6"
 								onClick={() => setActiveFilter(null)}
 							>
-								<IconRenderer name="ChevronRight" className="rotate-180" />
+								<IconRenderer
+									name="ChevronRight"
+									className="rotate-180 text-muted-foreground"
+								/>
 							</Button>
 							<span className="ml-2 font-medium text-sm">Priority</span>
 						</div>
@@ -244,7 +262,10 @@ export function HeaderFilter() {
 								className="size-6"
 								onClick={() => setActiveFilter(null)}
 							>
-								<IconRenderer name="ChevronRight" className="rotate-180" />
+								<IconRenderer
+									name="ChevronRight"
+									className="rotate-180 text-muted-foreground"
+								/>
 							</Button>
 							<span className="ml-2 font-medium text-sm">Tags</span>
 						</div>
@@ -270,7 +291,7 @@ export function HeaderFilter() {
 												name="Tag"
 												className={
 													TEXT_COLOR_CLASSES[item?.color as ColorId] ??
-													"text-primary/60"
+													"text-muted-foreground"
 												}
 											/>
 											{item.title}

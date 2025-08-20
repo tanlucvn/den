@@ -52,7 +52,7 @@ export default function TaskControlsContext({
 						}}
 					>
 						<span>Focus</span>
-						<IconRenderer name="Timer" className="!text-primary/60" />
+						<IconRenderer name="Timer" className="text-muted-foreground" />
 					</ContextMenuItem>
 
 					<ContextMenuSeparator />
@@ -69,7 +69,7 @@ export default function TaskControlsContext({
 						}}
 					>
 						<span>Edit</span>
-						<IconRenderer name="Pen" className="!text-primary/60" />
+						<IconRenderer name="Pen" className="text-muted-foreground" />
 					</ContextMenuItem>
 
 					<ContextMenuItem
@@ -77,7 +77,7 @@ export default function TaskControlsContext({
 						onClick={() => handleDuplicate(task)}
 					>
 						<span>Duplicate</span>
-						<IconRenderer name="CopyPlus" className="!text-primary/60" />
+						<IconRenderer name="CopyPlus" className="text-muted-foreground" />
 					</ContextMenuItem>
 
 					<ContextMenuItem
@@ -85,7 +85,7 @@ export default function TaskControlsContext({
 						onClick={() => handleCopyToClipboard(task)}
 					>
 						<span>Copy Task</span>
-						<IconRenderer name="Clipboard" className="!text-primary/60" />
+						<IconRenderer name="Clipboard" className="text-muted-foreground" />
 					</ContextMenuItem>
 
 					<ContextMenuSeparator />
@@ -101,12 +101,12 @@ export default function TaskControlsContext({
 						{task.isPinned ? (
 							<>
 								<span>Unpin</span>
-								<IconRenderer name="PinOff" className="!text-primary/60" />
+								<IconRenderer name="PinOff" className="text-muted-foreground" />
 							</>
 						) : (
 							<>
 								<span>Pin</span>
-								<IconRenderer name="Pin" className="!text-primary/60" />
+								<IconRenderer name="Pin" className="text-muted-foreground" />
 							</>
 						)}
 					</ContextMenuItem>
@@ -118,12 +118,18 @@ export default function TaskControlsContext({
 						{task.isArchived ? (
 							<>
 								<span>Unarchive</span>
-								<IconRenderer name="ArchiveX" className="!text-primary/60" />
+								<IconRenderer
+									name="ArchiveX"
+									className="text-muted-foreground"
+								/>
 							</>
 						) : (
 							<>
 								<span>Archive</span>
-								<IconRenderer name="Archive" className="!text-primary/60" />
+								<IconRenderer
+									name="Archive"
+									className="text-muted-foreground"
+								/>
 							</>
 						)}
 					</ContextMenuItem>

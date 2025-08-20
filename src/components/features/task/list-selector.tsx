@@ -51,7 +51,7 @@ export default function TaskListCombobox({
 						name={selectedList?.icon ?? "ListPlus"}
 						className={
 							TEXT_COLOR_CLASSES[selectedList?.color as ColorId] ??
-							"text-primary/60"
+							"text-muted-foreground"
 						}
 					/>
 				</Button>
@@ -94,7 +94,7 @@ export default function TaskListCombobox({
 													name={list.icon ?? "List"}
 													className={
 														TEXT_COLOR_CLASSES[list?.color as ColorId] ??
-														"text-primary/60"
+														"text-muted-foreground"
 													}
 												/>
 												<span className="truncate">{list.title}</span>

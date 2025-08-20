@@ -110,7 +110,7 @@ export function NavUser() {
 									icon={
 										<IconRenderer
 											name="Sparkles"
-											className="!text-primary/60"
+											className="text-muted-foreground"
 										/>
 									}
 								>
@@ -123,7 +123,10 @@ export function NavUser() {
 							<DropDrawerGroup>
 								<DropDrawerItem
 									icon={
-										<IconRenderer name="User" className="!text-primary/60" />
+										<IconRenderer
+											name="User"
+											className="text-muted-foreground"
+										/>
 									}
 									onClick={() => setOpenProfileModal(true)}
 								>
@@ -131,7 +134,10 @@ export function NavUser() {
 								</DropDrawerItem>
 								<DropDrawerItem
 									icon={
-										<IconRenderer name="Bell" className="!text-primary/60" />
+										<IconRenderer
+											name="Bell"
+											className="text-muted-foreground"
+										/>
 									}
 								>
 									Notifications

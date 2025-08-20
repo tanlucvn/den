@@ -70,7 +70,7 @@ export default function HeaderNavBreadcrumb({
 									className={cn(
 										"size-4",
 										TEXT_COLOR_CLASSES[currentList?.color as ColorId] ??
-											"text-primary/60",
+											"text-muted-foreground",
 									)}
 								/>
 								<span className="truncate">{currentList?.title}</span>
@@ -104,7 +104,7 @@ export default function HeaderNavBreadcrumb({
 															className={cn(
 																"size-4",
 																TEXT_COLOR_CLASSES[list?.color as ColorId] ??
-																	"text-primary/60",
+																	"text-muted-foreground",
 															)}
 														/>
 														<span className="truncate">{list.title}</span>

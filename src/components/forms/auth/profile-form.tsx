@@ -53,7 +53,7 @@ export default function ProfileForm({ session, onFinish }: ProfileFormProps) {
 								<IconRenderer
 									name="UserPen"
 									className={cn(
-										"text-primary/60",
+										"text-muted-foreground",
 										form.formState.errors.name && "text-destructive",
 									)}
 								/>

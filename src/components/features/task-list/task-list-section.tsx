@@ -54,7 +54,7 @@ export function TaskListSection({
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="p-0">
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
-					<IconRenderer name={iconName} className="text-primary/60" />
+					<IconRenderer name={iconName} className="text-muted-foreground" />
 					<span>{title}</span>
 					<NumberFlowBadge value={taskLists.length} />
 				</CardTitle>
@@ -116,8 +116,19 @@ export function TaskListSection({
 						<EmptyState
 							icon="List"
 							title="No lists created yet"
-							description="Use the button above to create a new list."
-						/>
+							description="Create your first list below."
+						>
+							<NewTaskListModal>
+								<Button
+									variant="outline"
+									size="sm"
+									className="rounded-full font-normal text-foreground"
+								>
+									<IconRenderer name="Plus" className="text-muted-foreground" />
+									New list
+								</Button>
+							</NewTaskListModal>
+						</EmptyState>
 					)}
 				</CardContent>
 			)}

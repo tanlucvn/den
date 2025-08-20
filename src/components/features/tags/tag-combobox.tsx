@@ -141,7 +141,7 @@ export default function TagChipCombobox({
 												name="Tag"
 												className={
 													TEXT_COLOR_CLASSES[tag?.color as ColorId] ??
-													"text-primary/60"
+													"text-muted-foreground"
 												}
 											/>
 											<span className="truncate">{tag.title}</span>

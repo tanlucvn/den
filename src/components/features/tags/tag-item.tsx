@@ -23,7 +23,7 @@ export default function TagItem({ tag }: TagItemProps) {
 					name="Tag"
 					className={cn(
 						"shrink-0",
-						TEXT_COLOR_CLASSES[tag.color as ColorId] ?? "text-primary/60",
+						TEXT_COLOR_CLASSES[tag.color as ColorId] ?? "text-muted-foreground",
 					)}
 				/>
 

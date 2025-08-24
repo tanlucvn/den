@@ -11,12 +11,17 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
+import type { Task } from "@/db/schema/tasks";
 
 interface NewTaskModalProps {
+	initialData?: Partial<Task>;
 	children: React.ReactNode;
 }
 
-export default function NewTaskModal({ children }: NewTaskModalProps) {
+export default function NewTaskModal({
+	initialData,
+	children,
+}: NewTaskModalProps) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
@@ -29,6 +34,7 @@ export default function NewTaskModal({ children }: NewTaskModalProps) {
 				</ModalHeader>
 
 				<NewTaskForm
+					initialData={initialData}
 					onFinish={() => {
 						setIsOpen(false);
 					}}

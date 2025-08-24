@@ -32,24 +32,30 @@ export const FILTER_LABELS: Record<string, string> = {
 };
 
 export const ALL_STATUS = [
-	{ id: "todo", name: "Todo", icon: "Circle" },
+	{ id: "todo", name: "Todo", icon: "Bean" },
 	{
 		id: "in_progress",
 		name: "In Progress",
-		icon: "CircleDot",
+		icon: "Sprout",
 	},
-	{ id: "paused", name: "Paused", icon: "CircleSlash" },
 	{
 		id: "completed",
 		name: "Completed",
-		icon: "CircleCheck",
+		icon: "TreeDeciduous",
 	},
+	{ id: "paused", name: "Paused", icon: "Shovel" },
 ] as const;
 export const STATUS_COLORS: Record<StatusId, string> = {
 	todo: "text-muted-foreground",
 	in_progress: "text-amber-500",
 	paused: "text-sky-500",
 	completed: "text-emerald-500",
+};
+export const BG_STATUS_COLORS: Record<StatusId, string> = {
+	todo: "bg-accent/60",
+	in_progress: "bg-amber-500/5",
+	paused: "bg-sky-500/5",
+	completed: "bg-emerald-500/5",
 };
 export type StatusId = (typeof ALL_STATUS)[number]["id"];
 export type Status = (typeof ALL_STATUS)[number];
@@ -204,3 +210,9 @@ export const TEXT_COLOR_CLASSES: Record<ColorId, string> = Object.fromEntries(
 export const BG_COLOR_CLASSES: Record<ColorId, string> = Object.fromEntries(
 	ALL_COLORS.map((c) => [c.id, c.background]),
 ) as Record<ColorId, string>;
+
+export const ENTITY_ICONS: Record<"task" | "taskList" | "tags", string> = {
+	task: "Leaf",
+	taskList: "Trees",
+	tags: "Flower",
+};

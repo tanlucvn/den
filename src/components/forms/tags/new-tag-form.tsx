@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import type { NewTag } from "@/db/schema/tags";
 import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
-import type { ColorId } from "@/lib/constants";
+import { type ColorId, ENTITY_ICONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { type NewTagValues, newTagSchema } from "@/lib/validators/new-tag";
 
@@ -61,7 +61,7 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 						<FormItem>
 							<FormLabel>
 								<IconRenderer
-									name="Tag"
+									name={ENTITY_ICONS.tags}
 									className={cn(
 										"text-muted-foreground",
 										form.formState.errors.title && "text-destructive",

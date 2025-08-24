@@ -3,18 +3,31 @@
 import { useTheme } from "next-themes";
 import { type ReactNode, useEffect } from "react";
 import { AppSidebar } from "@/components/common/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { useAppSettingsStore } from "@/store/use-app-settings-store";
-import { AppQuickActions } from "../common/app-quick-actions";
+import { Aside, AsideProvider } from "./app-aside";
 
-interface Props {
-	header: React.ReactNode;
+interface AppLayoutProps {
+	header?: ReactNode;
+	headersNumber?: 1 | 2;
+	aside?: ReactNode;
 	children: ReactNode;
 }
 
-export default function AppLayout({ header, children }: Props) {
+export default function AppLayout({
+	header,
+	headersNumber = 1,
+	aside,
+	children,
+}: AppLayoutProps) {
 	const { theme } = useTheme();
 	const { appColor } = useAppSettingsStore();
+
+	const height = {
+		1: "h-[calc(100svh-48px)] lg:h-[calc(100svh-64px)]",
+		2: "h-[calc(100svh-90px)] lg:h-[calc(100svh-106px)]",
+	};
 
 	// Apply theme
 	useEffect(() => {
@@ -25,23 +38,28 @@ export default function AppLayout({ header, children }: Props) {
 		<SidebarProvider
 			style={
 				{
-					"--sidebar-width": "19rem",
+					"--sidebar-width": "17rem",
 				} as React.CSSProperties
 			}
 		>
-			<AppSidebar />
+			<AsideProvider>
+				<AppSidebar />
+				<div className="h-svh w-full overflow-hidden lg:p-2">
+					<div className="flex h-full w-full flex-col items-center justify-start overflow-hidden bg-container shadow-xs ring-4 ring-accent lg:rounded-md lg:border">
+						{header}
 
-			<SidebarInset>
-				<div className="relative mx-auto size-full max-w-3xl space-y-4 p-4">
-					{header}
-
-					<div className="sticky top-2 z-10 w-full rounded-full bg-background">
-						<AppQuickActions />
+						<div
+							className={cn(
+								"flex w-full",
+								height[headersNumber as keyof typeof height],
+							)}
+						>
+							<div className="w-full overflow-auto p-2">{children}</div>
+							{aside && <Aside>{aside}</Aside>}
+						</div>
 					</div>
-
-					{children}
 				</div>
-			</SidebarInset>
+			</AsideProvider>
 		</SidebarProvider>
 	);
 }

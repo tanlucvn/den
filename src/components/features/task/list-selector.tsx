@@ -20,17 +20,24 @@ import {
 } from "@/components/ui/popover";
 import { useTaskLists } from "@/hooks/mutations/use-task-list-mutation";
 import { useTasks } from "@/hooks/mutations/use-task-mutation";
-import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
+import {
+	type ColorId,
+	ENTITY_ICONS,
+	TEXT_COLOR_CLASSES,
+} from "@/lib/constants";
 import { filterByLists } from "@/lib/helpers/tasks-filter-by";
+import { cn } from "@/lib/utils";
 
 interface TaskListComboboxProps {
 	value?: string;
 	onValueChange?: (id: string | null) => void;
+	className?: string;
 }
 
 export default function TaskListCombobox({
 	value,
 	onValueChange,
+	className,
 }: TaskListComboboxProps) {
 	const { data: tasks = [] } = useTasks();
 	const { data: allLists, isPending } = useTaskLists();
@@ -46,7 +53,7 @@ export default function TaskListCombobox({
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button variant="outline" size="icon">
+				<Button variant="outline" size="icon" className={cn(className)}>
 					<IconRenderer
 						name={selectedList?.icon ?? "ListPlus"}
 						className={
@@ -91,7 +98,7 @@ export default function TaskListCombobox({
 										>
 											<div className="flex items-center gap-2 overflow-hidden">
 												<IconRenderer
-													name={list.icon ?? "List"}
+													name={list.icon || ENTITY_ICONS.taskList}
 													className={
 														TEXT_COLOR_CLASSES[list?.color as ColorId] ??
 														"text-muted-foreground"

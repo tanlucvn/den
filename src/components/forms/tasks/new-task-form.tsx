@@ -28,7 +28,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { NewTask } from "@/db/schema/tasks";
+import type { NewTask, Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { useSession } from "@/lib/auth-client";
 import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/constants";
@@ -39,10 +39,14 @@ import {
 } from "@/lib/validators/new-task";
 
 interface NewTaskFormProps {
+	initialData?: Partial<Task>;
 	onFinish: () => void;
 }
 
-export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
+export default function NewTaskForm({
+	initialData,
+	onFinish,
+}: NewTaskFormProps) {
 	const { data } = useSession();
 
 	const { loading, handleCreate } = useTaskActions();
@@ -50,12 +54,12 @@ export default function NewTaskForm({ onFinish }: NewTaskFormProps) {
 	const form = useForm<NewTaskFormValues>({
 		resolver: zodResolver(newTaskSchema),
 		defaultValues: {
-			title: "",
-			note: "",
-			location: "",
-			priority: "none",
-			status: "todo",
-			remindAt: null,
+			title: initialData?.title || "",
+			note: initialData?.note || "",
+			location: initialData?.location || "",
+			priority: initialData?.priority || "none",
+			status: initialData?.status || "todo",
+			remindAt: initialData?.remindAt || null,
 		},
 	});
 

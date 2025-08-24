@@ -16,6 +16,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { ENTITY_ICONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { NavUser } from "./nav-user";
 
@@ -24,7 +25,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 	const isActive = (href: string) => pathname === href;
 
 	return (
-		<Sidebar variant="floating" {...props}>
+		<Sidebar variant="inset" collapsible="offcanvas" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
@@ -73,7 +74,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 										)}
 									>
 										<IconRenderer
-											name="ListChecks"
+											name={ENTITY_ICONS.taskList}
 											className="text-sidebar-foreground/60"
 										/>
 										Task Lists
@@ -90,7 +91,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 										)}
 									>
 										<IconRenderer
-											name="CircleCheck"
+											name={ENTITY_ICONS.task}
 											className="text-sidebar-foreground/60"
 										/>
 										Tasks
@@ -107,7 +108,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 										)}
 									>
 										<IconRenderer
-											name="Tags"
+											name={ENTITY_ICONS.tags}
 											className="text-sidebar-foreground/60"
 										/>
 										Tags

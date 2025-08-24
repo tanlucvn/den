@@ -7,15 +7,15 @@ import type { Task } from "@/db/schema/tasks";
 import { useSearchStore } from "@/store/use-search-store";
 import { TaskListItem } from "./task-list-item";
 
-interface SearchTaskListViewProps {
+interface SearchTaskListWrapperProps {
 	taskLists: TaskList[];
 	tasks: Task[];
 }
 
-export function SearchTaskListView({
+export function SearchTaskListWrapper({
 	taskLists,
 	tasks,
-}: SearchTaskListViewProps) {
+}: SearchTaskListWrapperProps) {
 	const { searchQuery, isSearchOpen } = useSearchStore();
 	const [results, setResults] = useState<TaskList[]>([]);
 

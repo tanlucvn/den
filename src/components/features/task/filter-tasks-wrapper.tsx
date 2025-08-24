@@ -4,14 +4,13 @@ import { EmptyState } from "@/components/ui/empty-state";
 import type { TaskWithTagsAndList } from "@/db/schema/tasks";
 import { useFilterStore } from "@/store/use-filter-store";
 import { useViewStore } from "@/store/use-view-store";
-import { TasksByStatusGrid } from "./tasks-by-status-grid";
-import { TasksByStatusList } from "./tasks-by-status-list";
+import { TasksView } from "./tasks-view";
 
-interface FilteredTasksViewProps {
+interface FilteredTasksWrapperProps {
 	tasks: TaskWithTagsAndList[];
 }
 
-export function FilteredTasksView({ tasks }: FilteredTasksViewProps) {
+export function FilteredTasksWrapper({ tasks }: FilteredTasksWrapperProps) {
 	const { viewType } = useViewStore();
 	const { filters, hasActiveFilters } = useFilterStore();
 
@@ -49,17 +48,19 @@ export function FilteredTasksView({ tasks }: FilteredTasksViewProps) {
 	}
 
 	return (
-		<div className="flex flex-col gap-2">
-			<div className="text-foreground text-sm">
-				Found <span className="font-medium">{filteredTasks.length}</span> task
-				{filteredTasks.length !== 1 && "s"} matching filters
+		<div className="flex size-full flex-col gap-2">
+			<div className="flex items-center gap-2 text-muted-foreground text-xs">
+				<div className="h-px flex-1 bg-border" />
+				<span>
+					<span className="font-semibold text-foreground">
+						{filteredTasks.length}
+					</span>{" "}
+					task{filteredTasks.length !== 1 && "s"} found
+				</span>
+				<div className="h-px flex-1 bg-border" />
 			</div>
 
-			{isViewTypeGrid ? (
-				<TasksByStatusGrid tasks={filteredTasks} />
-			) : (
-				<TasksByStatusList tasks={filteredTasks} />
-			)}
+			<TasksView tasks={filteredTasks} isViewTypeGrid={isViewTypeGrid} />
 		</div>
 	);
 }

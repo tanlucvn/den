@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Tag } from "@/db/schema/tags";
 import type { Task } from "@/db/schema/tasks";
-import { FILTER_LABELS } from "@/lib/constants";
+import { ENTITY_ICONS, FILTER_LABELS } from "@/lib/constants";
 import { getTagSummary } from "@/lib/helpers/get-tag-summary";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +46,10 @@ export function TagSummaryCard({
 		<Card className={cn("gap-4 bg-secondary/20 p-4", className)}>
 			<CardHeader className="p-0">
 				<CardTitle className="flex items-center gap-2 font-normal text-sm">
-					<IconRenderer name="Tag" className="text-muted-foreground" />
+					<IconRenderer
+						name={ENTITY_ICONS.tags}
+						className="text-muted-foreground"
+					/>
 					<span>Tag Summary</span>
 				</CardTitle>
 				<CardDescription className="text-sm">

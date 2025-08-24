@@ -29,9 +29,9 @@ export default function HeaderNav({ taskList }: HeaderNavProps) {
 	const currentList = taskLists.find((list) => list.id === id);
 
 	return (
-		<div className="flex h-8 w-full items-center justify-between">
+		<div className="flex h-12 w-full items-center justify-between border-b p-2">
 			<div className="flex items-center gap-2">
-				<SidebarTrigger className="-ml-1 size-8" />
+				<SidebarTrigger className="size-8" />
 
 				<Separator
 					orientation="vertical"

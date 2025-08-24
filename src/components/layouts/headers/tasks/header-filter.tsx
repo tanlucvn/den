@@ -24,6 +24,7 @@ import {
 	ALL_PRIORITY,
 	ALL_STATUS,
 	type ColorId,
+	ENTITY_ICONS,
 	PRIORITY_COLORS,
 	STATUS_COLORS,
 	TEXT_COLOR_CLASSES,
@@ -118,7 +119,7 @@ export function HeaderFilter() {
 								>
 									<span className="flex items-center gap-2">
 										<IconRenderer
-											name="Tags"
+											name={ENTITY_ICONS.tags}
 											className="size-4 text-muted-foreground"
 										/>
 										Tags
@@ -288,9 +289,9 @@ export function HeaderFilter() {
 									>
 										<div className="flex items-center gap-2">
 											<IconRenderer
-												name="Tag"
+												name={ENTITY_ICONS.tags}
 												className={
-													TEXT_COLOR_CLASSES[item?.color as ColorId] ??
+													TEXT_COLOR_CLASSES[item?.color as ColorId] ||
 													"text-muted-foreground"
 												}
 											/>

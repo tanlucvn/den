@@ -27,7 +27,11 @@ import {
 } from "@/components/ui/popover";
 import type { TaskList } from "@/db/schema/task-lists";
 import type { Task } from "@/db/schema/tasks";
-import { type ColorId, TEXT_COLOR_CLASSES } from "@/lib/constants";
+import {
+	type ColorId,
+	ENTITY_ICONS,
+	TEXT_COLOR_CLASSES,
+} from "@/lib/constants";
 import { filterByLists } from "@/lib/helpers/tasks-filter-by";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +70,7 @@ export default function HeaderNavBreadcrumb({
 								className="max-w-24 overflow-hidden font-normal text-foreground"
 							>
 								<IconRenderer
-									name={currentList?.icon ?? "List"}
+									name={currentList?.icon || ENTITY_ICONS.taskList}
 									className={cn(
 										"size-4",
 										TEXT_COLOR_CLASSES[currentList?.color as ColorId] ??
@@ -100,7 +104,7 @@ export default function HeaderNavBreadcrumb({
 												>
 													<div className="flex items-center gap-2 overflow-hidden">
 														<IconRenderer
-															name={list?.icon ?? "List"}
+															name={list?.icon || ENTITY_ICONS.taskList}
 															className={cn(
 																"size-4",
 																TEXT_COLOR_CLASSES[list?.color as ColorId] ??

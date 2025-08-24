@@ -1,6 +1,10 @@
 "use client";
 
 import { isToday } from "date-fns";
+import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { type DragSourceMonitor, useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import TagChipCombobox from "@/components/features/tags/tag-combobox";
 import TaskControlsDropdown from "@/components/features/task/task-controls-dropdown";
 import { IconRenderer } from "@/components/icon-renderer";
@@ -11,21 +15,26 @@ import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { PRIORITY_COLORS } from "@/lib/constants";
 import { cn, formatDate } from "@/lib/utils";
 import TaskListCombobox from "./list-selector";
-import { TaskStatusSelector } from "./status-selector";
 import TaskControlsContext from "./task-controls-context";
 
-interface TaskItemProps {
+interface TaskGridItemProps {
 	task: TaskWithTagsAndList;
-	showStatusSelector?: boolean;
 	className?: string;
 }
 
-export default function TaskItem({
-	task,
-	showStatusSelector = true,
-	className,
-}: TaskItemProps) {
+export const DragType = "TASK";
+
+export default function TaskGridItem({ task, className }: TaskGridItemProps) {
 	const { handleUpdateTags, handleUpdate } = useTaskActions();
+	const ref = useRef<HTMLDivElement>(null);
+
+	const [{ isDragging }, drag, preview] = useDrag(() => ({
+		type: DragType,
+		item: task,
+		collect: (monitor: DragSourceMonitor) => ({
+			isDragging: monitor.isDragging(),
+		}),
+	}));
 
 	const isRemindPast = (date: string | Date) => {
 		const d = new Date(date);
@@ -39,30 +48,45 @@ export default function TaskItem({
 		task.isArchived ||
 		task.priority !== "none";
 
+	// Use empty image as drag preview (we'll create a custom one with DragLayer)
+	useEffect(() => {
+		preview(getEmptyImage(), { captureDraggingState: true });
+	}, [preview]);
+
+	// Set up drop functionality.
+
+	// Connect drag and drop to the element.
+	drag(ref);
+
 	return (
 		<TaskControlsContext task={task}>
-			<div
+			<motion.div
+				ref={ref}
+				layoutId={`task-grid-${task.id}`}
 				className={cn(
 					"group relative flex w-full flex-col gap-2 rounded-lg border bg-card px-2 py-1.5 shadow-xs",
 					"hover:border-ring hover:ring-[3px] hover:ring-ring/20",
 					className,
 				)}
+				style={{
+					opacity: isDragging ? 0.5 : 1,
+					cursor: isDragging ? "grabbing" : "default",
+				}}
 			>
 				{/* Main row */}
 				<div className="flex items-center justify-between gap-2">
 					{/* Left: Status + List + Title */}
 					<div className="flex min-w-0 flex-1 items-center gap-2">
-						{showStatusSelector && <TaskStatusSelector task={task} />}
-
 						<TaskListCombobox
 							value={task.listId ?? undefined}
 							onValueChange={(newListId) =>
 								handleUpdate({ ...task, listId: newListId })
 							}
+							className="size-7"
 						/>
 
-						<div className="flex min-w-0 flex-col overflow-hidden">
-							<h3 className="truncate font-medium text-sm">{task.title}</h3>
+						<div className="flex min-w-0 max-w-[200px] flex-col overflow-hidden">
+							<h3 className="truncate font-medium">{task.title}</h3>
 							{task.note && (
 								<p className="truncate text-muted-foreground text-xs">
 									{task.note}
@@ -80,7 +104,7 @@ export default function TaskItem({
 						/>
 
 						<TaskControlsDropdown task={task}>
-							<Button variant="ghost" size="icon" className="size-8">
+							<Button variant="ghost" size="icon" className="rounded-full">
 								<IconRenderer name="EllipsisVertical" />
 							</Button>
 						</TaskControlsDropdown>
@@ -121,7 +145,7 @@ export default function TaskItem({
 								<Badge
 									variant="secondary"
 									className={cn(
-										"rounded-full text-xs capitalize",
+										"rounded-full text-[10px] capitalize",
 										PRIORITY_COLORS[task.priority],
 									)}
 								>
@@ -132,7 +156,7 @@ export default function TaskItem({
 						</div>
 					</div>
 				)}
-			</div>
+			</motion.div>
 		</TaskControlsContext>
 	);
 }

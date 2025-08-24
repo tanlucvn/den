@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import TagItem from "@/components/features/tags/tag-item";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Tag } from "@/db/schema/tags";
-import { useTags } from "@/hooks/mutations/use-tag-mutation"; // hook lấy tags
 import { useSearchStore } from "@/store/use-search-store";
 
-export function SearchTagsView() {
-	const { data: tags = [] } = useTags();
+interface SearchTagsWrapperProps {
+	tags: Tag[];
+}
+
+export function SearchTagsWrapper({ tags }: SearchTagsWrapperProps) {
 	const { searchQuery, isSearchOpen } = useSearchStore();
 	const [results, setResults] = useState<Tag[]>([]);
 
@@ -44,14 +46,19 @@ export function SearchTagsView() {
 
 	// Render results
 	return (
-		<div className="flex flex-col gap-2">
-			<div className="text-foreground text-sm">
-				Found <span className="font-medium">{results.length}</span> tag
-				{results.length !== 1 && "s"} for "
-				<span className="font-medium italic">{searchQuery}</span>"
+		<div className="flex size-full flex-col gap-4">
+			<div className="flex items-center gap-2 text-muted-foreground text-xs">
+				<div className="h-px flex-1 bg-border" />
+				<span>
+					<span className="font-semibold text-foreground text-sm">
+						{results.length}
+					</span>{" "}
+					tag{results.length !== 1 && "s"} found
+				</span>
+				<div className="h-px flex-1 bg-border" />
 			</div>
 
-			<div className="grid auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<div className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
 				{results.map((tag) => (
 					<TagItem key={tag.id} tag={tag} />
 				))}

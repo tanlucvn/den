@@ -23,6 +23,7 @@ import { useTasks } from "@/hooks/mutations/use-task-mutation";
 import {
 	BG_COLOR_CLASSES,
 	type ColorId,
+	ENTITY_ICONS,
 	TEXT_COLOR_CLASSES,
 } from "@/lib/constants";
 import { filterByTags } from "@/lib/helpers/tasks-filter-by";
@@ -92,7 +93,7 @@ export default function TagChipCombobox({
 										key={t.id}
 										className={cn(
 											"h-5 w-2 rounded-full",
-											BG_COLOR_CLASSES[t?.color as ColorId] ?? "bg-muted",
+											BG_COLOR_CLASSES[t?.color as ColorId] || "bg-muted",
 										)}
 									/>
 								))}
@@ -138,9 +139,9 @@ export default function TagChipCombobox({
 									>
 										<div className="flex items-center gap-2 overflow-hidden">
 											<IconRenderer
-												name="Tag"
+												name={ENTITY_ICONS.tags}
 												className={
-													TEXT_COLOR_CLASSES[tag?.color as ColorId] ??
+													TEXT_COLOR_CLASSES[tag?.color as ColorId] ||
 													"text-muted-foreground"
 												}
 											/>

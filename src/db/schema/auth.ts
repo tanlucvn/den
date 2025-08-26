@@ -1,15 +1,41 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import {
+	boolean,
+	pgPolicy,
+	pgRole,
+	pgTable,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
 
-export const users = pgTable("users", {
-	id: text().primaryKey(),
-	name: text().notNull(),
-	email: text().notNull().unique(),
-	emailVerified: boolean().notNull(),
-	normalizedEmail: text().unique(),
-	image: text(),
-	createdAt: timestamp().notNull(),
-	updatedAt: timestamp().notNull(),
-});
+const authenticated = pgRole("authenticated");
+
+export const users = pgTable(
+	"users",
+	{
+		id: text().primaryKey(),
+		name: text().notNull(),
+		email: text().notNull().unique(),
+		emailVerified: boolean().notNull(),
+		normalizedEmail: text().unique(),
+		image: text(),
+		createdAt: timestamp().notNull(),
+		updatedAt: timestamp().notNull(),
+	},
+	() => [
+		pgPolicy("select_self", {
+			for: "select",
+			to: authenticated,
+			using: sql`id = auth.uid()`,
+		}),
+		pgPolicy("update_self", {
+			for: "update",
+			to: authenticated,
+			using: sql`id = auth.uid()`,
+			withCheck: sql`id = auth.uid()`,
+		}),
+	],
+).enableRLS();
 
 export const sessions = pgTable("sessions", {
 	id: text().primaryKey(),

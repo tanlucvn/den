@@ -1,42 +1,79 @@
-import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { type TaskList, taskLists } from "@/db/schema/task-lists";
+import { sql } from "drizzle-orm";
+import {
+	boolean,
+	pgPolicy,
+	pgRole,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
+import { type List, lists } from "@/db/schema/lists";
 import type { Tag } from "./tags";
 
-export const tasks = pgTable("tasks", {
-	id: uuid().primaryKey().defaultRandom(),
-	userId: text().notNull(),
+const authenticated = pgRole("authenticated");
 
-	listId: uuid("listId").references(() => taskLists.id, {
-		onDelete: "cascade",
-	}),
+export const tasks = pgTable(
+	"tasks",
+	{
+		id: uuid().primaryKey().defaultRandom(),
+		userId: text().notNull(),
 
-	title: text().notNull(),
-	note: text(),
+		listId: uuid("listId").references(() => lists.id, {
+			onDelete: "cascade",
+		}),
 
-	priority: text("priority", {
-		enum: ["none", "low", "medium", "high"],
-	})
-		.notNull()
-		.default("none"),
+		title: text().notNull(),
+		description: text(),
+		note: text(),
+		location: text(),
 
-	status: text("status", {
-		enum: ["todo", "in_progress", "paused", "completed"],
-	})
-		.notNull()
-		.default("todo"),
+		priority: text("priority", {
+			enum: ["none", "low", "medium", "high"],
+		})
+			.notNull()
+			.default("none"),
 
-	location: text(),
+		status: text("status", {
+			enum: ["todo", "in_progress", "paused", "completed"],
+		})
+			.notNull()
+			.default("todo"),
 
-	isCompleted: boolean().notNull().default(false),
-	isPinned: boolean().notNull().default(false),
-	isArchived: boolean().notNull().default(false),
+		isCompleted: boolean().notNull().default(false),
+		isPinned: boolean().notNull().default(false),
+		isArchived: boolean().notNull().default(false),
 
-	deletedAt: timestamp({ mode: "date" }),
-	remindAt: timestamp({ mode: "date" }),
+		deletedAt: timestamp({ mode: "date" }),
+		remindAt: timestamp({ mode: "date" }),
 
-	createdAt: timestamp({ mode: "date" }).notNull().defaultNow(),
-	updatedAt: timestamp({ mode: "date" }).notNull().defaultNow(),
-});
+		createdAt: timestamp({ mode: "date" }).notNull().defaultNow(),
+		updatedAt: timestamp({ mode: "date" }).notNull().defaultNow(),
+	},
+	() => [
+		pgPolicy("select_own_tasks", {
+			for: "select",
+			to: authenticated,
+			using: sql`userId = auth.uid()`,
+		}),
+		pgPolicy("insert_own_tasks", {
+			for: "insert",
+			to: authenticated,
+			withCheck: sql`userId = auth.uid()`,
+		}),
+		pgPolicy("update_own_tasks", {
+			for: "update",
+			to: authenticated,
+			using: sql`userId = auth.uid()`,
+			withCheck: sql`userId = auth.uid()`,
+		}),
+		pgPolicy("delete_own_tasks", {
+			for: "delete",
+			to: authenticated,
+			using: sql`userId = auth.uid()`,
+		}),
+	],
+).enableRLS();
 
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
@@ -47,5 +84,5 @@ export type TaskWithTags = Task & {
 
 export type TaskWithTagsAndList = Task & {
 	tags?: Tag[];
-	list?: TaskList;
+	list?: List;
 };

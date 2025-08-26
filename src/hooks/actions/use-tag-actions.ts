@@ -7,13 +7,10 @@ import {
 	useDeleteTag,
 	useUpdateTag,
 } from "@/hooks/mutations/use-tag-mutation";
-import { useAppStore } from "@/store/use-app-store";
 
 //* Custom hook for tag actions (CRUD, refresh, edit modal)
 //* Use mutation logic with toast notifications
 export const useTagActions = () => {
-	const { setEditTag } = useAppStore();
-
 	// Tag mutation hooks
 	const { mutateAsync: createTag, isPending: isCreating } = useCreateTag();
 	const { mutateAsync: updateTag, isPending: isUpdating } = useUpdateTag();
@@ -45,15 +42,10 @@ export const useTagActions = () => {
 		}
 	};
 
-	const handleEdit = (tag: Tag) => {
-		setEditTag(tag);
-	};
-
 	return {
 		loading: isCreating || isUpdating || isDeleting,
 		handleCreate,
 		handleUpdate,
 		handleDelete,
-		handleEdit,
 	};
 };

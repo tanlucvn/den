@@ -51,6 +51,7 @@ export function useCreateTask() {
 					userId: variables.userId,
 					listId: variables.listId ?? null,
 					title: variables.title,
+					description: variables.description ?? null,
 					note: variables.note ?? null,
 					priority: variables.priority ?? "none",
 					status: variables.status ?? "todo",
@@ -64,49 +65,6 @@ export function useCreateTask() {
 					updatedAt: new Date(),
 				};
 				return [newTask, ...(prevQueryData ?? [])];
-			},
-			invalidateQueryOnSuccess: true,
-		},
-	});
-}
-
-//* Update task-tag relationships with optimistic UI
-export function useUpdateTaskTags() {
-	return useOptimisticMutation({
-		mutationFn: async ({
-			taskId,
-			tagIds,
-		}: {
-			taskId: string;
-			tagIds: string[];
-		}) => {
-			return (await axios.post("/api/task-tags", { taskId, tagIds })).data;
-		},
-		optimisticUpdateOptions: {
-			queryKey: [TASKS_KEY],
-			getOptimisticState: ({
-				prevQueryData,
-				variables,
-			}: {
-				prevQueryData: TaskWithTagsAndList[];
-				variables: { taskId: string; tagIds: string[] };
-			}) => {
-				if (!Array.isArray(prevQueryData)) return prevQueryData ?? [];
-				return prevQueryData.map((task) =>
-					task.id === variables.taskId
-						? {
-								...task,
-								tags: variables.tagIds.map((id) => ({
-									id,
-									userId: task.userId,
-									title: "",
-									color: null,
-									createdAt: new Date(),
-									updatedAt: new Date(),
-								})),
-							}
-						: task,
-				);
 			},
 			invalidateQueryOnSuccess: true,
 		},

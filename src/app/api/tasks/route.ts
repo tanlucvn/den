@@ -2,8 +2,6 @@ import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { tags, taskTags } from "@/db/schema/tags";
-import { taskLists } from "@/db/schema/task-lists";
 import { type TaskWithTagsAndList, tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
 
@@ -21,47 +19,24 @@ export async function GET(req: NextRequest) {
 			? and(eq(tasks.userId, session.user.id), eq(tasks.listId, listId))
 			: eq(tasks.userId, session.user.id);
 
-		// Query task with list & tags
-		const rows = await db
-			.select({
-				task: tasks,
-				list: taskLists,
-				tag: tags,
-			})
-			.from(tasks)
-			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
-			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
-			.leftJoin(tags, eq(taskTags.tagId, tags.id))
-			.where(where)
-			.orderBy(
-				sql`
-					CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
-					CASE ${tasks.priority}
-						WHEN 'high' THEN 3
-						WHEN 'medium' THEN 2
-						WHEN 'low' THEN 1
-						WHEN 'none' THEN 0
-						ELSE 0
-					END DESC
-				`,
-			);
+		const rows = await db.query.tasks.findMany({
+			where,
+			with: {
+				list: true,
+				taskTags: { with: { tag: true } },
+			},
+			orderBy: orderByPinnedAndPriority(),
+		});
 
-		const map = new Map<string, TaskWithTagsAndList>();
-
-		for (const { task, list, tag } of rows) {
-			if (!map.has(task.id)) {
-				map.set(task.id, { ...task, list: list ?? undefined, tags: [] });
-			}
-			if (tag?.id) {
-				map.get(task.id)!.tags!.push(tag);
-			}
-		}
-
-		return NextResponse.json(Array.from(map.values()));
+		const result = rows.map(formatTask);
+		return NextResponse.json(result, { status: 200 });
 	} catch (error) {
 		console.error("GET /api/tasks error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}
@@ -76,56 +51,60 @@ export async function POST(req: NextRequest) {
 
 		const body = await req.json();
 
-		// Insert task
-		const inserted = await db
+		const [inserted] = await db
 			.insert(tasks)
 			.values({ ...body, userId: session.user.id })
 			.returning();
 
-		const taskId = inserted[0].id;
+		const row = await db.query.tasks.findFirst({
+			where: eq(tasks.id, inserted.id),
+			with: {
+				list: true,
+				taskTags: { with: { tag: true } },
+			},
+			orderBy: orderByPinnedAndPriority(),
+		});
 
-		// Query task with list & tags
-		const rows = await db
-			.select({
-				task: tasks,
-				list: taskLists,
-				tag: tags,
-			})
-			.from(tasks)
-			.leftJoin(taskLists, eq(tasks.listId, taskLists.id))
-			.leftJoin(taskTags, eq(taskTags.taskId, tasks.id))
-			.leftJoin(tags, eq(taskTags.tagId, tags.id))
-			.where(eq(tasks.id, taskId))
-			.orderBy(
-				sql`
-					CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
-					CASE ${tasks.priority}
-						WHEN 'high' THEN 3
-						WHEN 'medium' THEN 2
-						WHEN 'low' THEN 1
-						WHEN 'none' THEN 0
-						ELSE 0
-					END DESC
-				`,
+		if (!row) {
+			return NextResponse.json(
+				{ error: "Task not found after insert" },
+				{ status: 404 },
 			);
-
-		const map = new Map<string, TaskWithTagsAndList>();
-
-		for (const { task, list, tag } of rows) {
-			if (!map.has(task.id)) {
-				map.set(task.id, { ...task, list: list ?? undefined, tags: [] });
-			}
-			if (tag?.id) {
-				map.get(task.id)!.tags!.push(tag);
-			}
 		}
 
-		return NextResponse.json(Array.from(map.values())[0]);
+		const result = formatTask(row);
+		return NextResponse.json(result, { status: 201 });
 	} catch (error) {
 		console.error("POST /api/tasks error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}
+}
+
+// Helper: order tasks
+function orderByPinnedAndPriority() {
+	return sql`
+    CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
+    CASE ${tasks.priority}
+      WHEN 'high' THEN 3
+      WHEN 'medium' THEN 2
+      WHEN 'low' THEN 1
+      WHEN 'none' THEN 0
+      ELSE 0
+    END DESC,
+	${tasks.createdAt} DESC
+  `;
+}
+
+function formatTask(row: any): TaskWithTagsAndList {
+	return {
+		...row,
+		list: row.list ?? undefined,
+		tags: row.taskTags?.map((tt: any) => tt.tag) ?? [],
+	};
 }

@@ -17,20 +17,22 @@ export async function GET(
 
 		const { id } = await params;
 
-		const result = await db
-			.select()
-			.from(tags)
-			.where(and(eq(tags.userId, session.user.id), eq(tags.id, id)));
+		const tag = await db.query.tags.findFirst({
+			where: and(eq(tags.userId, session.user.id), eq(tags.id, id)),
+		});
 
-		if (!result.length) {
+		if (!tag) {
 			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
 		}
 
-		return NextResponse.json(result[0]);
+		return NextResponse.json(tag, { status: 200 });
 	} catch (error) {
 		console.error("GET /api/tags/[id] error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}
@@ -50,26 +52,28 @@ export async function PUT(
 		const body = await req.json();
 
 		const updatedData = {
-			title: body.title,
-			color: body.color ?? null,
+			...body,
 			updatedAt: new Date(),
 		};
 
-		const result = await db
+		const [updated] = await db
 			.update(tags)
 			.set(updatedData)
 			.where(and(eq(tags.id, id), eq(tags.userId, session.user.id)))
 			.returning();
 
-		if (!result.length) {
+		if (!updated) {
 			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
 		}
 
-		return NextResponse.json(result[0]);
+		return NextResponse.json(updated, { status: 200 });
 	} catch (error) {
 		console.error("PUT /api/tags/[id] error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}
@@ -87,15 +91,23 @@ export async function DELETE(
 
 		const { id } = await params;
 
-		await db
+		const [deleted] = await db
 			.delete(tags)
-			.where(and(eq(tags.id, id), eq(tags.userId, session.user.id)));
+			.where(and(eq(tags.id, id), eq(tags.userId, session.user.id)))
+			.returning();
 
-		return NextResponse.json({ success: true });
+		if (!deleted) {
+			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
+		}
+
+		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
 		console.error("DELETE /api/tags/[id] error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}

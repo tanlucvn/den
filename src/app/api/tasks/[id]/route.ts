@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
+import { tags, taskTags } from "@/db/schema";
 import { tasks } from "@/db/schema/tasks";
 import { auth } from "@/lib/auth";
 
@@ -11,7 +12,6 @@ export async function PUT(
 ) {
 	try {
 		const session = await auth.api.getSession({ headers: await headers() });
-
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
@@ -21,27 +21,58 @@ export async function PUT(
 
 		const updatedData = {
 			...body,
-			createdAt: new Date(body.createdAt),
-			updatedAt: new Date(body.updatedAt),
+			createdAt: body.createdAt ? new Date(body.createdAt) : null,
+			updatedAt: new Date(),
 			remindAt: body.remindAt ? new Date(body.remindAt) : null,
-			deletedAt: body.deletedAt ? new Date(body.deletedAt) : null,
 		};
 
-		const result = await db
+		// Update task
+		const [updated] = await db
 			.update(tasks)
 			.set(updatedData)
 			.where(and(eq(tasks.id, id), eq(tasks.userId, session.user.id)))
 			.returning();
 
-		if (!result.length) {
+		if (!updated) {
 			return NextResponse.json({ error: "Task not found" }, { status: 404 });
 		}
 
-		return NextResponse.json(result[0]);
+		// Update tags
+		if (Array.isArray(body.tagIds)) {
+			// Remove old tags
+			await db.delete(taskTags).where(eq(taskTags.taskId, id));
+
+			// Add new tags
+			if (body.tagIds.length > 0) {
+				const inserts = body.tagIds.map((tagId: string) => ({
+					taskId: id,
+					tagId,
+				}));
+				await db.insert(taskTags).values(inserts);
+			}
+		}
+
+		const taskTagsJoined = await db
+			.select({
+				id: tags.id,
+				title: tags.title,
+				color: tags.color,
+			})
+			.from(taskTags)
+			.leftJoin(tags, eq(taskTags.tagId, tags.id))
+			.where(eq(taskTags.taskId, id));
+
+		return NextResponse.json(
+			{ ...updated, tags: taskTagsJoined },
+			{ status: 200 },
+		);
 	} catch (error) {
 		console.error("PUT /api/tasks/[id] error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}
@@ -53,20 +84,29 @@ export async function DELETE(
 ) {
 	try {
 		const session = await auth.api.getSession({ headers: await headers() });
-
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
 		const { id } = await params;
 
-		await db.delete(tasks).where(eq(tasks.id, id));
+		const [deleted] = await db
+			.delete(tasks)
+			.where(and(eq(tasks.id, id), eq(tasks.userId, session.user.id)))
+			.returning();
 
-		return NextResponse.json({ success: true });
+		if (!deleted) {
+			return NextResponse.json({ error: "Task not found" }, { status: 404 });
+		}
+
+		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
 		console.error("DELETE /api/tasks/[id] error:", error);
 		return NextResponse.json(
-			{ error: "Internal Server Error" },
+			{
+				error: "Internal Server Error",
+				details: error instanceof Error ? error.message : String(error),
+			},
 			{ status: 500 },
 		);
 	}

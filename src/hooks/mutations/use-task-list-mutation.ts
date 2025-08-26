@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useOptimisticMutation } from "tanstack-query-optimistic-updates";
-import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
+import type { List, NewList } from "@/db/schema/lists";
 
-const TASK_LISTS_KEY = "task-lists";
+const TASK_LISTS_KEY = "lists";
 
 //* Fetch all task lists
 export function useTaskLists() {
-	return useQuery<TaskList[]>({
+	return useQuery<List[]>({
 		queryKey: [TASK_LISTS_KEY],
-		queryFn: async () => (await axios.get("/api/task-lists")).data,
+		queryFn: async () => (await axios.get("/api/lists")).data,
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
 	});
@@ -18,19 +18,19 @@ export function useTaskLists() {
 //* Create task list with optimistic update
 export function useCreateTaskList() {
 	return useOptimisticMutation({
-		mutationFn: async (data: NewTaskList) =>
-			(await axios.post("/api/task-lists", data)).data,
+		mutationFn: async (data: NewList) =>
+			(await axios.post("/api/lists", data)).data,
 		optimisticUpdateOptions: {
 			queryKey: [TASK_LISTS_KEY],
 			getOptimisticState: ({
 				prevQueryData,
 				variables,
 			}: {
-				prevQueryData: TaskList[];
-				variables: NewTaskList;
+				prevQueryData: List[];
+				variables: NewList;
 			}) => {
 				const optimisticId = crypto.randomUUID();
-				const newList: TaskList = {
+				const newList: List = {
 					id: optimisticId,
 					userId: variables.userId,
 					title: variables.title,
@@ -51,16 +51,16 @@ export function useCreateTaskList() {
 //* Update task list with optimistic update
 export function useUpdateTaskList() {
 	return useOptimisticMutation({
-		mutationFn: async (list: TaskList) =>
-			(await axios.put(`/api/task-lists/${list.id}`, list)).data,
+		mutationFn: async (list: List) =>
+			(await axios.put(`/api/lists/${list.id}`, list)).data,
 		optimisticUpdateOptions: {
 			queryKey: [TASK_LISTS_KEY],
 			getOptimisticState: ({
 				prevQueryData,
 				variables,
 			}: {
-				prevQueryData: TaskList[];
-				variables: TaskList;
+				prevQueryData: List[];
+				variables: List;
 			}) =>
 				(prevQueryData ?? []).map((l) =>
 					l.id === variables.id ? { ...l, ...variables } : l,
@@ -73,8 +73,8 @@ export function useUpdateTaskList() {
 //* Delete task list with optimistic update
 export function useDeleteTaskList() {
 	return useOptimisticMutation({
-		mutationFn: async (list: TaskList) => {
-			await axios.delete(`/api/task-lists/${list.id}`);
+		mutationFn: async (list: List) => {
+			await axios.delete(`/api/lists/${list.id}`);
 			return list;
 		},
 		optimisticUpdateOptions: {
@@ -83,8 +83,8 @@ export function useDeleteTaskList() {
 				prevQueryData,
 				variables,
 			}: {
-				prevQueryData: TaskList[];
-				variables: TaskList;
+				prevQueryData: List[];
+				variables: List;
 			}) => (prevQueryData ?? []).filter((l) => l.id !== variables.id),
 			invalidateQueryOnSuccess: true,
 		},

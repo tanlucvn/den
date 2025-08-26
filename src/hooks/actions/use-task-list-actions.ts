@@ -2,19 +2,17 @@
 
 import { useTransitionRouter } from "next-view-transitions";
 import { toast } from "sonner";
-import type { NewTaskList, TaskList } from "@/db/schema/task-lists";
+import type { List, NewList } from "@/db/schema/lists";
 import {
 	useCreateTaskList,
 	useDeleteTaskList,
 	useUpdateTaskList,
 } from "@/hooks/mutations/use-task-list-mutation";
-import { useAppStore } from "@/store/use-app-store";
 
 //* Custom hook for task list actions (CRUD, refresh, edit modal)
 //* Use mutation logic with toast notifications
 export const useTaskListActions = () => {
 	const router = useTransitionRouter();
-	const { setEditTaskList } = useAppStore();
 
 	const { mutateAsync: createTaskList, isPending: isCreating } =
 		useCreateTaskList();
@@ -23,7 +21,7 @@ export const useTaskListActions = () => {
 	const { mutateAsync: deleteTaskList, isPending: isDeleting } =
 		useDeleteTaskList();
 
-	const handleCreate = async (list: NewTaskList) => {
+	const handleCreate = async (list: NewList) => {
 		if (!list.title.trim()) return;
 
 		try {
@@ -33,7 +31,7 @@ export const useTaskListActions = () => {
 		}
 	};
 
-	const handleUpdate = async (list: TaskList) => {
+	const handleUpdate = async (list: List) => {
 		try {
 			await updateTaskList(list);
 		} catch {
@@ -41,7 +39,7 @@ export const useTaskListActions = () => {
 		}
 	};
 
-	const handleDelete = async (list: TaskList) => {
+	const handleDelete = async (list: List) => {
 		try {
 			await deleteTaskList(list);
 
@@ -54,15 +52,10 @@ export const useTaskListActions = () => {
 		}
 	};
 
-	const handleEdit = (list: TaskList) => {
-		setEditTaskList(list);
-	};
-
 	return {
 		loading: isCreating || isUpdating || isDeleting,
 		handleCreate,
 		handleUpdate,
 		handleDelete,
-		handleEdit,
 	};
 };

@@ -1,29 +1,20 @@
 "use client";
 
 import { toast } from "sonner";
-import { useDebouncedCallback } from "use-debounce";
-import type { NewTask, Task } from "@/db/schema/tasks";
+import type { NewTask, Task, TaskWithTagsAndList } from "@/db/schema/tasks";
 import {
-	useBatchUpdateTasks,
 	useCreateTask,
 	useDeleteTask,
 	useUpdateTask,
-	useUpdateTaskTags,
 } from "@/hooks/mutations/use-task-mutation";
 import { useSession } from "@/lib/auth-client";
-import { useAppStore } from "@/store/use-app-store";
 
 export const useTaskActions = () => {
 	const { data: session } = useSession();
-	const { setEditTask } = useAppStore();
 
 	const { mutateAsync: createTask, isPending: isCreating } = useCreateTask();
-	const { mutateAsync: updateTaskTags, isPending: isUpdatingTags } =
-		useUpdateTaskTags();
 	const { mutateAsync: updateTask, isPending: isUpdating } = useUpdateTask();
 	const { mutateAsync: deleteTask, isPending: isDeleting } = useDeleteTask();
-	const { mutateAsync: batchUpdateTasks, isPending: isBatching } =
-		useBatchUpdateTasks();
 
 	const handleCreate = async (task: NewTask) => {
 		if (!task.title.trim()) return;
@@ -67,9 +58,17 @@ export const useTaskActions = () => {
 		}
 	};
 
-	const handleUpdateTags = async (taskId: string, tagIds: string[]) => {
+	const handleUpdateTags = async (
+		task: TaskWithTagsAndList,
+		tagIds: string[],
+	) => {
 		try {
-			await updateTaskTags({ taskId, tagIds });
+			const data = {
+				...task,
+				tagIds,
+			};
+
+			await updateTask(data);
 		} catch {
 			toast.error("Failed to update tags.");
 		}
@@ -82,23 +81,6 @@ export const useTaskActions = () => {
 			toast.error("Failed to delete task.");
 		}
 	};
-
-	const handleClearCompleted = async (tasks: Task[]) => {
-		const toDelete = tasks.filter((t) => t.isCompleted);
-		await Promise.allSettled(toDelete.map((t) => deleteTask(t)));
-	};
-
-	const handleSort = async (tasks: Task[]) => {
-		try {
-			await batchUpdateTasks(tasks);
-		} catch {
-			toast.error("Failed to sort tasks.");
-		}
-	};
-
-	const debouncedSort = useDebouncedCallback((tasks: Task[]) => {
-		handleSort(tasks);
-	}, 500);
 
 	const handleDuplicate = async (task: NewTask) => {
 		if (!session) return;
@@ -132,13 +114,8 @@ export const useTaskActions = () => {
 		}
 	};
 
-	const handleEdit = (task: Task) => {
-		setEditTask(task);
-	};
-
 	return {
-		loading:
-			isCreating || isUpdatingTags || isUpdating || isDeleting || isBatching,
+		loading: isCreating || isUpdating || isDeleting,
 		handleCreate,
 		handleUpdate,
 		handleToggle,
@@ -146,11 +123,7 @@ export const useTaskActions = () => {
 		handlePinToggle,
 		handleUpdateTags,
 		handleDelete,
-		handleClearCompleted,
-		handleSort,
-		debouncedSort,
 		handleDuplicate,
 		handleCopyToClipboard,
-		handleEdit,
 	};
 };

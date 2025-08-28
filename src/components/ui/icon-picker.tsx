@@ -1,8 +1,9 @@
 import { iconNames } from "lucide-react/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { IconRenderer } from "@/components/icon-renderer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Modal,
 	ModalContent,
@@ -12,127 +13,89 @@ import {
 	ModalTitle,
 	ModalTrigger,
 } from "@/components/ui/modal";
-import { cn } from "@/lib/utils";
-import { Input } from "./input";
+import { cn, formatIconName } from "@/lib/utils";
 
 interface IconPickerProps {
 	icons?: string[];
-	onIconSelect: (iconName: string | null) => void;
-	selectedIcon?: string | null;
+	onValueChange: (icon: string | null) => void;
+	value?: string | null;
 	className?: string;
 }
 
-const BATCH_SIZE = 100;
+const BATCH = 100;
 
 export function IconPicker({
 	icons = iconNames,
-	onIconSelect,
-	selectedIcon,
+	onValueChange,
+	value = null,
 	className,
 }: IconPickerProps) {
-	const [modalOpen, setModalOpen] = useState(false);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
-	const [tempSelectedIcon, setTempSelectedIcon] = useState<string | null>(
-		selectedIcon ?? null,
-	);
+	const [open, setOpen] = useState(false);
+	const [search, setSearch] = useState("");
+	const [count, setCount] = useState(BATCH);
+	const [temp, setTemp] = useState<string | null>(value);
 
-	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-	const filteredCountRef = useRef<number>(0);
+	const [debounced] = useDebounce(search, 300);
+
+	const filtered = useMemo(() => {
+		if (!debounced.trim()) return icons;
+		const term = debounced.toLowerCase().trim();
+		return icons.filter((n) => n.toLowerCase().includes(term));
+	}, [icons, debounced]);
+
+	const view = filtered.slice(0, count);
+
+	useEffect(() => {
+		if (!open || !value) return;
+		const index = filtered.indexOf(value);
+		if (index === -1) return;
+
+		// Make sure icon is loaded
+		const needed = Math.ceil((index + 1) / BATCH) * BATCH;
+		setCount(needed);
+
+		// Scroll after DOM render
+		requestAnimationFrame(() => {
+			const el = document.querySelector<HTMLButtonElement>(
+				`[data-icon-name="${value}"]`,
+			);
+			el?.scrollIntoView({ block: "center" });
+		});
+	}, [open, value, filtered]);
 
 	const handleSelect = (icon: string) => {
-		const newValue = tempSelectedIcon === icon ? null : icon;
-		setTempSelectedIcon(newValue);
-		onIconSelect(newValue);
+		const newVal = temp === icon ? null : icon;
+		setTemp(newVal);
+		onValueChange(newVal);
 	};
 
-	// Debounce search term (use-debounce returns array)
-	const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
-
-	// Filter icons (runs on debounced term)
-	const filteredIcons = useMemo(() => {
-		if (!debouncedSearchTerm.trim()) return icons;
-		const lower = debouncedSearchTerm.toLowerCase().trim();
-		return icons.filter((name) => name.toLowerCase().includes(lower));
-	}, [icons, debouncedSearchTerm]);
-
-	// keep up-to-date count in a ref so scroll handler always sees the latest
-	useEffect(() => {
-		filteredCountRef.current = filteredIcons.length;
-	}, [filteredIcons.length]);
-
-	// Reset states when modal opens (only when modalOpen changes)
-	useEffect(() => {
-		if (!modalOpen) return;
-		setTempSelectedIcon(selectedIcon ?? null);
-		setVisibleCount(BATCH_SIZE);
-		setSearchTerm(""); // clear previous search when opening (optional)
-	}, [modalOpen, selectedIcon]);
-
-	// When the (debounced) search changes, reset visibleCount so we show top results
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		setVisibleCount(BATCH_SIZE);
-	}, [debouncedSearchTerm]);
-
-	// Attach scroll listener after a small timeout when modal opens
-	useEffect(() => {
-		if (!modalOpen) return;
-
-		const timeout = setTimeout(() => {
-			const container = scrollContainerRef.current;
-			if (!container) return;
-
-			const handleScroll = () => {
-				if (
-					container.scrollTop + container.clientHeight >=
-					container.scrollHeight - 20
-				) {
-					setVisibleCount((prev) =>
-						Math.min(prev + BATCH_SIZE, filteredCountRef.current),
-					);
-				}
-			};
-
-			container.addEventListener("scroll", handleScroll);
-
-			// run once in case initial content is short and needs more to fill
-			handleScroll();
-
-			return () => {
-				container.removeEventListener("scroll", handleScroll);
-			};
-		}, 50); // keep 50ms delay as you requested
-
-		return () => clearTimeout(timeout);
-	}, [modalOpen]); // NOTE: not dependent on filteredIcons to avoid re-running unnecessarily
-
-	const visibleIcons = filteredIcons.slice(0, visibleCount);
-
-	function formatIconName(name: string) {
-		return name
-			.split("-")
-			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" ");
-	}
-
 	return (
-		<Modal open={modalOpen} onOpenChange={setModalOpen}>
+		<Modal
+			open={open}
+			onOpenChange={(v) => {
+				setOpen(v);
+				if (v) {
+					setTemp(value);
+					setSearch("");
+					setCount(BATCH);
+				}
+			}}
+		>
+			{/* Trigger */}
 			<ModalTrigger asChild>
 				<Button
 					type="button"
 					variant="outline"
 					className={cn(
 						"w-full justify-between truncate font-normal",
-						!selectedIcon && "text-muted-foreground",
+						!value && "text-muted-foreground",
 						className,
 					)}
-					onClick={() => setModalOpen(true)}
 				>
-					{selectedIcon ? (
+					{value ? (
 						<div className="flex items-center gap-2 truncate">
-							<IconRenderer name={selectedIcon} />
-							<span className="truncate">{formatIconName(selectedIcon)}</span>
+							<IconRenderer name={value} />
+							<span className="truncate">{formatIconName(value)}</span>
 						</div>
 					) : (
 						<span>Select an icon</span>
@@ -140,58 +103,67 @@ export function IconPicker({
 					<IconRenderer name="Maximize2" className="ml-2 opacity-50" />
 				</Button>
 			</ModalTrigger>
+
+			{/* Content */}
 			<ModalContent showCloseButton={false} className="sm:max-w-[400px]">
 				<ModalHeader>
 					<ModalTitle>Select an icon</ModalTitle>
 					<ModalDescription>Choose your favorite icon</ModalDescription>
 				</ModalHeader>
 
+				{/* Search */}
 				<div className="relative">
 					<Input
 						placeholder="Search icon..."
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
+						value={search}
+						onChange={(e) => {
+							setSearch(e.target.value);
+							setCount(BATCH);
+						}}
 						className="peer ps-9"
 					/>
-					<div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+					<div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3 text-muted-foreground/80">
 						<IconRenderer name="Search" aria-hidden="true" />
 					</div>
 				</div>
 
+				{/* Grid */}
 				<div
-					ref={scrollContainerRef}
 					className="grid max-h-80 gap-2 overflow-y-auto"
 					style={{
 						gridTemplateColumns: "repeat(auto-fit, minmax(40px, 1fr))",
 					}}
+					onScroll={(e) => {
+						const el = e.currentTarget;
+						if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
+							setCount((p) => Math.min(p + BATCH, filtered.length));
+						}
+					}}
 				>
-					{visibleIcons.map((iconName) => (
+					{view.map((icon) => (
 						<Button
-							key={iconName}
-							variant={tempSelectedIcon === iconName ? "default" : "outline"}
+							key={icon}
+							data-icon-name={icon}
+							variant={temp === icon ? "default" : "outline"}
 							size="icon"
-							title={iconName}
-							onClick={() => handleSelect(iconName)}
+							title={icon}
+							onClick={() => handleSelect(icon)}
 							className="size-10"
 						>
-							<IconRenderer
-								name={iconName}
-								className="transition-transform group-hover:scale-110"
-							/>
+							<IconRenderer name={icon} />
 						</Button>
 					))}
 				</div>
 
+				{/* Footer */}
 				<ModalFooter className="grid grid-cols-2 gap-2 p-0">
-					<Button variant="outline" onClick={() => setModalOpen(false)}>
+					<Button variant="outline" onClick={() => setOpen(false)}>
 						Cancel
 					</Button>
 					<Button
 						onClick={() => {
-							if (tempSelectedIcon) {
-								onIconSelect(tempSelectedIcon);
-							}
-							setModalOpen(false);
+							onValueChange(temp);
+							setOpen(false);
 						}}
 					>
 						Save

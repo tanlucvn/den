@@ -30,13 +30,18 @@ export const TiptapEditor: React.FC<TiptapEditorProps> = ({
 		extensions: [StarterKit],
 		content: value,
 		onUpdate({ editor }) {
-			debouncedOnChange(editor.getHTML());
+			if (editor.isEmpty) {
+				debouncedOnChange("");
+			} else {
+				debouncedOnChange(editor.getHTML());
+			}
 		},
 		onCreate: ({ editor }) => {
 			editor.commands.focus("end");
 		},
 		editorProps: {
 			attributes: {
+				spellcheck: "false",
 				class: cn(
 					"!outline-none !focus-visible:!outline-none rounded-lg border p-2 dark:bg-input/30",
 					"size-full max-h-[100px] overflow-y-auto",

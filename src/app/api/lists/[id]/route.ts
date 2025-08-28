@@ -1,38 +1,33 @@
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+	handleError,
+	notFound,
+	requireSession,
+	success,
+	successMessage,
+} from "@/app/api/api-response";
 import { db } from "@/db";
 import { lists } from "@/db/schema/lists";
-import { tasks } from "@/db/schema/tasks";
-import { auth } from "@/lib/auth";
+import { listSchema } from "@/lib/validators/list-schema";
 
 export async function GET(
 	_req: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 
-		const result = await db.query.tasks.findMany({
-			where: and(eq(tasks.userId, session.user.id), eq(tasks.listId, id)),
-			orderBy: (tasks, { asc }) => asc(tasks.createdAt),
+		const list = await db.query.lists.findFirst({
+			where: and(eq(lists.userId, session.user.id), eq(lists.id, id)),
 		});
 
-		return NextResponse.json(result, { status: 200 });
+		if (!list) return notFound("List not found");
+
+		return success(list);
 	} catch (error) {
-		console.error("GET /api/lists/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
@@ -41,39 +36,22 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 		const body = await req.json();
-
-		const updatedData = {
-			...body,
-			updatedAt: new Date(),
-		};
+		const parsed = listSchema.parse(body);
 
 		const [updated] = await db
 			.update(lists)
-			.set(updatedData)
-			.where(and(eq(lists.id, id), eq(lists.userId, session.user.id)))
+			.set({ ...parsed, updatedAt: new Date() })
+			.where(and(eq(lists.userId, session.user.id), eq(lists.id, id)))
 			.returning();
 
-		if (!updated) {
-			return NextResponse.json({ error: "List not found" }, { status: 404 });
-		}
+		if (!updated) return notFound("List not found");
 
-		return NextResponse.json(updated, { status: 200 });
+		return successMessage("List updated successfully");
 	} catch (error) {
-		console.error("PUT /api/lists/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
@@ -82,31 +60,18 @@ export async function DELETE(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 
 		const [deleted] = await db
 			.delete(lists)
-			.where(and(eq(lists.id, id), eq(lists.userId, session.user.id)))
+			.where(and(eq(lists.userId, session.user.id), eq(lists.id, id)))
 			.returning();
 
-		if (!deleted) {
-			return NextResponse.json({ error: "List not found" }, { status: 404 });
-		}
+		if (!deleted) return notFound("List not found");
 
-		return NextResponse.json({ success: true }, { status: 200 });
+		return successMessage("List deleted successfully");
 	} catch (error) {
-		console.error("DELETE /api/lists/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }

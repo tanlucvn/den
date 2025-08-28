@@ -42,8 +42,11 @@ export function HeaderFilter() {
 	const [open, setOpen] = useState<boolean>(false);
 	const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
 
-	const { filters, toggleFilter, clearFilters, getActiveFiltersCount } =
+	const { entities, toggleFilter, clearFilters, getActiveFiltersCount } =
 		useFilterStore();
+
+	const filters = entities.tasks;
+	const activeCount = getActiveFiltersCount("tasks");
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -55,9 +58,9 @@ export function HeaderFilter() {
 				>
 					<IconRenderer name="ListFilter" className="text-muted-foreground" />
 					Filter
-					{getActiveFiltersCount() > 0 && (
+					{activeCount > 0 && (
 						<span className="-top-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
-							{getActiveFiltersCount()}
+							{activeCount}
 						</span>
 					)}
 				</Button>
@@ -137,12 +140,12 @@ export function HeaderFilter() {
 									</div>
 								</CommandItem>
 							</CommandGroup>
-							{getActiveFiltersCount() > 0 && (
+							{activeCount > 0 && (
 								<>
 									<CommandSeparator />
 									<CommandGroup>
 										<CommandItem
-											onSelect={() => clearFilters()}
+											onSelect={() => clearFilters("tasks")}
 											className="text-destructive"
 										>
 											Clear all filters
@@ -172,9 +175,8 @@ export function HeaderFilter() {
 						<CommandList>
 							<CommandEmpty className="p-0">
 								<EmptyState
-									icon="SearchX"
 									title="No status found"
-									description="Try another keyword."
+									description="Please try another keyword."
 								/>
 							</CommandEmpty>
 							<CommandGroup>
@@ -182,7 +184,7 @@ export function HeaderFilter() {
 									<CommandItem
 										key={item.id}
 										value={item.id}
-										onSelect={() => toggleFilter("status", item.id)}
+										onSelect={() => toggleFilter("tasks", "status", item.id)}
 										className="flex items-center justify-between"
 									>
 										<div className="flex items-center gap-2">
@@ -223,9 +225,8 @@ export function HeaderFilter() {
 						<CommandList>
 							<CommandEmpty className="p-0">
 								<EmptyState
-									icon="SearchX"
 									title="No priorities found"
-									description="Try another keyword."
+									description="Please try another keyword."
 								/>
 							</CommandEmpty>
 							<CommandGroup>
@@ -233,7 +234,7 @@ export function HeaderFilter() {
 									<CommandItem
 										key={item.id}
 										value={item.id}
-										onSelect={() => toggleFilter("priority", item.id)}
+										onSelect={() => toggleFilter("tasks", "priority", item.id)}
 										className="flex items-center justify-between"
 									>
 										<div className="flex items-center gap-2">
@@ -274,9 +275,8 @@ export function HeaderFilter() {
 						<CommandList>
 							<CommandEmpty className="p-0">
 								<EmptyState
-									icon="SearchX"
 									title="No tags found"
-									description="Try another keyword or create a new tag."
+									description="Please try another keyword."
 								/>
 							</CommandEmpty>
 							<CommandGroup>
@@ -284,7 +284,7 @@ export function HeaderFilter() {
 									<CommandItem
 										key={item.id}
 										value={item.title}
-										onSelect={() => toggleFilter("tags", item.id)}
+										onSelect={() => toggleFilter("tasks", "tags", item.id)}
 										className="flex items-center justify-between"
 									>
 										<div className="flex items-center gap-2">

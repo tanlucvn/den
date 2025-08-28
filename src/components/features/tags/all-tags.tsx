@@ -101,7 +101,7 @@ function TagsContent({
 	}
 
 	return (
-		<div className="grid auto-rows-min grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
+		<div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
 			{tags.map((tag) => (
 				<TagItem key={tag.id} tag={tag} />
 			))}
@@ -123,7 +123,7 @@ export function AllTagsSkeleton() {
 
 			<Skeleton className="h-9 w-full rounded-full" />
 
-			<div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-2">
 				{Array.from({ length: 6 }).map((_, i) => (
 					<Skeleton key={i} className="h-12 w-full rounded-lg" />
 				))}

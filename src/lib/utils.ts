@@ -19,12 +19,24 @@ export function filterTasks(tasks: Task[], searchTerm: string): Task[] {
 	});
 }
 
+export const isRemindPast = (date: string | Date) => {
+	const d = new Date(date);
+	return d < new Date() && !isToday(d);
+};
+
 export const formatDate = (date: string | Date) => {
 	const d = new Date(date);
 	if (isToday(d)) return "today";
 	if (isTomorrow(d)) return "tomorrow";
 	return format(d, "MMMM do yyyy");
 };
+
+export function formatIconName(name: string) {
+	return name
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+}
 
 export function getURL(): string {
 	if (typeof window !== "undefined") {

@@ -1,17 +1,18 @@
 import { and, eq, sql } from "drizzle-orm";
-import { headers } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+	handleError,
+	requireSession,
+	success,
+	successMessage,
+} from "@/app/api/api-response";
 import { db } from "@/db";
-import { type TaskWithTagsAndList, tasks } from "@/db/schema/tasks";
-import { auth } from "@/lib/auth";
+import { tasks } from "@/db/schema/tasks";
+import { taskSchema } from "@/lib/validators/task-schema";
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { searchParams } = new URL(req.url);
 		const listId = searchParams.get("listId");
 
@@ -21,72 +22,39 @@ export async function GET(req: NextRequest) {
 
 		const rows = await db.query.tasks.findMany({
 			where,
-			with: {
-				list: true,
-				taskTags: { with: { tag: true } },
-			},
+			with: { list: true, taskTags: { with: { tag: true } } },
 			orderBy: orderByPinnedAndPriority(),
 		});
 
-		const result = rows.map(formatTask);
-		return NextResponse.json(result, { status: 200 });
+		const results = rows.map((row) => ({
+			...row,
+			list: row.list ?? null,
+			tags: row.taskTags?.map((tt: any) => tt.tag) ?? [],
+		}));
+
+		return success(results);
 	} catch (error) {
-		console.error("GET /api/tasks error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const body = await req.json();
+		const parsed = taskSchema.parse(body);
 
-		const [inserted] = await db
+		await db
 			.insert(tasks)
-			.values({ ...body, userId: session.user.id })
+			.values({ ...parsed, userId: session.user.id })
 			.returning();
 
-		const row = await db.query.tasks.findFirst({
-			where: eq(tasks.id, inserted.id),
-			with: {
-				list: true,
-				taskTags: { with: { tag: true } },
-			},
-			orderBy: orderByPinnedAndPriority(),
-		});
-
-		if (!row) {
-			return NextResponse.json(
-				{ error: "Task not found after insert" },
-				{ status: 404 },
-			);
-		}
-
-		const result = formatTask(row);
-		return NextResponse.json(result, { status: 201 });
+		return successMessage("Task created successfully", 201);
 	} catch (error) {
-		console.error("POST /api/tasks error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
-// Helper: order tasks
 function orderByPinnedAndPriority() {
 	return sql`
     CASE WHEN ${tasks.isPinned} = true THEN 1 ELSE 0 END DESC,
@@ -97,14 +65,6 @@ function orderByPinnedAndPriority() {
       WHEN 'none' THEN 0
       ELSE 0
     END DESC,
-	${tasks.createdAt} DESC
+    ${tasks.updatedAt} DESC
   `;
-}
-
-function formatTask(row: any): TaskWithTagsAndList {
-	return {
-		...row,
-		list: row.list ?? undefined,
-		tags: row.taskTags?.map((tt: any) => tt.tag) ?? [],
-	};
 }

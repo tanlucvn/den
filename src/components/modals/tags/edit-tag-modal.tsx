@@ -8,21 +8,19 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from "@/components/ui/modal";
-import { useAppStore } from "@/store/use-app-store";
+import type { Tag } from "@/db/schema";
 
 interface EditTagModalProps {
+	tag: Tag;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 }
 
 export default function EditTagModal({
+	tag,
 	open,
 	onOpenChange,
 }: EditTagModalProps) {
-	const { editTag } = useAppStore();
-
-	if (!editTag) return null;
-
 	return (
 		<Modal open={open} onOpenChange={onOpenChange}>
 			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[400px]">
@@ -33,10 +31,7 @@ export default function EditTagModal({
 					</ModalDescription>
 				</ModalHeader>
 
-				<EditTagForm
-					initialData={editTag}
-					onFinish={() => onOpenChange?.(false)}
-				/>
+				<EditTagForm initialData={tag} onFinish={() => onOpenChange?.(false)} />
 			</ModalContent>
 		</Modal>
 	);

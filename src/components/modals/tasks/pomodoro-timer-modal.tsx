@@ -14,6 +14,7 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from "@/components/ui/modal";
+import type { Task } from "@/db/schema";
 
 const QUOTES = [
 	{
@@ -40,14 +41,14 @@ const QUOTES = [
 
 interface PomodoroTimerModalProps {
 	onFinish: () => void;
-	title: string;
+	task: Task;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 }
 
 export default function PomodoroTimerModal({
 	onFinish,
-	title,
+	task,
 	open,
 	onOpenChange,
 }: PomodoroTimerModalProps) {
@@ -129,7 +130,7 @@ export default function PomodoroTimerModal({
 		<Modal open={open} onOpenChange={onOpenChange}>
 			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[500px]">
 				<ModalHeader className="p-0">
-					<ModalTitle>{title}</ModalTitle>
+					<ModalTitle>{task.title}</ModalTitle>
 					<ModalDescription>
 						Focus for
 						<span className="ml-1 font-semibold text-primary">

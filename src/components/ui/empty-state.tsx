@@ -1,5 +1,6 @@
 import { IconRenderer } from "@/components/icon-renderer";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 interface EmptyStateProps {
 	icon?: string;
@@ -32,12 +33,15 @@ export function EmptyState({
 				<div className="relative z-10 flex h-full flex-col items-center justify-center gap-4">
 					<div className="flex flex-col items-center justify-center gap-1">
 						{icon && (
-							<IconRenderer
-								name={icon}
-								className="size-5 text-muted-foreground"
-							/>
+							<Button
+								variant="outline"
+								size="icon"
+								className="backdrop-blur-lg"
+							>
+								<IconRenderer name={icon} className="text-foreground" />
+							</Button>
 						)}
-						<p className="text-foreground">{title}</p>
+						<p className="font-medium text-foreground">{title}</p>
 						<p className="px-4 text-xs">{description}</p>
 					</div>
 

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "sonner";
 import { IconRenderer } from "@/components/icon-renderer";
-import NewTaskListModal from "@/components/modals/task-lists/new-task-list-modal";
+import NewTaskListModal from "@/components/modals/lists/new-task-list-modal";
 import NewTaskModal from "@/components/modals/tasks/new-task-modal";
 import { Button } from "@/components/ui/button";
 import {

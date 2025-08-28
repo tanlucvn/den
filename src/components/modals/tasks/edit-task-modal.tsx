@@ -1,5 +1,3 @@
-"use client";
-
 import EditTaskForm from "@/components/forms/tasks/edit-task-form";
 import {
 	Modal,
@@ -8,21 +6,19 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from "@/components/ui/modal";
-import { useAppStore } from "@/store/use-app-store";
+import type { Task } from "@/db/schema";
 
 interface EditTaskModalProps {
-	open?: boolean;
-	onOpenChange?: (open: boolean) => void;
+	task: Task;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 }
 
 export default function EditTaskModal({
+	task,
 	open,
 	onOpenChange,
 }: EditTaskModalProps) {
-	const { editTask } = useAppStore();
-
-	if (!editTask) return null;
-
 	return (
 		<Modal open={open} onOpenChange={onOpenChange}>
 			<ModalContent className="rounded-2xl ring-4 ring-accent sm:max-w-[400px]">
@@ -33,13 +29,7 @@ export default function EditTaskModal({
 					</ModalDescription>
 				</ModalHeader>
 
-				<EditTaskForm
-					initialData={editTask}
-					onFinish={(resetForm) => {
-						resetForm();
-						onOpenChange?.(false);
-					}}
-				/>
+				<EditTaskForm initialData={task} onSubmit={() => onOpenChange(false)} />
 			</ModalContent>
 		</Modal>
 	);

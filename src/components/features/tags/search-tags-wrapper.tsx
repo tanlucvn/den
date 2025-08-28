@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import TagItem from "@/components/features/tags/tag-item";
+import { IconRenderer } from "@/components/icon-renderer";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Tag } from "@/db/schema/tags";
 import { useSearchStore } from "@/store/use-search-store";
@@ -49,12 +51,13 @@ export function SearchTagsWrapper({ tags }: SearchTagsWrapperProps) {
 		<div className="flex size-full flex-col gap-4">
 			<div className="flex items-center gap-2 text-muted-foreground text-xs">
 				<div className="h-px flex-1 bg-border" />
-				<span>
-					<span className="font-semibold text-foreground text-sm">
-						{results.length}
-					</span>{" "}
-					tag{results.length !== 1 && "s"} found
-				</span>
+				<Badge variant="secondary" className="rounded-full">
+					<IconRenderer
+						name="Search"
+						className="size-3 text-muted-foreground"
+					/>
+					{results.length} tag{results.length !== 1 && "s"} found
+				</Badge>
 				<div className="h-px flex-1 bg-border" />
 			</div>
 

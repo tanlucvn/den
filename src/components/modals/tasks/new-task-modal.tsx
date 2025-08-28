@@ -35,7 +35,7 @@ export default function NewTaskModal({
 
 				<NewTaskForm
 					initialData={initialData}
-					onFinish={() => {
+					onSubmit={() => {
 						setIsOpen(false);
 					}}
 				/>

@@ -20,7 +20,7 @@ export const useTaskActions = () => {
 		if (!task.title.trim()) return;
 
 		try {
-			await createTask(task);
+			await createTask({ ...task, updatedAt: new Date() });
 		} catch {
 			toast.error("Failed to create task.");
 		}
@@ -28,7 +28,7 @@ export const useTaskActions = () => {
 
 	const handleUpdate = async (task: Task) => {
 		try {
-			await updateTask(task);
+			await updateTask({ ...task, updatedAt: new Date() });
 		} catch {
 			toast.error("Failed to update task.");
 		}
@@ -63,12 +63,12 @@ export const useTaskActions = () => {
 		tagIds: string[],
 	) => {
 		try {
-			const data = {
+			const payload = {
 				...task,
 				tagIds,
 			};
 
-			await updateTask(data);
+			await updateTask({ ...payload, updatedAt: new Date() });
 		} catch {
 			toast.error("Failed to update tags.");
 		}

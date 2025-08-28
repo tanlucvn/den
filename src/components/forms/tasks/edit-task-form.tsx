@@ -27,40 +27,36 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import type { Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import {
-	type EditTaskFormValues,
-	editTaskSchema,
-} from "@/lib/validators/edit-task";
+import { type TaskValues, taskSchema } from "@/lib/validators/task-schema";
 
 interface EditTaskFormProps {
 	initialData: Task;
-	onFinish: (reset: () => void) => void;
+	onSubmit: () => void;
 }
 
 export default function EditTaskForm({
 	initialData,
-	onFinish,
+	onSubmit,
 }: EditTaskFormProps) {
 	const { loading, handleUpdate } = useTaskActions();
 
-	const form = useForm<EditTaskFormValues>({
-		resolver: zodResolver(editTaskSchema),
+	const form = useForm<TaskValues>({
+		resolver: zodResolver(taskSchema),
 		defaultValues: {
 			title: initialData.title,
-			note: initialData.note ?? "",
+			description: initialData.description ?? "",
 			location: initialData.location ?? "",
 			priority: initialData.priority,
 			status: initialData.status,
-			remindAt: initialData.remindAt,
+			remindAt: initialData.remindAt && new Date(initialData.remindAt),
 		},
 	});
 
-	const handleSubmit = async (values: EditTaskFormValues) => {
+	const handleSubmit = async (values: TaskValues) => {
 		if (!initialData) return;
 
 		await handleUpdate({
@@ -69,7 +65,8 @@ export default function EditTaskForm({
 			remindAt: values.remindAt ?? null,
 		});
 
-		onFinish(() => form.reset());
+		form.reset();
+		onSubmit();
 	};
 
 	return (
@@ -100,24 +97,24 @@ export default function EditTaskForm({
 
 				<FormField
 					control={form.control}
-					name="note"
+					name="description"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
 								<IconRenderer
-									name="Captions"
+									name="PenLine"
 									className="text-muted-foreground"
 								/>
-								Note
+								Description
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
 								</span>
 							</FormLabel>
 							<FormControl>
-								<Textarea
-									placeholder="Optional details..."
+								<Input
+									placeholder="Quick description..."
 									{...field}
-									className="max-h-20 resize-none"
+									value={field.value ?? ""}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -138,7 +135,11 @@ export default function EditTaskForm({
 								</span>
 							</FormLabel>
 							<FormControl>
-								<Input placeholder="e.g. Work, Home" {...field} />
+								<Input
+									placeholder="e.g. Work, Home"
+									{...field}
+									value={field.value ?? ""}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

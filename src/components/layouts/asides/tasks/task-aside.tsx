@@ -1,4 +1,4 @@
-import { TaskSummary } from "@/components/features/task/task-summary-card";
+import { TaskSummary } from "@/components/layouts/asides/tasks/task-summary";
 import type { Task } from "@/db/schema/tasks";
 
 interface TaskAsideProps {

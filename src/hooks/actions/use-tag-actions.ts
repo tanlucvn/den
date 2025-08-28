@@ -8,10 +8,7 @@ import {
 	useUpdateTag,
 } from "@/hooks/mutations/use-tag-mutation";
 
-//* Custom hook for tag actions (CRUD, refresh, edit modal)
-//* Use mutation logic with toast notifications
 export const useTagActions = () => {
-	// Tag mutation hooks
 	const { mutateAsync: createTag, isPending: isCreating } = useCreateTag();
 	const { mutateAsync: updateTag, isPending: isUpdating } = useUpdateTag();
 	const { mutateAsync: deleteTag, isPending: isDeleting } = useDeleteTag();

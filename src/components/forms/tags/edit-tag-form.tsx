@@ -16,10 +16,7 @@ import type { Tag } from "@/db/schema/tags";
 import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import type { ColorId } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import {
-	type EditTagFormValues,
-	editTagSchema,
-} from "@/lib/validators/edit-tag";
+import { type TagValues, tagSchema } from "@/lib/validators/tag-schema";
 
 interface EditTagFormProps {
 	initialData: Tag;
@@ -32,15 +29,15 @@ export default function EditTagForm({
 }: EditTagFormProps) {
 	const { loading, handleUpdate } = useTagActions();
 
-	const form = useForm<EditTagFormValues>({
-		resolver: zodResolver(editTagSchema),
+	const form = useForm<TagValues>({
+		resolver: zodResolver(tagSchema),
 		defaultValues: {
 			title: initialData.title,
 			color: initialData.color ?? null,
 		},
 	});
 
-	const handleSubmit = async (values: EditTagFormValues) => {
+	const handleSubmit = async (values: TagValues) => {
 		if (!initialData) return;
 
 		await handleUpdate({

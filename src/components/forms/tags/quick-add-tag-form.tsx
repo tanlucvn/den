@@ -14,31 +14,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
-import {
-	type QuickNewTagValues,
-	quickNewTagSchema,
-} from "@/lib/validators/quick-new-tag";
+import { type TagValues, tagSchema } from "@/lib/validators/tag-schema";
 
-interface QuickAddTagFormProps {
-	formId: string;
-	onFinish?: () => void;
-}
-
-export default function QuickAddTagForm({
-	formId,
-	onFinish,
-}: QuickAddTagFormProps) {
+export default function QuickAddTagForm() {
 	const { data } = useSession();
 	const { loading, handleCreate } = useTagActions();
 
-	const form = useForm<QuickNewTagValues>({
-		resolver: zodResolver(quickNewTagSchema),
+	const form = useForm<TagValues>({
+		resolver: zodResolver(tagSchema),
 		defaultValues: {
 			title: "",
 		},
 	});
 
-	const handleSubmit = async (values: QuickNewTagValues) => {
+	const handleSubmit = async (values: TagValues) => {
 		if (!data) return;
 
 		await handleCreate({
@@ -47,12 +36,11 @@ export default function QuickAddTagForm({
 		});
 
 		form.reset();
-		onFinish?.();
 	};
 
 	return (
 		<Form {...form}>
-			<form id={formId} onSubmit={form.handleSubmit(handleSubmit)}>
+			<form id="quick-add-tag-form" onSubmit={form.handleSubmit(handleSubmit)}>
 				<FormField
 					control={form.control}
 					name="title"
@@ -73,7 +61,7 @@ export default function QuickAddTagForm({
 				<Button
 					size="sm"
 					type="submit"
-					form={formId}
+					form="quick-add-tag-form"
 					className="absolute top-1 right-1 h-7 gap-1 rounded-full text-xs"
 					disabled={loading}
 				>

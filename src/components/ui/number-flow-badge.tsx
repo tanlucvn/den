@@ -11,12 +11,12 @@ type NumberFlowBadgeProps = {
 export function NumberFlowBadge({
 	value,
 	className,
-	variant = "outline",
+	variant = "secondary",
 }: NumberFlowBadgeProps) {
 	return (
 		<Badge
 			variant={variant}
-			className={cn("select-none rounded-[4px] px-2 font-medium", className)}
+			className={cn("select-none rounded font-medium", className)}
 		>
 			<NumberFlow value={value} />
 		</Badge>

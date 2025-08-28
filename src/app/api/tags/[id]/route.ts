@@ -1,40 +1,33 @@
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+	handleError,
+	notFound,
+	requireSession,
+	success,
+	successMessage,
+} from "@/app/api/api-response";
 import { db } from "@/db";
 import { tags } from "@/db/schema/tags";
-import { auth } from "@/lib/auth";
+import { tagSchema } from "@/lib/validators/tag-schema";
 
 export async function GET(
 	_req: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 
 		const tag = await db.query.tags.findFirst({
 			where: and(eq(tags.userId, session.user.id), eq(tags.id, id)),
 		});
 
-		if (!tag) {
-			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
-		}
+		if (!tag) return notFound("Tag not found");
 
-		return NextResponse.json(tag, { status: 200 });
+		return success(tag);
 	} catch (error) {
-		console.error("GET /api/tags/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
@@ -43,39 +36,22 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 		const body = await req.json();
-
-		const updatedData = {
-			...body,
-			updatedAt: new Date(),
-		};
+		const parsed = tagSchema.parse(body);
 
 		const [updated] = await db
 			.update(tags)
-			.set(updatedData)
-			.where(and(eq(tags.id, id), eq(tags.userId, session.user.id)))
+			.set({ ...parsed, updatedAt: new Date() })
+			.where(and(eq(tags.userId, session.user.id), eq(tags.id, id)))
 			.returning();
 
-		if (!updated) {
-			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
-		}
+		if (!updated) return notFound("Tag not found");
 
-		return NextResponse.json(updated, { status: 200 });
+		return successMessage("Tag updated successfully");
 	} catch (error) {
-		console.error("PUT /api/tags/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
@@ -84,31 +60,18 @@ export async function DELETE(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const { id } = await params;
 
 		const [deleted] = await db
 			.delete(tags)
-			.where(and(eq(tags.id, id), eq(tags.userId, session.user.id)))
+			.where(and(eq(tags.userId, session.user.id), eq(tags.id, id)))
 			.returning();
 
-		if (!deleted) {
-			return NextResponse.json({ error: "Tag not found" }, { status: 404 });
-		}
+		if (!deleted) return notFound("Tag not found");
 
-		return NextResponse.json({ success: true }, { status: 200 });
+		return successMessage("Tag deleted successfully");
 	} catch (error) {
-		console.error("DELETE /api/tags/[id] error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }

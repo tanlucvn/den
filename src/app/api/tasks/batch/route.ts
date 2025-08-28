@@ -1,51 +1,41 @@
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+	handleError,
+	requireSession,
+	successMessage,
+} from "@/app/api/api-response";
 import { db } from "@/db";
 import { tasks } from "@/db/schema/tasks";
-import { auth } from "@/lib/auth";
+import { taskSchema } from "@/lib/validators/task-schema";
 
 export async function PUT(req: NextRequest) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		const session = await requireSession();
+		const body = await req.json();
+
+		if (!Array.isArray(body) || body.length === 0) {
+			return handleError(
+				new Error("Invalid input, expected a non-empty array"),
+			);
 		}
 
-		const body = await req.json(); // Task[]
-		if (!Array.isArray(body)) {
-			return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-		}
-
-		const results = await Promise.all(
+		await Promise.all(
 			body.map(async (task) => {
-				const updatedData = {
-					...task,
-					createdAt: task.createdAt ? new Date(task.createdAt) : undefined,
-					updatedAt: new Date(),
-					remindAt: task.remindAt ? new Date(task.remindAt) : null,
-					deletedAt: task.deletedAt ? new Date(task.deletedAt) : null,
-				};
-
-				const [updated] = await db
+				const parsed = taskSchema.parse(task);
+				await db
 					.update(tasks)
-					.set(updatedData)
-					.where(and(eq(tasks.id, task.id), eq(tasks.userId, session.user.id)))
-					.returning({ id: tasks.id });
-
-				return updated;
+					.set({
+						...parsed,
+						updatedAt: new Date(),
+						remindAt: parsed.remindAt ?? null,
+					})
+					.where(and(eq(tasks.id, task.id), eq(tasks.userId, session.user.id)));
 			}),
 		);
 
-		return NextResponse.json(results, { status: 200 });
+		return successMessage("Tasks updated successfully");
 	} catch (error) {
-		console.error("PUT /api/tasks/batch error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }

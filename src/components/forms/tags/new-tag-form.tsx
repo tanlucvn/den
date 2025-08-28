@@ -17,7 +17,7 @@ import { useTagActions } from "@/hooks/actions/use-tag-actions";
 import { useSession } from "@/lib/auth-client";
 import { type ColorId, ENTITY_ICONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { type NewTagValues, newTagSchema } from "@/lib/validators/new-tag";
+import { type TagValues, tagSchema } from "@/lib/validators/tag-schema";
 
 interface NewTagFormProps {
 	onFinish: () => void;
@@ -28,15 +28,15 @@ export default function NewTagForm({ onFinish }: NewTagFormProps) {
 
 	const { loading, handleCreate } = useTagActions();
 
-	const form = useForm<NewTagValues>({
-		resolver: zodResolver(newTagSchema),
+	const form = useForm<TagValues>({
+		resolver: zodResolver(tagSchema),
 		defaultValues: {
 			title: "",
 			color: null,
 		},
 	});
 
-	const handleSubmit = async (values: NewTagValues) => {
+	const handleSubmit = async (values: TagValues) => {
 		if (!session) return;
 
 		const newTag: NewTag = {

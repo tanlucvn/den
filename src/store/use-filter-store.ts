@@ -1,87 +1,110 @@
 import { create } from "zustand";
 
-export type FilterType = "status" | "priority" | "tags";
+export type EntityType = "tasks" | "lists" | "tags";
+export type FilterType = "status" | "priority" | "tags" | "color" | "icon";
 
-export interface FilterState {
-	// Filter options
-	filters: {
-		status: string[];
-		priority: string[];
-		tags: string[];
-	};
-
-	// Actions
-	setFilter: (type: FilterType, ids: string[]) => void;
-	toggleFilter: (type: FilterType, id: string) => void;
-	clearFilters: () => void;
-	clearFilterType: (type: FilterType) => void;
-
-	// Utility
-	hasActiveFilters: () => boolean;
-	getActiveFiltersCount: () => number;
+export interface EntityFilters {
+	status: string[];
+	priority: string[];
+	tags: string[];
+	color: string[];
+	icon: string[];
 }
 
-export const useFilterStore = create<FilterState>((set, get) => ({
-	// Initial state
-	filters: {
-		status: [],
-		priority: [],
-		tags: [],
-	},
+interface FilterStore {
+	entities: Record<EntityType, EntityFilters>;
 
 	// Actions
-	setFilter: (type, ids) => {
+	setFilter: (entity: EntityType, type: FilterType, ids: string[]) => void;
+	toggleFilter: (entity: EntityType, type: FilterType, id: string) => void;
+	clearFilters: (entity: EntityType) => void;
+	clearFilterType: (entity: EntityType, type: FilterType) => void;
+
+	// Utility
+	hasActiveFilters: (entity: EntityType) => boolean;
+	getActiveFiltersCount: (entity: EntityType) => number;
+}
+
+const initialFilters: EntityFilters = {
+	// Tasks
+	status: [],
+	priority: [],
+	tags: [],
+
+	// Task Lists
+	color: [],
+	icon: [],
+};
+
+export const useFilterStore = create<FilterStore>((set, get) => ({
+	entities: {
+		tasks: { ...initialFilters },
+		lists: { ...initialFilters },
+		tags: { ...initialFilters },
+	},
+
+	setFilter: (entity, type, ids) => {
 		set((state) => ({
-			filters: {
-				...state.filters,
-				[type]: ids,
+			entities: {
+				...state.entities,
+				[entity]: {
+					...state.entities[entity],
+					[type]: ids,
+				},
 			},
 		}));
 	},
 
-	toggleFilter: (type, id) => {
+	toggleFilter: (entity, type, id) => {
 		set((state) => {
-			const currentFilters = state.filters[type];
+			const currentFilters = state.entities[entity][type];
 			const newFilters = currentFilters.includes(id)
 				? currentFilters.filter((item) => item !== id)
 				: [...currentFilters, id];
 
 			return {
-				filters: {
-					...state.filters,
-					[type]: newFilters,
+				entities: {
+					...state.entities,
+					[entity]: {
+						...state.entities[entity],
+						[type]: newFilters,
+					},
 				},
 			};
 		});
 	},
 
-	clearFilters: () => {
-		set({
-			filters: {
-				status: [],
-				priority: [],
-				tags: [],
-			},
-		});
-	},
-
-	clearFilterType: (type) => {
+	clearFilters: (entity) => {
 		set((state) => ({
-			filters: {
-				...state.filters,
-				[type]: [],
+			entities: {
+				...state.entities,
+				[entity]: { ...initialFilters },
 			},
 		}));
 	},
 
-	// Utility
-	hasActiveFilters: () => {
-		const { filters } = get();
-		return Object.values(filters).some((filterArray) => filterArray.length > 0);
+	clearFilterType: (entity, type) => {
+		set((state) => ({
+			entities: {
+				...state.entities,
+				[entity]: {
+					...state.entities[entity],
+					[type]: [],
+				},
+			},
+		}));
 	},
 
-	getActiveFiltersCount: () => {
-		const { filters } = get();
-		return Object.values(filters).reduce((acc, curr) => acc + curr.length, 0);
+	hasActiveFilters: (entity) => {
+		const { entities } = get();
+		return Object.values(entities[entity]).some((arr) => arr.length > 0);
+	},
+
+	getActiveFiltersCount: (entity) => {
+		const { entities } = get();
+		return Object.values(entities[entity]).reduce(
+			(acc, arr) => acc + arr.length,
+			0,
+		);
 	},
 }));

@@ -24,12 +24,14 @@ export const COLOR_OPTIONS: { label: string; value: AppColor; desc: string }[] =
 		},
 	];
 
-export const FILTER_LABELS: Record<string, string> = {
+export const DATE_FILTER_LABELS: Record<DateFilter, string> = {
 	all: "All",
 	today: "Today",
 	week: "This Week",
 	month: "This Month",
 };
+export const DATE_FILTERS = ["all", "today", "week", "month"] as const;
+export type DateFilter = (typeof DATE_FILTERS)[number];
 
 export const ALL_STATUS = [
 	{ id: "todo", name: "Todo", icon: "Bean" },
@@ -68,9 +70,9 @@ export const ALL_PRIORITY = [
 ] as const;
 export const PRIORITY_COLORS: Record<PriorityId, string> = {
 	none: "text-muted-foreground",
-	low: "text-green-500",
+	low: "text-emerald-500",
 	medium: "text-amber-500",
-	high: "text-red-500",
+	high: "text-rose-500",
 };
 export type PriorityId = (typeof ALL_PRIORITY)[number]["id"];
 export type Priority = (typeof ALL_PRIORITY)[number];
@@ -211,8 +213,8 @@ export const BG_COLOR_CLASSES: Record<ColorId, string> = Object.fromEntries(
 	ALL_COLORS.map((c) => [c.id, c.background]),
 ) as Record<ColorId, string>;
 
-export const ENTITY_ICONS: Record<"task" | "taskList" | "tags", string> = {
+export const ENTITY_ICONS: Record<"task" | "lists" | "tags", string> = {
 	task: "Leaf",
-	taskList: "Trees",
+	lists: "Trees",
 	tags: "Flower",
 };

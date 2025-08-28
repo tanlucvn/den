@@ -1,67 +1,43 @@
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import {
+	handleError,
+	requireSession,
+	success,
+	successMessage,
+} from "@/app/api/api-response";
 import { db } from "@/db";
 import { tags } from "@/db/schema/tags";
-import { auth } from "@/lib/auth";
+import { tagSchema } from "@/lib/validators/tag-schema";
 
 export async function GET() {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
+		const session = await requireSession();
 
-		const data = await db.query.tags.findMany({
+		const results = await db.query.tags.findMany({
 			where: eq(tags.userId, session.user.id),
+			orderBy: (tags, { asc }) => asc(tags.updatedAt),
 		});
 
-		return NextResponse.json(data, { status: 200 });
+		return success(results);
 	} catch (error) {
-		console.error("GET /api/tags error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await auth.api.getSession({ headers: await headers() });
-		if (!session) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
+		const session = await requireSession();
 		const body = await req.json();
+		const parsed = tagSchema.parse(body);
 
-		if (!body.name || typeof body.name !== "string") {
-			return NextResponse.json(
-				{ error: "Tag name is required" },
-				{ status: 400 },
-			);
-		}
-
-		const [newTag] = await db
+		await db
 			.insert(tags)
-			.values({
-				...body,
-				userId: session.user.id,
-			})
+			.values({ ...parsed, userId: session.user.id, updatedAt: new Date() })
 			.returning();
 
-		return NextResponse.json(newTag, { status: 201 });
+		return successMessage("Tag created successfully", 201);
 	} catch (error) {
-		console.error("POST /api/tags error:", error);
-		return NextResponse.json(
-			{
-				error: "Internal Server Error",
-				details: error instanceof Error ? error.message : String(error),
-			},
-			{ status: 500 },
-		);
+		return handleError(error);
 	}
 }

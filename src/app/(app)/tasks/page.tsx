@@ -1,6 +1,6 @@
 "use client";
 
-import AllTasks from "@/components/features/task/all-tasks";
+import AllTasks from "@/components/features/tasks/all-tasks";
 import AppLayout from "@/components/layouts/app-layout";
 import TaskAside from "@/components/layouts/asides/tasks/task-aside";
 import Header from "@/components/layouts/headers/tasks/header";
@@ -16,7 +16,6 @@ export default function TasksPage() {
 			aside={<TaskAside tasks={allTasks} isLoading={isLoading} />}
 		>
 			<AllTasks
-				iconName="Inbox"
 				title="All Tasks"
 				description="Keep track of everything in one place."
 				tasks={allTasks}

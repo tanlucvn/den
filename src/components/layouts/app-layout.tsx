@@ -25,8 +25,8 @@ export default function AppLayout({
 	const { appColor } = useAppSettingsStore();
 
 	const height = {
-		1: "h-[calc(100svh-48px)] lg:h-[calc(100svh-64px)]",
-		2: "h-[calc(100svh-90px)] lg:h-[calc(100svh-106px)]",
+		1: "h-[calc(100svh-48px)] lg:h-[calc(100svh-66px)]",
+		2: "h-[calc(100svh-88px)] lg:h-[calc(100svh-106px)]",
 	};
 
 	// Apply theme
@@ -45,16 +45,18 @@ export default function AppLayout({
 			<AsideProvider>
 				<AppSidebar />
 				<div className="h-svh w-full overflow-hidden lg:p-2">
-					<div className="flex h-full w-full flex-col items-center justify-start overflow-hidden bg-container shadow-xs ring-4 ring-accent lg:rounded-md lg:border">
+					<div className="flex h-full w-full flex-col items-center justify-start overflow-hidden bg-container shadow-xs ring-4 ring-accent lg:rounded-lg lg:border">
 						{header}
 
 						<div
 							className={cn(
-								"flex w-full",
+								"flex size-full",
 								height[headersNumber as keyof typeof height],
 							)}
 						>
-							<div className="w-full overflow-auto p-2">{children}</div>
+							<div className="scrollbar flex size-full flex-col gap-4 overflow-auto px-4 py-2">
+								{children}
+							</div>
 							{aside && <Aside>{aside}</Aside>}
 						</div>
 					</div>

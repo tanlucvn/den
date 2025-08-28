@@ -17,7 +17,6 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from "@/components/ui/modal";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 type AsideContext = {
@@ -25,7 +24,6 @@ type AsideContext = {
 	setOpen: (open: boolean) => void;
 	openMobile: boolean; // mobile state
 	setOpenMobile: (open: boolean) => void;
-	isMobile: boolean;
 	toggleAside: () => void;
 };
 
@@ -40,28 +38,26 @@ export function useAside() {
 }
 
 export const AsideProvider = ({ children }: { children: React.ReactNode }) => {
-	const isMobile = useIsMobile(1024);
 	const [open, setOpen] = useState(true); // desktop
 	const [openMobile, setOpenMobile] = useState(false); // mobile
 
 	const toggleAside = useCallback(() => {
-		if (isMobile) {
+		if (window.innerWidth < 1024) {
 			setOpenMobile((prev) => !prev);
 		} else {
 			setOpen((prev) => !prev);
 		}
-	}, [isMobile]);
+	}, []);
 
 	const contextValue = useMemo<AsideContext>(
 		() => ({
-			isMobile,
 			open,
 			setOpen,
 			openMobile,
 			setOpenMobile,
 			toggleAside,
 		}),
-		[isMobile, open, openMobile, toggleAside],
+		[open, openMobile, toggleAside],
 	);
 
 	return (
@@ -77,17 +73,18 @@ interface AsideProps {
 }
 
 export const Aside = ({ children }: AsideProps) => {
-	const { isMobile, open, openMobile, setOpenMobile } = useAside();
+	const { open, openMobile, setOpenMobile } = useAside();
 
-	if (isMobile) {
-		return (
+	return (
+		<>
+			{/* Mobile (hidden on lg and up) */}
 			<Modal
 				open={openMobile}
 				onOpenChange={setOpenMobile}
 				direction="right"
 				onlyDrawer
 			>
-				<ModalContent className="w-[20rem] rounded-lg p-4 after:hidden after:content-none [&>button]:hidden">
+				<ModalContent className="block w-[20rem] rounded-lg p-4 ring-4 ring-accent after:hidden after:content-none lg:hidden [&>button]:hidden">
 					<ModalHeader className="sr-only">
 						<ModalTitle>Aside Panel</ModalTitle>
 						<ModalDescription>
@@ -97,26 +94,25 @@ export const Aside = ({ children }: AsideProps) => {
 					<div className="flex h-full w-full flex-col">{children}</div>
 				</ModalContent>
 			</Modal>
-		);
-	}
 
-	return (
-		<aside
-			className={cn(
-				"overflow-hidden bg-sidebar transition-all duration-300 ease-in-out",
-				open ? "w-[20rem] border-l" : "pointer-events-none w-0",
-			)}
-			aria-hidden={!open}
-		>
-			<div
+			{/* Desktop (hidden below lg) */}
+			<aside
 				className={cn(
-					"h-full overflow-auto p-4 transition-opacity duration-200",
-					open ? "opacity-100" : "opacity-0",
+					"hidden overflow-hidden bg-sidebar transition-all duration-300 ease-in-out lg:block",
+					open ? "w-[20rem] border-l" : "pointer-events-none w-0",
 				)}
+				aria-hidden={!open}
 			>
-				{children}
-			</div>
-		</aside>
+				<div
+					className={cn(
+						"scrollbar h-full overflow-auto p-4 transition-opacity duration-200",
+						open ? "opacity-100" : "opacity-0",
+					)}
+				>
+					{children}
+				</div>
+			</aside>
+		</>
 	);
 };
 Aside.displayName = "Aside";

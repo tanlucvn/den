@@ -14,53 +14,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { useSession } from "@/lib/auth-client";
-import {
-	type QuickNewTaskFormValues,
-	quickNewTaskSchema,
-} from "@/lib/validators/quick-new-task";
+import { type TaskValues, taskSchema } from "@/lib/validators/task-schema";
 
 interface QuickAddFormProps {
-	formId: string;
 	listId?: string;
-	onFinish?: () => void;
 }
 
-export default function QuickAddTaskForm({
-	formId,
-	listId,
-	onFinish,
-}: QuickAddFormProps) {
+export default function QuickAddTaskForm({ listId }: QuickAddFormProps) {
 	const { data } = useSession();
 	const { loading, handleCreate } = useTaskActions();
 
-	const form = useForm<QuickNewTaskFormValues>({
-		resolver: zodResolver(quickNewTaskSchema),
+	const form = useForm<TaskValues>({
+		resolver: zodResolver(taskSchema),
 		defaultValues: {
 			title: "",
+			priority: "none",
+			status: "todo",
 		},
 	});
 
-	const handleSubmit = async (values: QuickNewTaskFormValues) => {
+	const handleSubmit = async (values: TaskValues) => {
 		if (!data) return;
 
+		// For optimistic UI
+		const id = crypto.randomUUID();
+
 		await handleCreate({
+			...values,
+			id: id,
 			listId,
 			title: values.title.trim(),
 			userId: data.user.id,
-			isCompleted: false,
-			isPinned: false,
-			note: "",
-			location: "",
-			priority: "none",
 		});
 
 		form.reset();
-		onFinish?.();
 	};
 
 	return (
 		<Form {...form}>
-			<form id={formId} onSubmit={form.handleSubmit(handleSubmit)}>
+			<form id="quick-add-task-form" onSubmit={form.handleSubmit(handleSubmit)}>
 				<FormField
 					control={form.control}
 					name="title"
@@ -81,7 +73,7 @@ export default function QuickAddTaskForm({
 				<Button
 					size="sm"
 					type="submit"
-					form={formId}
+					form="quick-add-task-form"
 					className="absolute top-1 right-1 h-7 gap-1 rounded-full text-xs"
 					disabled={loading}
 				>

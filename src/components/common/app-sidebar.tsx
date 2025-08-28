@@ -74,7 +74,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 										)}
 									>
 										<IconRenderer
-											name={ENTITY_ICONS.taskList}
+											name={ENTITY_ICONS.lists}
 											className="text-sidebar-foreground/60"
 										/>
 										Task Lists

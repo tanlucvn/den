@@ -27,35 +27,31 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import type { NewTask, Task } from "@/db/schema/tasks";
 import { useTaskActions } from "@/hooks/actions/use-task-actions";
 import { useSession } from "@/lib/auth-client";
 import { PRIORITY_COLORS, STATUS_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import {
-	type NewTaskFormValues,
-	newTaskSchema,
-} from "@/lib/validators/new-task";
+import { type TaskValues, taskSchema } from "@/lib/validators/task-schema";
 
 interface NewTaskFormProps {
 	initialData?: Partial<Task>;
-	onFinish: () => void;
+	onSubmit: () => void;
 }
 
 export default function NewTaskForm({
 	initialData,
-	onFinish,
+	onSubmit,
 }: NewTaskFormProps) {
 	const { data } = useSession();
 
 	const { loading, handleCreate } = useTaskActions();
 
-	const form = useForm<NewTaskFormValues>({
-		resolver: zodResolver(newTaskSchema),
+	const form = useForm<TaskValues>({
+		resolver: zodResolver(taskSchema),
 		defaultValues: {
 			title: initialData?.title || "",
-			note: initialData?.note || "",
+			description: initialData?.description || "",
 			location: initialData?.location || "",
 			priority: initialData?.priority || "none",
 			status: initialData?.status || "todo",
@@ -63,11 +59,15 @@ export default function NewTaskForm({
 		},
 	});
 
-	const handleSubmit = async (values: NewTaskFormValues) => {
+	const handleSubmit = async (values: TaskValues) => {
 		if (!data) return;
+
+		// For optimistic UI
+		const id = crypto.randomUUID();
 
 		const newTask: NewTask = {
 			...values,
+			id: id,
 			userId: data.user.id,
 			isCompleted: false,
 			isPinned: false,
@@ -77,7 +77,7 @@ export default function NewTaskForm({
 		await handleCreate(newTask);
 		form.reset();
 
-		onFinish();
+		onSubmit();
 	};
 
 	return (
@@ -108,24 +108,24 @@ export default function NewTaskForm({
 
 				<FormField
 					control={form.control}
-					name="note"
+					name="description"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>
 								<IconRenderer
-									name="Captions"
+									name="PenLine"
 									className="text-muted-foreground"
 								/>
-								Note
+								Description
 								<span className="font-normal text-muted-foreground text-xs">
 									(optional)
 								</span>
 							</FormLabel>
 							<FormControl>
-								<Textarea
-									placeholder="Optional details..."
+								<Input
+									placeholder="Quick description..."
 									{...field}
-									className="max-h-20 resize-none"
+									value={field.value ?? ""}
 								/>
 							</FormControl>
 							<FormMessage />
@@ -146,7 +146,11 @@ export default function NewTaskForm({
 								</span>
 							</FormLabel>
 							<FormControl>
-								<Input placeholder="e.g. Work, Home" {...field} />
+								<Input
+									placeholder="e.g. Work, Home"
+									{...field}
+									value={field.value ?? ""}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

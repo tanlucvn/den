@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useOptimisticMutation } from "tanstack-query-optimistic-updates";
 import type { NewTask, Task, TaskWithTagsAndList } from "@/db/schema/tasks";
+import { sortTasks } from "@/lib/helpers/sort-tasks";
 
 const TASKS_KEY = "tasks";
 
@@ -47,7 +48,7 @@ export function useCreateTask() {
 			}) => {
 				const optimisticId = crypto.randomUUID();
 				const newTask: Task = {
-					id: optimisticId,
+					id: variables.id ?? optimisticId,
 					userId: variables.userId,
 					listId: variables.listId ?? null,
 					title: variables.title,
@@ -64,7 +65,9 @@ export function useCreateTask() {
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
-				return [newTask, ...(prevQueryData ?? [])];
+
+				// Sort tasks immediately in the UI to maintain correct order
+				return sortTasks([newTask, ...(prevQueryData ?? [])]);
 			},
 			invalidateQueryOnSuccess: true,
 		},
@@ -84,10 +87,16 @@ export function useUpdateTask() {
 			}: {
 				prevQueryData: Task[];
 				variables: Task;
-			}) =>
-				(prevQueryData ?? []).map((t) =>
+			}) => {
+				if (!prevQueryData) return [];
+
+				const updatedTasks = prevQueryData.map((t) =>
 					t.id === variables.id ? { ...t, ...variables } : t,
-				),
+				);
+
+				// Sort tasks immediately in the UI to maintain correct order
+				return sortTasks(updatedTasks);
+			},
 			invalidateQueryOnSuccess: true,
 		},
 	});

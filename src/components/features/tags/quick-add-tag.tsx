@@ -6,11 +6,9 @@ import NewTagModal from "@/components/modals/tags/new-tag-modal";
 import { Button } from "@/components/ui/button";
 
 export default function QuickAddTag() {
-	const formId = "quick-add-tag-form";
-
 	return (
 		<div className="relative w-full">
-			<QuickAddTagForm formId={formId} />
+			<QuickAddTagForm />
 
 			<NewTagModal>
 				<Button
